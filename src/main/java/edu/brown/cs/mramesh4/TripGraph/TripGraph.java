@@ -59,9 +59,7 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
       ret.add(graph.get(start));
       return ret;
     } else{
-      //ret = aStarHelper(graph.get(start), graph.get(end));
       ret = aStarHelper(graph.get(start), graph.get(end));
-      //ret = getReverseList(graph.get(start), graph.get(end),returned);
       return ret;
     }
   }
@@ -106,6 +104,7 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
       N curr = pq.poll();
       nodes.add(curr);
       if (curr.equals(end)) {
+        //return a copy in order to prevent alteration
         return new ArrayList<>(nodes);
       }
       List<N> neighbors = curr.getNeighbors();
@@ -133,6 +132,7 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
           }
         }
       }
+      //backtracking
       List<N> ret = aStarHelp(end, pq, nodes, visited);
       nodes.remove(curr);
       return ret;
@@ -193,6 +193,7 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param end end node to delete from
    */
   public void deleteEdge(N start, N end){
+    //delete edges from both sides
     start.deleteEdge(end);
     end.deleteEdge(start);
   }
@@ -203,6 +204,7 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param end end node to add an edge from
    */
   public void insertEdge(N start, N end){
+    //call insertEdge
     start.insertEdges(end);
   }
 
