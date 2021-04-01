@@ -117,10 +117,8 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   public void insertEdges(CityNode node){
     if(node != null) {
       String name = node.getName();
-      System.out.println("name" + name);
       CityEdge edge = new CityEdge(this, node);
       CityEdge edge2 = new CityEdge(node, this);
-      System.out.println("edge" + edge + "edge2" + edge2);
       connectingNodes.put(name, node);
       connectingEdges.put(name, edge);
       node.getConnectingNodes().put(this.name, this);
@@ -129,6 +127,21 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
       System.out.println("node is null");
     }
   }
+
+  /**
+   * This is a method that deletes an edge between two nodes
+   * @param node edge to delete between two edges
+   */
+  @Override
+  public void deleteEdge(CityNode node){
+    String name = node.getName();
+    connectingNodes.remove(name);
+    connectingEdges.remove(name);
+    node.getConnectingNodes().remove(this.name);
+    node.getConnectingEdges().remove(this.name);
+  }
+
+
   //TODO: Change this to an A* or more significant path-finding version
   /**
    * Returns the euclidean distance between two city nodes
