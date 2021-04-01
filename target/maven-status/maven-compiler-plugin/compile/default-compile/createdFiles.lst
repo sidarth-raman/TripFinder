@@ -1,6 +1,8 @@
 edu/brown/cs/mramesh4/KDTree/KDTree.class
 edu/brown/cs/mramesh4/maps/GUIHandler$RouteCoorsHandler.class
 edu/brown/cs/mramesh4/maps/GUIHandler.class
+edu/brown/cs/mramesh4/TripGraph/CompleteTripGraph.class
+edu/brown/cs/mramesh4/TripGraph/TripGraphNodeComparator.class
 edu/brown/cs/mramesh4/maps/GUIHandler$RadiusHandler.class
 edu/brown/cs/mramesh4/maps/GUIHandler$NearestHandler.class
 edu/brown/cs/mramesh4/KDTree/KDTree$1.class
@@ -37,6 +39,7 @@ edu/brown/cs/mramesh4/stars/IllegalArgumentException.class
 edu/brown/cs/mramesh4/CSVParser/CSVParser.class
 edu/brown/cs/mramesh4/maps/WayNodeCache$1.class
 edu/brown/cs/mramesh4/maps/Way.class
+edu/brown/cs/mramesh4/TripGraph/TripGraph.class
 edu/brown/cs/mramesh4/maps/GUIHandler$UserHandler.class
 edu/brown/cs/mramesh4/KDTree/KDTree$2.class
 edu/brown/cs/mramesh4/MockPerson/MockPersonMethod.class

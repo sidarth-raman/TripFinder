@@ -23,7 +23,7 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * Empty constructor for a graph with no nodes.
    */
   public TripGraph() {
-
+    graph = new HashMap<>();
   }
 
   /**
@@ -33,6 +33,7 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    */
   public TripGraph(List<N> nodes){
     //fill our list of nodes
+    graph = new HashMap<>();
       for(N node: nodes){
         String name = node.getName();
         if(!graph.containsKey(name)){
@@ -142,23 +143,28 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
 
   /**
    * Node to insert and a List of Nodes to have edges with.
+   * If we put in a node we already have encountered, it will not reinsert.
    * @param node node to add to graph
    * @param nodes list of nodes to connect it to.
    */
   public void insertNode(N node, List<N> nodes){
-    //for all the nodes within the list of nodes to add to
-    //make sure they are in the graph
-    for(N neighbor: nodes){
-      String name = neighbor.getName();
-      if(graph.containsKey(name)) {
-        //add an edge between them
-        node.insertEdges(neighbor);
+    String nodeName = node.getName();
+
+    if(!graph.containsKey(nodeName) || (graph.containsKey(nodeName) && !graph.get(nodeName).equals(node))) {
+      //for all the nodes within the list of nodes to add to
+      //make sure they are in the graph
+      for (N neighbor : nodes) {
+        String name = neighbor.getName();
+        if (graph.containsKey(name)) {
+          //add an edge between them
+          node.insertEdges(neighbor);
+        }
       }
-    }
-    //if there is an edge between node and another node
-    //in the graph, this is valid, push it to the graph
-    if(!node.getOutgoingEdges().isEmpty()){
-      graph.put(node.getName(), node);
+      //if there is an edge between node and another node
+      //in the graph, this is valid, push it to the graph
+      if (!node.getOutgoingEdges().isEmpty()) {
+        graph.put(node.getName(), node);
+      }
     }
   }
 
@@ -175,5 +181,31 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
       graph.getConnectingEdges().remove(name);
       graph.getConnectingNodes().remove(name);
     }
+  }
+
+  /**
+   * This method deletes an edge between two nodes
+   * @param start one node to delete from
+   * @param end end node to delete from
+   */
+  public void deleteEdge(N start, N end){
+    start.deleteEdge(end);
+  }
+
+  /**
+   * This method adds an edge between two nodes within the graph.
+   * @param start one node to an add an edge from
+   * @param end end node to add an edge from
+   */
+  public void insertEdge(N start, N end){
+    start.insertEdges(end);
+  }
+
+  /**
+   * Accesor method for graph.
+   * @return a graph.
+   */
+  public HashMap<String, N> getGraph(){
+    return graph;
   }
 }
