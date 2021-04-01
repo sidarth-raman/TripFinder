@@ -7,8 +7,11 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
+
 
 /**
  * This is a class representing a Graph with nodes with undirected edges. We represent
@@ -56,10 +59,14 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
       ret.add(graph.get(start));
       return ret;
     } else{
+      //ret = aStarHelper(graph.get(start), graph.get(end));
       ret = aStarHelper(graph.get(start), graph.get(end));
+      //ret = getReverseList(graph.get(start), graph.get(end),returned);
+      return ret;
     }
-    return ret;
   }
+
+
 
   /**
    * This is a helper to run aStar within the graph that we are writing
@@ -68,43 +75,45 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @return a list of nodes
    */
   public List<N> aStarHelper(N start, N end){
+    ArrayList<N> ret = new ArrayList<>();
     //create a comparator that sorts them by a weight aStar assigns them
-    PriorityQueue<N> pq = new PriorityQueue<>(new TripGraphNodeComparator<N, E>());
+    PriorityQueue<N> pq = new PriorityQueue<N>(new TripGraphNodeComparator<N, E>());
     //set the distance travelled to 0
     start.setDistance(0);
+    start.setWeight(0);
     //keep track of a visited
     HashMap<String, N> visited = new HashMap<>();
+    HashMap<N, List<E>> deletedEdges = new HashMap<>();
     //put them in the visited
     visited.put(start.getName(), start);
     List<N> nodes = new ArrayList<>();
-    nodes.add(start);
-    aStarRecurs(end, pq, nodes, visited);
-    return nodes;
+    //nodes.add(start);
+    pq.add(start);
+    return aStarHelp(end, pq, nodes, visited);
   }
 
   /**
-   * This is a recursive method to fill our aStar method and run aStar
-   * @param end the goal node to reach
-   * @param pq a priorityqueue of nodes left to visit
-   * @param nodes a list of nodes in order to visit
-   * @param visited a map of visited nodes
+   * Helper method to conduct the AStar search recursively and use backtracking
+   * to save the route, since this method could not be used previously.
+   * @param end the end node to search for
+   * @param pq priorityqueue to use
+   * @param nodes nodes of curr path
+   * @param visited map of visited
+   * @return a list of Nodes.
    */
-  //TODO: Hand work through an example of aStarRecurs
-  //This should work but I am not sure.
-  public void aStarRecurs(N end, PriorityQueue<N> pq, List<N> nodes, HashMap<String, N> visited){
+  public List<N> aStarHelp(N end, PriorityQueue<N> pq, List<N> nodes, HashMap<String, N> visited){
     if(!pq.isEmpty()){
       N curr = pq.poll();
+      nodes.add(curr);
       if (curr.equals(end)) {
-        return;
+        return new ArrayList<>(nodes);
       }
       List<N> neighbors = curr.getNeighbors();
       for(N next: neighbors){
-        //we don't want to revisit this, because this will set an infinite loop
         if(next.equals(curr)) {
           continue;
-        } else {
+        } else{
           String name = next.getName();
-          //this is the distance of curr to edge of next
           Double dist = curr.getDistance() + curr.getConnectingEdges().get(name).getWeight();
           Double totalWeight = dist + next.toGoal(end);
           if (!visited.containsKey(next.getName())) {
@@ -112,32 +121,27 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
             next.setWeight(totalWeight);
             visited.put(next.getName(), next);
             pq.add(next);
-            nodes.add(next);
-            //backtrack: add this to the pq and add it
-            aStarRecurs(end, pq, nodes, visited);
-            //not sure if i need to remove all this.
-            visited.remove(next.getName());
-            pq.remove(next);
-            nodes.remove(next);
           } else {
+            N prev = visited.get(next.getName());
             //checking if we want to update the weight and distance
-            if (visited.get(next.getName()).getWeight() > totalWeight) {
+            if (prev.getWeight() > totalWeight) {
               next.setDistance(dist);
               next.setWeight(totalWeight);
               visited.put(next.getName(), next);
               pq.add(next);
-              nodes.add(next);
-              //backtrack: add this to the pq and add it
-              aStarRecurs(end, pq, nodes, visited);
-              //remove it from the backtracking
-              visited.remove(next.getName());
-              pq.remove(next);
-              nodes.remove(next);
             }
           }
         }
       }
-
+      List<N> ret = aStarHelp(end, pq, nodes, visited);
+      nodes.remove(curr);
+      return ret;
+    } else{
+       if(visited.containsKey(end)){
+         return nodes;
+       } else{
+         return null;
+       }
     }
   }
 
@@ -190,6 +194,7 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    */
   public void deleteEdge(N start, N end){
     start.deleteEdge(end);
+    end.deleteEdge(start);
   }
 
   /**
