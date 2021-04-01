@@ -8,7 +8,7 @@ import java.util.List;
  * @param <N> representing the type of node to be used in the Graph class.
  * @param <E> representing the type of edge to be used in the Graph class.
  */
-public interface GraphNode<N extends GraphNode<N, E>, E extends GraphEdge<N, E>> {
+public interface GraphNode<N extends GraphNode<N, E>, E extends edu.brown.cs.mramesh4.Graph.GraphEdge<N, E>> {
 
   /**
    * This method returns the name or ID of the current node.

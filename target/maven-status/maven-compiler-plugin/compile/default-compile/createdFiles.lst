@@ -6,7 +6,14 @@ edu/brown/cs/mramesh4/maps/GUIHandler$NearestHandler.class
 edu/brown/cs/mramesh4/KDTree/KDTree$1.class
 edu/brown/cs/mramesh4/stars/StarsLogic$1.class
 edu/brown/cs/mramesh4/maps/WayNodeCache.class
+<<<<<<< HEAD
 edu/brown/cs/mramesh4/Dimensional/DimensionalComparator.class
+=======
+edu/brown/cs/mramesh4/TripGraph/CityNode.class
+edu/brown/cs/mramesh4/TripGraph/TripGraphNode.class
+edu/brown/cs/mramesh4/Dimensional/DimensionalComparator.class
+edu/brown/cs/mramesh4/TripGraph/CityEdge.class
+>>>>>>> mit_branch
 edu/brown/cs/mramesh4/Graph/GraphEdge.class
 edu/brown/cs/mramesh4/SQLDatabase/UserSQLDatabase.class
 edu/brown/cs/mramesh4/REPLLoop/Parser.class
@@ -34,6 +41,10 @@ edu/brown/cs/mramesh4/maps/GUIHandler$UserHandler.class
 edu/brown/cs/mramesh4/KDTree/KDTree$2.class
 edu/brown/cs/mramesh4/MockPerson/MockPersonMethod.class
 edu/brown/cs/mramesh4/stars/ActionMethod.class
+<<<<<<< HEAD
+=======
+edu/brown/cs/mramesh4/TripGraph/TripGraphEdge.class
+>>>>>>> mit_branch
 edu/brown/cs/mramesh4/maps/GUIHandler$WayHandler.class
 edu/brown/cs/mramesh4/stars/StarsLogic$2.class
 edu/brown/cs/mramesh4/stars/Star.class

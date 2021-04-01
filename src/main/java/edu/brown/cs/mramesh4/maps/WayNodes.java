@@ -133,7 +133,7 @@ public class WayNodes implements Dimensional, GraphNode<WayNodes, Way> {
    * @return a Way representing from Way
    */
   @Override
-  public Way getFrom() {
+  public Way  () {
     return from;
   }
 

@@ -33,7 +33,6 @@ public class Graph<N extends GraphNode<N, E>, E extends GraphEdge<N, E>> {
   public N aStar(N source, N end) {
     PriorityQueue<N> pq = new PriorityQueue<>(new GraphNodeComparator<N, E>());
     //current node should have distance 0, add it to PQ
-    source.setCurrentDistance(0);
     pq.add(source);
     //checks for visited nodes so we don't readd them
     HashMap<String, N> visited = new HashMap<>();
