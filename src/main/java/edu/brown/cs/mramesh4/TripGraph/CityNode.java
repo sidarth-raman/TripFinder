@@ -1,4 +1,6 @@
 package edu.brown.cs.mramesh4.TripGraph;
+import edu.brown.cs.mramesh4.maps.WayNodes;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +17,9 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   private double longit;
   private HashMap<String, CityNode> connectingNodes;
   private HashMap<String, CityEdge> connectingEdges;
+  private double weight;
+  private double distance;
+  private static final double EARTH_RADIUS_IN_KM = 6371;
 
   /**
    * This is a constructor for a cityNode. A cityNode right now takes in
@@ -29,6 +34,8 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     this.longit = lon;
     connectingNodes = new HashMap<>();
     connectingEdges = new HashMap<>();
+    this.weight = Double.MAX_VALUE;
+    this.distance = Double.MAX_VALUE;
   }
   /**
    * Returns the name of the cityNode.
@@ -48,9 +55,33 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * Returns the longitude of the city.
    * @return The longitude of the city
    */
+
   public double getLong(){
     return longit;
   }
+
+  /**
+   * Returns the weight of the node for algorithms.
+   * @return weight
+   */
+  @Override
+  public double getWeight(){return weight;}
+
+  /**
+   * Setter method for distance.
+   * @param dist distance to set the distance to.
+   */
+  @Override
+  public void setDistance(double dist){distance = dist;}
+
+  @Override
+  public double getDistance(){return distance;}
+
+  /**
+   * Setter method for weight.
+   * @param weight weight to set the weight to.
+   */
+  public void setWeight(double weight){this.weight = weight;}
 
   /**
    * Accessor method for the nodes map
@@ -139,6 +170,33 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     }
     return ret;
   }
+
+  /**
+   * This is for the aStar heuristic, using haversine distance
+   * @param goal goal to check from
+   * @return a double for the A* function
+   */
+  @Override
+  public double toGoal(CityNode goal) {
+    double thisLat = Math.toRadians(lat);
+    double thisLon = Math.toRadians(longit);
+    double goalLat = Math.toRadians(goal.getLat());
+    double goalLon = Math.toRadians(goal.getLong());
+    /**
+     * Haversine formula: I got this from
+     * https://www.geeksforgeeks.org/program-distance-two-points-earth/
+     */
+    double dlon = goalLon - thisLon;
+    double dlat = goalLat - thisLat;
+    double havernmath = Math.pow(Math.sin(dlat / 2), 2)
+      + Math.cos(thisLat) * Math.cos(goalLat)
+      * Math.pow(Math.sin(dlon / 2), 2);
+    double finalanswer = 2 * Math.asin(Math.sqrt(havernmath));
+    // Radius of earth in kilometers. Use 3956 for miles
+    return (finalanswer * EARTH_RADIUS_IN_KM);
+  }
+
+
   //TODO: Code a getActivities() method
 
 }

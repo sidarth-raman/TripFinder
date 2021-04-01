@@ -68,6 +68,7 @@ public class CityEdge implements TripGraphEdge<CityNode, CityEdge> {
    * Weight setter method
    * @param weight double to set wieght of edge
    */
+  @Override
   public void setWeight(double weight){
       this.weight = weight;
     }
@@ -76,7 +77,8 @@ public class CityEdge implements TripGraphEdge<CityNode, CityEdge> {
    * Weight mutator function.
    * @return double representing weight
    */
-  public Double getWeight(){
+  @Override
+  public double getWeight(){
       return weight;
     }
 
