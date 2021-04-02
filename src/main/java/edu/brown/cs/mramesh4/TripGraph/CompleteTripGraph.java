@@ -27,8 +27,10 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       String name = node.getName();
       //makes sure the graph is complete
       if(node.getOutgoingEdges().size() != nodes.size() - 1) {
-        for (int j = i; j < nodes.size(); j++) {
-          node.insertEdges(nodes.get(j));
+        for (int j = i+1; j < nodes.size(); j++) {
+          if(!nodes.get(j).equals(i)) {
+            node.insertEdges(nodes.get(j));
+          }
         }
       }
       if(!graph.containsKey(name)){
@@ -195,4 +197,8 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   public HashMap<String, N> getGraph(){
     return graph;
   }
+
+
+
+  //TODO:Implement TSP algorithm
 }

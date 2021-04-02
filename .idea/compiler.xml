@@ -6,14 +6,17 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="TripFinder" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="maps" target="11" />
+      <module name="TripFinder" target="11" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="TripFinder" options="-Xlint:all" />
       <module name="maps" options="-Xlint:all" />
     </option>
   </component>
