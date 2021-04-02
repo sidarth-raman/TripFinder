@@ -1,6 +1,8 @@
 package edu.brown.cs.mramesh4.TripGraph;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -208,9 +210,10 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    */
   public List<N> TwoOptTSP(N start){
     //start with a complete graph
-    //TODO: Generate a minimum spanning tree
-    //TODO: Do a DFS traversal of minimum spanning tree
-    //TODO: Delete duplicates outside of the start.
+    //get a MST from Kruskals
+    TripGraph<N, E> mst = this.Kruskals();
+    //TODO: apply DFS to Kruskal's
+    //TODO: remove duplicates
     return null;
   }
 
@@ -244,7 +247,8 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
         return mst;
       }
       mst.insertEdge(curr);
-      if(isCycle(mst)){
+      //if there is a cycle because of this, remove it
+      if(isCyclic(mst)){
         mst.deleteEdge(curr.getNodes().get(0), curr.getNodes().get(1));
       }
     }
@@ -263,8 +267,52 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * @return
    */
   //TODO: Implement isCycle
-  public boolean isCycle(TripGraph<N,E> mst){
+
+  /**
+   * This is a helper method to test if a graph is cyclic using BFs
+   * @param mst: the graph to search:
+   * @param node the node we are at currently
+   * @param visited the visited edge.
+   * @return
+   */
+  public boolean isCyclicHelper(TripGraph<N,E> mst, N node, HashMap<String, Boolean> visited){
+    Deque<N> deque = new ArrayDeque<>(50);
+    HashMap<N, N> parent = new HashMap<>();
+    visited.put(node.getName(), true);
+    deque.offerLast(node);
+    while(!deque.isEmpty()){
+      N curr = deque.getLast();
+      for(N neighbor: curr.getNeighbors()){
+        if(!visited.get(neighbor.getName())){
+          visited.put(neighbor.getName(), true);
+          deque.offerLast(neighbor);
+          parent.put(neighbor, curr);
+        } else if(!parent.get(neighbor).equals(curr)){
+          return false;
+        }
+      }
+    }
     return true;
+  }
+
+  /**
+   * This method uses bfs to tell us if there is a cycle in the graph.
+   * @param mst: A minimum spanning tree graph
+   * @return a boolean if the mst is cyclic or not.
+   */
+  public boolean isCyclic(TripGraph<N,E> mst){
+    HashMap<String, Boolean> visited = new HashMap<>();
+    //set every node visited to false
+    for(N node: mst.getGraph().values()){
+      visited.put(node.getName(), false);
+    }
+
+    for(N node: mst.getGraph().values()){
+        if(!visited.get(node.getName()) && isCyclicHelper(mst, node, visited)){
+          return true;
+        }
+    }
+    return false;
   }
 
 
