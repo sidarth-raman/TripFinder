@@ -117,8 +117,9 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   public void insertEdges(CityNode node){
     if(node != null) {
       String name = node.getName();
-      CityEdge edge = new CityEdge(this, node);
-      CityEdge edge2 = new CityEdge(node, this);
+      String edgeName = this.name + "->" + node.getName();
+      CityEdge edge = new CityEdge(this, node, edgeName);
+      CityEdge edge2 = new CityEdge(node, this, edgeName);
       connectingNodes.put(name, node);
       connectingEdges.put(name, edge);
       node.getConnectingNodes().put(this.name, this);

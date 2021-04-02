@@ -121,7 +121,7 @@ public class GraphTest {
   public void testNumEdges(){
     setUp();
     assertEquals(11, tripGraph.getNumEdges(), DELTA);
-    CityEdge e = new CityEdge(node6, node2);
+    CityEdge e = new CityEdge(node6, node2, "Harrison->JC");
     tripGraph.insertEdge(e);
     assertEquals(12, tripGraph.getNumEdges(), DELTA);
     tripGraph.insertEdge(node6, node4);

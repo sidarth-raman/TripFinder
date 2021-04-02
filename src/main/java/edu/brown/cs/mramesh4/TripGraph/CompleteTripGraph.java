@@ -209,11 +209,27 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * @return a list that represents a hamlitonian cycle
    */
   public List<N> TwoOptTSP(N start){
-    //start with a complete graph
-    //get a MST from Kruskals
     TripGraph<N, E> mst = this.Kruskals();
-    //TODO: apply DFS to Kruskal's
-    //TODO: remove duplicates
+    List<N> mstDFS = this.dfsTree(mst, start);
+    return this.removeDuplicates(mstDFS, start);
+  }
+
+  /**
+   * Takes in the kruskal's tree and runs a DFS algorithm on it
+   * in order to reduce the amount of nodes running.
+   * @param mst a dfs-searched tree.
+   * @return
+   */
+  public List<N> dfsTree(TripGraph<N,E> mst, N start){
+    return null;
+  }
+
+  /**
+   * Returns the list without duplicates
+   * @param dfsTree: what we generated from the dfs search
+   * @return the dfs searched.
+   */
+  public List<N> removeDuplicates(List<N> dfsTree, N start){
     return null;
   }
 
@@ -225,49 +241,59 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   public TripGraph<N, E> Kruskals(){
     TripGraph<N, E> mst = new TripGraph<>();
     //get the edgeList.
-    List<E> edgeList = new ArrayList<>();
+    HashMap<String, E> edgeList = new HashMap<>();
     //get all the edges within the graph and add them to the edgeList.
-    for(int i = 0; i < this.getGraph().values().toArray().length; i++){
-        for(int j = i+1; j < this.getGraph().values().toArray().length; j++){
-          N node = (N) this.getGraph().values().toArray()[i];
-          N node2 = (N) this.getGraph().values().toArray()[j];
-          edgeList.add(node.getConnectingEdges().get(node2.getName()));
+    //we make sure not to readd edges twice.
+    for(N node: this.getGraph().values()){
+      for(N node2: this.getGraph().values()){
+        if(!node2.equals(node)){
+          E edge = node.getConnectingEdges().get(node2.getName());
+          String edgeName = edge.getName();
+          //we only add unique edges so we don't add it to the graph multiple times
+          if(!edgeList.containsKey(edgeName)){
+            edgeList.put(edgeName,edge);
+          }
         }
+      }
     }
-    System.out.println("Edges added in this graph are" + edgeList.size());
+
+    //FIRST TEST: to see if all the edges are within the graph.
+    System.out.println("This is the size of the edgeList" + edgeList.values().size());
+    for(String s: edgeList.keySet()){
+      System.out.println("Edge for" + s + "in set");
+    }
+
     //take the priorityQueue
     PriorityQueue<E> pq = new PriorityQueue<E>(new TripGraphEdgeComparator<N, E>());
     //add the list of sorted edges to the priorityqueue
-    for(E edge: edgeList){
+    for(E edge: edgeList.values()){
       pq.add(edge);
     }
     //checks to see the elements in the pq.
     while(!pq.isEmpty()){
       E curr = pq.poll();
+      //see the edge we are on.
+      System.out.println("current edge is" + curr.getName());
+      //if we have n-1 edges, we have a complete MST.
       if(mst.getNumEdges() == this.getGraph().values().size() - 1){
         return mst;
       }
+      //add the edge to the graph otherwise
       mst.insertEdge(curr);
-      //if there is a cycle because of this, remove it
+      //if there is a cycle because of this, we shouldn't add the node to the graph
       if(isCyclic(mst)){
         mst.deleteEdge(curr.getNodes().get(0), curr.getNodes().get(1));
       }
     }
       //if there was no minimum spanning tree: we return null, which indicates an issue.
     if(mst.getNumEdges() == this.getGraph().values().size() - 1){
+      System.out.println("Broke out of the pq loop");
       return mst;
     } else{
         System.out.println("There was an issue");
       return null;
     }
   }
-
-  /**
-   * This conducts an algorithm to check whether the graph is a cycle.
-   * @param mst
-   * @return
-   */
-  //TODO: Implement isCycle
 
   /**
    * This is a helper method to test if a graph is cyclic using BFs
@@ -277,18 +303,28 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * @return
    */
   public boolean isCyclicHelper(TripGraph<N,E> mst, N node, HashMap<String, Boolean> visited){
+    //we have a deque for a max elements with 50: for larger graph algorithms, we may want
+    //to use a different datastructure
     Deque<N> deque = new ArrayDeque<>(50);
+    //the parent map
     HashMap<N, N> parent = new HashMap<>();
+    //this is a list of visited nodes
     visited.put(node.getName(), true);
     deque.offerLast(node);
+    //we go through the deque
     while(!deque.isEmpty()){
+      //find the neighbors
       N curr = deque.getLast();
+      System.out.println("Curr node" + curr.getName());
       for(N neighbor: curr.getNeighbors()){
         if(!visited.get(neighbor.getName())){
+          System.out.println("Neighbor node, unvisited" + neighbor.getName());
           visited.put(neighbor.getName(), true);
           deque.offerLast(neighbor);
           parent.put(neighbor, curr);
         } else if(!parent.get(neighbor).equals(curr)){
+          System.out.println("Neighbor node, visited" + neighbor.getName() +
+            "parent of neighbor" + parent.get(neighbor));
           return false;
         }
       }
@@ -305,11 +341,13 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     HashMap<String, Boolean> visited = new HashMap<>();
     //set every node visited to false: this means we haven't visited yet
     for(N node: mst.getGraph().values()){
+      System.out.println("Nodes in the graph include" + node.getName());
       visited.put(node.getName(), false);
     }
     //if we detect a cycle in the portion of the graph, we know there is a cycle
-    //in the graph 
+    //in the graph
     for(N node: mst.getGraph().values()){
+        System.out.println("Running helper method on" + node.getName());
         if(!visited.get(node.getName()) && isCyclicHelper(mst, node, visited)){
           return true;
         }

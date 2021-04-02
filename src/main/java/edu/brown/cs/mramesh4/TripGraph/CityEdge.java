@@ -18,10 +18,11 @@ public class CityEdge implements TripGraphEdge<CityNode, CityEdge> {
    * @param start first node of edge
    * @param end second node of edge
    */
-    public CityEdge(CityNode start, CityNode end){
+    public CityEdge(CityNode start, CityNode end, String name){
       weight = start.distanceBetween(end);
       this.start = start;
       this.end = end;
+      this.name = name;
     }
 
   /**
@@ -30,10 +31,11 @@ public class CityEdge implements TripGraphEdge<CityNode, CityEdge> {
    * @param end second node of edge
    * @param weight weight of edge
    */
-    public CityEdge(CityNode start, CityNode end, double weight){
+    public CityEdge(CityNode start, CityNode end, String name, double weight){
       this.weight = weight;
       this.start = start;
       this.end = end;
+      this.name = name;
     }
 
   /**
@@ -92,6 +94,11 @@ public class CityEdge implements TripGraphEdge<CityNode, CityEdge> {
         this.end.equals(e.start) && this.start.equals(e.end));
     }
 
-
-
+  /**
+   * Getter method for name
+   * @return a name
+   */
+  public String getName() {
+    return name;
+  }
 }
