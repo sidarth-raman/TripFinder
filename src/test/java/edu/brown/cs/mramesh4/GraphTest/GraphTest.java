@@ -9,6 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +44,34 @@ public class GraphTest {
     node3.insertEdges(node4);
     node3.insertEdges(node5);
     node4.insertEdges(node5);
-    node6.insertEdges(node4);
+    node6.insertEdges(node5);
+    List<CityNode> graphList = new ArrayList<>();
+    graphList.add(node);
+    graphList.add(node2);
+    graphList.add(node3);
+    graphList.add(node4);
+    graphList.add(node5);
+    graphList.add(node6);
+    tripGraph = new TripGraph<>(graphList);
+  }
+  @Before
+  public void setUp2(){
+    node = new CityNode("New York", 40.4, -73.56);
+    node2 = new CityNode("Jersey City", 40.34, -74.04);
+    node3 = new CityNode("Trenton", 40.13, -74.46);
+    node4 = new CityNode("Philadelphia", 39.57, -75.10);
+    node5 = new CityNode("Pittsburgh", 40.27, -80);
+    node6 = new CityNode("Harrison", 40.35, -79.6501);
+    node.insertEdges(node2);
+    node.insertEdges(node3);
+    node.insertEdges(node4);
+    node.insertEdges(node6);
+    node2.insertEdges(node3);
+    node2.insertEdges(node5);
+    node3.insertEdges(node4);
+    node3.insertEdges(node5);
+    node4.insertEdges(node5);
+    node6.insertEdges(node5);
     List<CityNode> graphList = new ArrayList<>();
     graphList.add(node);
     graphList.add(node2);
@@ -88,9 +118,45 @@ public class GraphTest {
   }
 
   @Test
-  public void testAStar(){
+  public void testAStarEdge(){
     setUp();
+    //test nodes that don't exist
+    assertNull(tripGraph.aStar("Houston", "Los Angeles"));
+    assertNull(tripGraph.aStar("Houston", "New York"));
+    assertNull(tripGraph.aStar("New York", "Los Angeles"));
+    //check the case of the same node;
+    List<CityNode> c = tripGraph.aStar("New York", "New York");
+     assertTrue(c.get(0).equals(node));
+   // assertEquals(test.size(), 2, DELTA);
+    //this says take the straight line path in the graph
     tearDown();
+  }
+
+  @Test
+  public void testAStarAlgo(){
+    setUp();
+    List<CityNode> c = tripGraph.aStar("New York", "Pittsburgh");
+    assertNotNull(c);
+    for(int i = 0; i < c.size(); i++){
+      System.out.println("c name" + c.get(i).getName());
+    }
+    tearDown();
+  }
+  @Test
+  public void testAStarAlgo2(){
+    setUp2();
+    List<CityNode> d = tripGraph.aStar("New York", "Pittsburgh");
+    assertNotNull(d);
+    tearDown();
+  }
+
+  @Test
+  public void testAStarDelete(){
+    setUp();
+    List<CityNode> c1 = tripGraph.aStar("New York", "Pittsburgh");
+    tripGraph.deleteEdge(node, node5);
+    List<CityNode> c = tripGraph.aStar("New York", "Pittsburgh");
+    assertNotEquals(c1, c);
   }
 
   @Test
@@ -138,4 +204,7 @@ public class GraphTest {
     assertEquals(7, tripGraph.getGraph().size(), DELTA);
     tearDown();
   }
+
+
+
 }
