@@ -188,14 +188,36 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
   }
 
   /**
+   * Gets the number of edges in graph
+   * @return number of edges
+   */
+  public int getNumEdges(){
+    int k = 0;
+    for(int i = 0; i < this.getGraph().values().toArray().length; i++){
+      for(int j = i+1; j < this.getGraph().values().toArray().length; j++){
+        k++;
+      }
+    }
+    return k;
+  }
+
+
+
+  /**
    * This method deletes an edge between two nodes
    * @param start one node to delete from
    * @param end end node to delete from
    */
   public void deleteEdge(N start, N end){
     //delete edges from both sides
-    start.deleteEdge(end);
-    end.deleteEdge(start);
+    if(graph.containsKey(start.getName()) && graph.containsKey(end.getName())) {
+      N getStart = graph.get(start.getName());
+      getStart.deleteEdge(end);
+      N getEnd = graph.get(end.getName());
+      getEnd.deleteEdge(start);
+      graph.put(start.getName(), getStart);
+      graph.put(end.getName(), getEnd);
+    }
   }
 
   /**
@@ -209,10 +231,31 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
   }
 
   /**
+   * Inserts an edge into the graph along with the nodes
+   * @param edge edge to insert
+   */
+  public void insertEdge(E edge){
+    List<N> node = edge.getNodes();
+    N start = node.get(0);
+    N end = node.get(1);
+    if(!graph.containsKey(start.getName())){
+      graph.put(start.getName(), start);
+    }
+    if(!graph.containsKey(end.getName())){
+      graph.put(end.getName(), end);
+    }
+    graph.get(start).insertEdges(end);
+  }
+
+  /**
    * Accesor method for graph.
    * @return a graph.
    */
   public HashMap<String, N> getGraph(){
     return graph;
   }
+
+
+
+
 }

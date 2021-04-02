@@ -199,6 +199,73 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   }
 
 
+  /**
+   * This is a 2Opt-Algorithm (At worse the cost
+   * of solving this is 2*optimal cost) for the Traveling Salesman
+   * Problem. This algorithm approximates the Tsp
+   * @param start The node to start from
+   * @return a list that represents a hamlitonian cycle
+   */
+  public List<N> TwoOptTSP(N start){
+    //start with a complete graph
+    //TODO: Generate a minimum spanning tree
+    //TODO: Do a DFS traversal of minimum spanning tree
+    //TODO: Delete duplicates outside of the start.
+    return null;
+  }
 
-  //TODO:Implement TSP algorithm
+  /**
+   * This is Kruskal's algorithm
+   * @return an MST of the graph
+   */
+  public TripGraph<N, E> Kruskals(){
+    TripGraph<N, E> mst = new TripGraph<>();
+    //get the edgeList.
+    List<E> edgeList = new ArrayList<>();
+    //get all the edges within the graph and add them to the edgeList.
+    for(int i = 0; i < this.getGraph().values().toArray().length; i++){
+        for(int j = i+1; j < this.getGraph().values().toArray().length; j++){
+          N node = (N) this.getGraph().values().toArray()[i];
+          N node2 = (N) this.getGraph().values().toArray()[j];
+          edgeList.add(node.getConnectingEdges().get(node2.getName()));
+        }
+    }
+    System.out.println("Edges added in this graph are" + edgeList.size());
+    //take the priorityQueue
+    PriorityQueue<E> pq = new PriorityQueue<E>(new TripGraphEdgeComparator<N, E>());
+    //add the list of sorted edges to the priorityqueue
+    for(E edge: edgeList){
+      pq.add(edge);
+    }
+    //checks to see the elements in the pq.
+    while(!pq.isEmpty()){
+      E curr = pq.poll();
+      if(mst.getNumEdges() == this.getGraph().values().size() - 1){
+        return mst;
+      }
+      mst.insertEdge(curr);
+      if(isCycle(mst)){
+        mst.deleteEdge(curr.getNodes().get(0), curr.getNodes().get(1));
+      }
+    }
+      //if there was no minimum spanning tree: we return null, which indicates an issue.
+    if(mst.getNumEdges() == this.getGraph().values().size() - 1){
+      return mst;
+    } else{
+        System.out.println("There was an issue");
+      return null;
+    }
+  }
+
+  /**
+   * This conducts an algorithm to check whether the graph is a cycle.
+   * @param mst
+   * @return
+   */
+  //TODO: Implement isCycle
+  public boolean isCycle(TripGraph<N,E> mst){
+    return true;
+  }
+
+
 }
