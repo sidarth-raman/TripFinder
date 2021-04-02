@@ -1,5 +1,0 @@
-INPUT
-mock data/stars/mock_data_with_percentage_empty.csv
-OUTPUT
-ERROR:
-END

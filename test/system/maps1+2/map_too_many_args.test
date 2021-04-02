@@ -1,5 +1,0 @@
-INPUT
-map data/maps/maps.sqlite3 extra args
-OUTPUT
-ERROR:
-END
