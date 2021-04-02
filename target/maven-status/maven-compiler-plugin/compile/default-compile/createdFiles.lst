@@ -22,6 +22,7 @@ edu/brown/cs/mramesh4/Graph/GraphNode.class
 edu/brown/cs/mramesh4/Dimensional/Dimensional.class
 edu/brown/cs/mramesh4/maps/GUIHandler$FrontHandler.class
 edu/brown/cs/mramesh4/KDTree/KDNode.class
+edu/brown/cs/mramesh4/TripGraph/TripGraphEdgeComparator.class
 edu/brown/cs/mramesh4/maps/GUIHandler$RouteStreetsHandler.class
 edu/brown/cs/mramesh4/maps/Main.class
 edu/brown/cs/mramesh4/Graph/Graph.class

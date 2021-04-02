@@ -218,7 +218,8 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   }
 
   /**
-   * This is Kruskal's algorithm
+   * This is Kruskal's algorithm, which we use to generate a MST
+   * within the graph. Using the MST, we will do a DFS on the MST.
    * @return an MST of the graph
    */
   public TripGraph<N, E> Kruskals(){
@@ -302,11 +303,12 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    */
   public boolean isCyclic(TripGraph<N,E> mst){
     HashMap<String, Boolean> visited = new HashMap<>();
-    //set every node visited to false
+    //set every node visited to false: this means we haven't visited yet
     for(N node: mst.getGraph().values()){
       visited.put(node.getName(), false);
     }
-
+    //if we detect a cycle in the portion of the graph, we know there is a cycle
+    //in the graph 
     for(N node: mst.getGraph().values()){
         if(!visited.get(node.getName()) && isCyclicHelper(mst, node, visited)){
           return true;

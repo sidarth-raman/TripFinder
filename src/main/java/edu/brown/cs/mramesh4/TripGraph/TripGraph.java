@@ -193,12 +193,14 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    */
   public int getNumEdges(){
     int k = 0;
-    for(int i = 0; i < this.getGraph().values().toArray().length; i++){
-      for(int j = i+1; j < this.getGraph().values().toArray().length; j++){
-        k++;
+    for(N node: graph.values()){
+      for(N node2: graph.values()){
+        if(!node2.equals(node) && node.getConnectingNodes().containsKey(node2.getName())){
+          k++;
+        }
       }
     }
-    return k;
+    return k/2;
   }
 
 
@@ -244,7 +246,7 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
     if(!graph.containsKey(end.getName())){
       graph.put(end.getName(), end);
     }
-    graph.get(start).insertEdges(end);
+    graph.get(start.getName()).insertEdges(end);
   }
 
   /**
