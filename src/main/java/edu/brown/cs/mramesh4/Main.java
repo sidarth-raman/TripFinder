@@ -1,4 +1,4 @@
-package edu.brown.cs.mramesh4.maps;
+package edu.brown.cs.mramesh4;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,9 @@ import edu.brown.cs.mramesh4.REPLLoop.REPL;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
 import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
+import edu.brown.cs.mramesh4.maps.CheckinThread;
+import edu.brown.cs.mramesh4.maps.GUIHandler;
+import edu.brown.cs.mramesh4.maps.MapsLogic;
 import edu.brown.cs.mramesh4.stars.ActionMethod;
 import edu.brown.cs.mramesh4.stars.StarsLogic;
 import joptsimple.OptionParser;
@@ -124,16 +127,7 @@ public final class Main {
     CheckinThread check = new CheckinThread(database);
     check.start();
     GUIHandler gui = new GUIHandler(database, map, db, check);
-    Spark.get("/stars", gui.methodTVR("FrontHandler"), freeMarker);
-    Spark.post("/radius", gui.methodTVR("RadiusHandler"), freeMarker);
-    Spark.post("/neighbors", gui.methodTVR("NeighborsHandler"), freeMarker);
-    Spark.post("/routeCoors", gui.method("RouteCoorsHandler"));
-    Spark.post("/routeStreets", gui.method("RouteStreetsHandler"));
-    Spark.post("/ways", gui.method("WayHandler"));
-    Spark.post("/nearest", gui.method("NearestHandler"));
-    Spark.post("/user", gui.method("UserHandler"));
-    Spark.post("/checkin", gui.method("CheckInHandler"));
-
+    System.out.println("hi");
 
   }
 
