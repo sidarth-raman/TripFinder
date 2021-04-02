@@ -4,11 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
 import edu.brown.cs.mramesh4.REPLLoop.REPL;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
 import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
+import edu.brown.cs.mramesh4.TripGraph.UserPreference;
 import edu.brown.cs.mramesh4.maps.CheckinThread;
 import edu.brown.cs.mramesh4.maps.GUIHandler;
 import edu.brown.cs.mramesh4.maps.MapsLogic;
@@ -17,9 +23,11 @@ import edu.brown.cs.mramesh4.stars.StarsLogic;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import org.json.JSONObject;
 import spark.ExceptionHandler;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 import freemarker.template.Configuration;
@@ -128,7 +136,29 @@ public final class Main {
     check.start();
     GUIHandler gui = new GUIHandler(database, map, db, check);
     System.out.println("hi");
+    Spark.post("/preference", new UserPreferenceHandler());
 
+  }
+
+  private static class UserPreferenceHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+
+      JSONObject data = new JSONObject(request.body());
+
+      //Retrieving preferences
+      String origin = data.getString("origin");
+      double maxDist = data.getDouble("maxDist");
+      int maxNumCities = data.getInt("maxNumCities");
+
+
+      UserPreference pref = new UserPreference(origin, maxDist, maxNumCities);
+
+//      Map<String, Object> variables = ImmutableMap.of("deleted", new ArrayList<>());
+
+
+      return GSON.toJson(origin);
+    }
   }
 
   /**

@@ -17,6 +17,7 @@ edu/brown/cs/mramesh4/Graph/GraphEdge.class
 edu/brown/cs/mramesh4/SQLDatabase/UserSQLDatabase.class
 edu/brown/cs/mramesh4/REPLLoop/Parser.class
 edu/brown/cs/mramesh4/KDTree/KDTree$3.class
+edu/brown/cs/mramesh4/Main$UserPreferenceHandler.class
 edu/brown/cs/mramesh4/REPLLoop/REPL.class
 edu/brown/cs/mramesh4/Graph/GraphNode.class
 edu/brown/cs/mramesh4/Dimensional/Dimensional.class
