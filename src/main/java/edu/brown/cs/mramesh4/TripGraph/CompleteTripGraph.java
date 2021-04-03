@@ -291,10 +291,12 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       for(N node2: this.getGraph().values()){
         if(!node2.equals(node)){
           E edge = node.getConnectingEdges().get(node2.getName());
-          String edgeName = edge.getName();
-          //we only add unique edges so we don't add it to the graph multiple times
-          if(!edgeList.containsKey(edgeName)){
-            edgeList.put(edgeName,edge);
+          if(edge!=null) {
+            String edgeName = edge.getName();
+            //we only add unique edges so we don't add it to the graph multiple times
+            if (!edgeList.containsKey(edgeName)) {
+              edgeList.put(edgeName, edge);
+            }
           }
         }
       }

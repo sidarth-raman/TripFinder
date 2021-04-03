@@ -155,7 +155,6 @@ public class CompleteGraphTest {
     nodes.add(c);
     nodes.add(d);
     CompleteTripGraph<CityNode, CityEdge> cg = new CompleteTripGraph<>(nodes);
-
     TripGraph<CityNode, CityEdge> ret = cg.Kruskals();
     assertNotNull(ret);
     for(CityNode node: ret.getGraph().values()){
@@ -166,6 +165,24 @@ public class CompleteGraphTest {
 
     List<CityNode> dfsRet = cg.dfsTree(ret, a);
     //assertNotNull(dfsRet);
+    for(CityNode c2: dfsRet){
+      System.out.println("citynodename" + c2.getName());
+    }
+  }
+
+  @Test
+  public void testAlgoComplex(){
+    setUp();
+    TripGraph<CityNode, CityEdge> ret = tripGraph.Kruskals();
+    assertNotNull(ret);
+    for(CityNode node: ret.getGraph().values()){
+      for(CityEdge e: node.getConnectingEdges().values()) {
+        System.out.println("Outgoing edges are for mst" + e.getName());
+      }
+    }
+
+    List<CityNode> dfsRet = tripGraph.TwoOptTSP(node);
+    assertNotNull(dfsRet);
     for(CityNode c2: dfsRet){
       System.out.println("citynodename" + c2.getName());
     }
