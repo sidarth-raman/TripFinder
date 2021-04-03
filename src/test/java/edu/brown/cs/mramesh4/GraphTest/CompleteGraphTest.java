@@ -143,7 +143,7 @@ public class CompleteGraphTest {
   }
 
   @Test
-  public void testKruskals(){
+  public void testKruskalSimple(){
     //we will generate a kruskal's test here with a simple rectangle
     CityNode a = new CityNode("A", 40, 72);
     CityNode b = new CityNode("B", 40, 81);
@@ -155,12 +155,19 @@ public class CompleteGraphTest {
     nodes.add(c);
     nodes.add(d);
     CompleteTripGraph<CityNode, CityEdge> cg = new CompleteTripGraph<>(nodes);
+
     TripGraph<CityNode, CityEdge> ret = cg.Kruskals();
     assertNotNull(ret);
     for(CityNode node: ret.getGraph().values()){
-      for(CityEdge e: node.getOutgoingEdges()) {
-        System.out.println("Outgoing edges are" + e.getName());
+      for(CityEdge e: node.getConnectingEdges().values()) {
+        System.out.println("Outgoing edges are for mst" + e.getName());
       }
+    }
+
+    List<CityNode> dfsRet = cg.dfsTree(ret, a);
+    //assertNotNull(dfsRet);
+    for(CityNode c2: dfsRet){
+      System.out.println("citynodename" + c2.getName());
     }
   }
 }

@@ -115,7 +115,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    */
   @Override
   public void insertEdges(CityNode node){
-    if(node != null) {
+    if(node != null && !node.equals(this)) {
       String name = node.getName();
       String edgeName = this.name + "->" + node.getName();
       CityEdge edge = new CityEdge(this, node, edgeName);
@@ -124,8 +124,6 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
       connectingEdges.put(name, edge);
       node.getConnectingNodes().put(this.name, this);
       node.getConnectingEdges().put(this.name, edge2);
-    } else{
-      System.out.println("node is null");
     }
   }
 

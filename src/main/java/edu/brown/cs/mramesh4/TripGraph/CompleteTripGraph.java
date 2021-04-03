@@ -4,8 +4,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Stack;
 
 public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N, E>>{
   private HashMap<String, N> graph;
@@ -27,18 +29,27 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     for(int i = 0; i < nodes.size(); i++){
       N node = nodes.get(i);
       String name = node.getName();
-      //makes sure the graph is complete
-      if(node.getOutgoingEdges().size() != nodes.size() - 1) {
-        for (int j = i+1; j < nodes.size(); j++) {
-          if(!nodes.get(j).equals(i)) {
-            node.insertEdges(nodes.get(j));
-          }
-        }
-      }
       if(!graph.containsKey(name)){
         graph.put(name, node);
       }
+      System.out.println("node added" + node.getName());
     }
+
+  //to add all the edges to each other
+    for(int j = 0; j < nodes.size(); j++){
+      N node2 = nodes.get(j);
+      System.out.println("node curr" + node2.getName());
+      for(N node: graph.values()){
+        String name = node.getName();
+        if(!node2.equals(node)) {
+          System.out.println("inserted edge between nodes" + node2.getName() + node.getName());
+          node2.insertEdges(node);
+        }
+        graph.put(name, node);
+      }
+      graph.put(node2.getName(), node2);
+    }
+    System.out.println("graph" + graph.size());
   }
   //TODO: use OOP to get rid of this and make this class more sensible
   /**
@@ -211,7 +222,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   public List<N> TwoOptTSP(N start){
     TripGraph<N, E> mst = this.Kruskals();
     List<N> mstDFS = this.dfsTree(mst, start);
-    return this.removeDuplicates(mstDFS, start);
+    return mstDFS;
   }
 
   /**
@@ -221,17 +232,49 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * @return
    */
   public List<N> dfsTree(TripGraph<N,E> mst, N start){
-    return null;
+    List<N> ret = new ArrayList<>();
+    HashMap<String, Integer> visited = new HashMap<>();
+    Stack<N> stack = new Stack<>();
+    String name = start.getName();
+    N node = mst.getGraph().get(name);
+    stack.push(node);
+    visited.put(name, 1);
+    while(!stack.isEmpty()){
+        N pop = stack.pop();
+        ret.add(pop);
+        for(N neighbor: pop.getNeighbors()){
+          String neigh = neighbor.getName();
+          if(!visited.containsKey(neigh) || visited.get(neigh) < 2){
+            stack.push(neighbor);
+            visited.put(neigh, visited.getOrDefault(neigh, 0) + 1);
+          }
+        }
+    }
+    return this.deleteDuplicates(ret, start);
   }
 
   /**
-   * Returns the list without duplicates
-   * @param dfsTree: what we generated from the dfs search
-   * @return the dfs searched.
+   * This deletes duplicates within the list.
+   * @param input the list to sort through
+   * @param start start node
+   * @return a non-duplicated list
    */
-  public List<N> removeDuplicates(List<N> dfsTree, N start){
-    return null;
+  public List<N> deleteDuplicates(List<N> input, N start){
+    HashSet<String> visited = new HashSet<>();
+    List<N> ret = new ArrayList<>();
+    ret.add(input.get(0));
+    visited.add(input.get(0).getName());
+    for(int i = 1; i < input.size() - 1; i++){
+      if(!visited.contains(input.get(i).getName())){
+        visited.add(input.get(i).getName());
+        ret.add(input.get(i));
+      }
+    }
+    ret.add(input.get(input.size()-1));
+    return ret;
   }
+
+
 
   /**
    * This is Kruskal's algorithm, which we use to generate a MST
@@ -337,10 +380,10 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
           parent.put(neighbor, curr);
         } else if(parent.containsKey(neighbor) && parent.get(neighbor).equals(curr) == false){
           System.out.println("Neighbor node, visited" + neighbor.getName() +
-            "parent of neighbor" + parent.get(neighbor));
+            "parent of neighbor" + parent.get(neighbor).getName());
           return false;
         } else{
-          System.out.println(" the parent should be null" + parent.get(neighbor));
+          System.out.println(" the parent is the curr node" + curr + parent.get(neighbor).getName());
         }
       }
     }
