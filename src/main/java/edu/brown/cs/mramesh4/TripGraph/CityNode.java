@@ -142,6 +142,12 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     node.getConnectingEdges().remove(this.name);
   }
 
+  @Override
+  public void clearGraphEdges(){
+    connectingNodes.clear();
+    connectingEdges.clear();
+  }
+
 
   //TODO: Change this to an A* or more significant path-finding version
   /**

@@ -267,8 +267,13 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     PriorityQueue<E> pq = new PriorityQueue<E>(new TripGraphEdgeComparator<N, E>());
     //add the list of sorted edges to the priorityqueue
     for(E edge: edgeList.values()){
+      //make sure to clear the graph nodes.
+      for(N node: edge.getNodes()){
+        node.clearGraphEdges();
+      }
       pq.add(edge);
     }
+    HashMap<String, E> addedEdges = new HashMap<>();
     //checks to see the elements in the pq.
     while(!pq.isEmpty()){
       E curr = pq.poll();
@@ -280,6 +285,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       }
       //add the edge to the graph otherwise
       mst.insertEdge(curr);
+
       //if there is a cycle because of this, we shouldn't add the node to the graph
       if(isCyclic(mst)){
         mst.deleteEdge(curr.getNodes().get(0), curr.getNodes().get(1));
@@ -308,8 +314,13 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     Deque<N> deque = new ArrayDeque<>(50);
     //the parent map
     HashMap<N, N> parent = new HashMap<>();
+    for(N next: mst.getGraph().values()){
+      parent.put(next, next);
+    }
+
     //this is a list of visited nodes
     visited.put(node.getName(), true);
+    System.out.println("Curr node added to visited" + node.getName());
     deque.offerLast(node);
     //we go through the deque
     while(!deque.isEmpty()){
@@ -317,15 +328,19 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       N curr = deque.getLast();
       System.out.println("Curr node" + curr.getName());
       for(N neighbor: curr.getNeighbors()){
-        if(!visited.get(neighbor.getName())){
+        if(!visited.containsKey(neighbor.getName())) {
+          System.out.println("Neighbor node, queued" + neighbor.getName());
+        } else if(visited.get(neighbor.getName()) == false) {
           System.out.println("Neighbor node, unvisited" + neighbor.getName());
           visited.put(neighbor.getName(), true);
           deque.offerLast(neighbor);
           parent.put(neighbor, curr);
-        } else if(!parent.get(neighbor).equals(curr)){
+        } else if(parent.containsKey(neighbor) && parent.get(neighbor).equals(curr) == false){
           System.out.println("Neighbor node, visited" + neighbor.getName() +
             "parent of neighbor" + parent.get(neighbor));
           return false;
+        } else{
+          System.out.println(" the parent should be null" + parent.get(neighbor));
         }
       }
     }

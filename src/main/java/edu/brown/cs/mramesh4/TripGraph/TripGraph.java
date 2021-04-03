@@ -188,6 +188,14 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
   }
 
   /**
+   * This clears all the edges in the graph, you will still have access
+   * to the nodes.
+   */
+  public void clearGraphEdges(){
+
+  }
+
+  /**
    * Gets the number of edges in graph
    * @return number of edges
    */
