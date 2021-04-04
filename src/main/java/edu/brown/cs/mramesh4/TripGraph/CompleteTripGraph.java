@@ -2,6 +2,7 @@ package edu.brown.cs.mramesh4.TripGraph;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,24 +33,24 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       if(!graph.containsKey(name)){
         graph.put(name, node);
       }
-      System.out.println("node added" + node.getName());
+      //System.out.println("node added" + node.getName());
     }
 
   //to add all the edges to each other
     for(int j = 0; j < nodes.size(); j++){
       N node2 = nodes.get(j);
-      System.out.println("node curr" + node2.getName());
+     // System.out.println("node curr" + node2.getName());
       for(N node: graph.values()){
         String name = node.getName();
         if(!node2.equals(node)) {
-          System.out.println("inserted edge between nodes" + node2.getName() + node.getName());
+          //System.out.println("inserted edge between nodes" + node2.getName() + node.getName());
           node2.insertEdges(node);
         }
         graph.put(name, node);
       }
       graph.put(node2.getName(), node2);
     }
-    System.out.println("graph" + graph.size());
+    //System.out.println("graph" + graph.size());
   }
   //TODO: use OOP to get rid of this and make this class more sensible
   /**
@@ -293,8 +294,10 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
           E edge = node.getConnectingEdges().get(node2.getName());
           if(edge!=null) {
             String edgeName = edge.getName();
+            String[] edgeSplit = edgeName.split("->");
+            String reverseEdge = edgeSplit[1] + "->" + edgeSplit[0];
             //we only add unique edges so we don't add it to the graph multiple times
-            if (!edgeList.containsKey(edgeName)) {
+            if (!edgeList.containsKey(edgeName) && !edgeList.containsKey(reverseEdge)) {
               edgeList.put(edgeName, edge);
             }
           }
@@ -303,10 +306,10 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     }
 
     //FIRST TEST: to see if all the edges are within the graph.
-    System.out.println("This is the size of the edgeList" + edgeList.values().size());
-    for(String s: edgeList.keySet()){
-      System.out.println("Edge for" + s + "in set");
-    }
+    //System.out.println("This is the size of the edgeList" + edgeList.values().size());
+//    for(String s: edgeList.keySet()){
+//      System.out.println("Edge for" + s + "in set");
+//    }
 
     //take the priorityQueue
     PriorityQueue<E> pq = new PriorityQueue<E>(new TripGraphEdgeComparator<N, E>());
@@ -323,7 +326,8 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     while(!pq.isEmpty()){
       E curr = pq.poll();
       //see the edge we are on.
-      System.out.println("current edge is" + curr.getName());
+      System.out.println("curr edge" + curr.getName());
+
       //if we have n-1 edges, we have a complete MST.
       if(mst.getNumEdges() == this.getGraph().values().size() - 1){
         return mst;
@@ -332,16 +336,21 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       mst.insertEdge(curr);
 
       //if there is a cycle because of this, we shouldn't add the node to the graph
-      if(isCyclic(mst)){
+
+      //TODO: fix this cycle detection algorithm
+      //if(isCyclic(mst)){
+      if(UnionFind(mst) == 1){
+        System.out.println("deleted" + curr.getName());
         mst.deleteEdge(curr.getNodes().get(0), curr.getNodes().get(1));
       }
+      System.out.println("curr edge size" + mst.getNumEdges());
     }
       //if there was no minimum spanning tree: we return null, which indicates an issue.
     if(mst.getNumEdges() == this.getGraph().values().size() - 1){
-      System.out.println("Broke out of the pq loop");
+      //System.out.println("Broke out of the pq loop");
       return mst;
     } else{
-        System.out.println("There was an issue");
+       // System.out.println("There was an issue");
       return null;
     }
   }
@@ -365,27 +374,27 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
 
     //this is a list of visited nodes
     visited.put(node.getName(), true);
-    System.out.println("Curr node added to visited" + node.getName());
+    //System.out.println("Curr node added to visited" + node.getName());
     deque.offerLast(node);
     //we go through the deque
     while(!deque.isEmpty()){
       //find the neighbors
       N curr = deque.getLast();
-      System.out.println("Curr node" + curr.getName());
+      //System.out.println("Curr node" + curr.getName());
       for(N neighbor: curr.getNeighbors()){
         if(!visited.containsKey(neighbor.getName())) {
-          System.out.println("Neighbor node, queued" + neighbor.getName());
+          //System.out.println("Neighbor node, queued" + neighbor.getName());
         } else if(visited.get(neighbor.getName()) == false) {
-          System.out.println("Neighbor node, unvisited" + neighbor.getName());
+          //System.out.println("Neighbor node, unvisited" + neighbor.getName());
           visited.put(neighbor.getName(), true);
           deque.offerLast(neighbor);
           parent.put(neighbor, curr);
         } else if(parent.containsKey(neighbor) && parent.get(neighbor).equals(curr) == false){
-          System.out.println("Neighbor node, visited" + neighbor.getName() +
-            "parent of neighbor" + parent.get(neighbor).getName());
+          //System.out.println("Neighbor node, visited" + neighbor.getName() +
+           // "parent of neighbor" + parent.get(neighbor).getName());
           return false;
         } else{
-          System.out.println(" the parent is the curr node" + curr + parent.get(neighbor).getName());
+          //System.out.println(" the parent is the curr node" + curr + parent.get(neighbor).getName());
         }
       }
     }
@@ -401,19 +410,64 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     HashMap<String, Boolean> visited = new HashMap<>();
     //set every node visited to false: this means we haven't visited yet
     for(N node: mst.getGraph().values()){
-      System.out.println("Nodes in the graph include" + node.getName());
+      //System.out.println("Nodes in the graph include" + node.getName());
       visited.put(node.getName(), false);
     }
     //if we detect a cycle in the portion of the graph, we know there is a cycle
     //in the graph
     for(N node: mst.getGraph().values()){
-        System.out.println("Running helper method on" + node.getName());
+        //System.out.println("Running helper method on" + node.getName());
         if(!visited.get(node.getName()) && isCyclicHelper(mst, node, visited)){
           return true;
         }
     }
     return false;
   }
+
+
+  public int UnionFind(TripGraph<N,E> mst){
+    Collection<N> nodes = mst.getGraph().values();
+    int[] parent = new int[nodes.size()];
+    HashMap<N, Integer> nodesMap = new HashMap<>();
+    int i = 0;
+    for(N node: nodes){
+      parent[i] = -1;
+      nodesMap.put(node, i);
+      i++;
+    }
+    HashSet<String> visited = new HashSet<>();
+    for(N node: nodes){
+      for(E edge: node.getOutgoingEdges()){
+        //visited.add(edge.getName());
+        String edgeName = edge.getName();
+        String[] edgeSplit = edgeName.split("->");
+        String reverseEdge = edgeSplit[1] + "->" + edgeSplit[0];
+        //visited.add(reverseEdge);
+        if(!visited.contains(edgeName) && !visited.contains(reverseEdge)){
+          visited.add(reverseEdge);
+          visited.add(edge.getName());
+          int x = this.find(parent, nodesMap.get(node));
+          int y = this.find(parent, nodesMap.get(edge.getNodes().get(1)));
+          if (x == y)
+            return 1;
+          this.Union(parent, x, y);
+        }
+
+      }
+    }
+    return 0;
+  }
+
+  public int find(int[] parent, int i){
+    if (parent[i] == -1)
+      return i;
+    return find(parent, parent[i]);
+  }
+
+  public void Union(int parent[], int x, int y) {
+    parent[x] = y;
+  }
+
 
 
 }

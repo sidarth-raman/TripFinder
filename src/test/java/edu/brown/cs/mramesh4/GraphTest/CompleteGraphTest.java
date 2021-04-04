@@ -45,6 +45,22 @@ public class CompleteGraphTest {
   }
 
   @Before
+  public void setUp3(){
+    node = new CityNode("New York", 40.4, -73.56);
+    node2 = new CityNode("Jersey City", 40.34, -74.04);
+    node3 = new CityNode("Trenton", 40.13, -74.46);
+    node4 = new CityNode("Philadelphia", 39.57, -75.10);
+    node5 = new CityNode("Pittsburgh", 40.27, -80);
+    List<CityNode> graphList = new ArrayList<>();
+    graphList.add(node);
+    graphList.add(node2);
+    graphList.add(node3);
+    graphList.add(node4);
+    graphList.add(node5);
+    tripGraph = new CompleteTripGraph<>(graphList);
+  }
+
+  @Before
   public void setUp2(){
     node = new CityNode("New York", 40.4, -73.56);
     node2 = new CityNode("Jersey City", 40.34, -74.04);
@@ -172,12 +188,12 @@ public class CompleteGraphTest {
 
   @Test
   public void testAlgoComplex(){
-    setUp();
+    setUp3();
     TripGraph<CityNode, CityEdge> ret = tripGraph.Kruskals();
     assertNotNull(ret);
     for(CityNode node: ret.getGraph().values()){
       for(CityEdge e: node.getConnectingEdges().values()) {
-        System.out.println("Outgoing edges are for mst" + e.getName());
+       System.out.println("Outgoing edges are for mst" + e.getName());
       }
     }
 
