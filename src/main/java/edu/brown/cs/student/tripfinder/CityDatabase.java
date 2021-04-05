@@ -62,7 +62,7 @@ public class CityDatabase {
       double lat = rs.getDouble(3);
       double lon = rs.getDouble(4);
       double pop = rs.getDouble(5);
-      cityMap.put(name, new City(name, state, lat, lon, pop));
+      cityMap.put(name + "-" + state, new City(name, state, lat, lon, pop));
       i++;
     }
     rs.close();
