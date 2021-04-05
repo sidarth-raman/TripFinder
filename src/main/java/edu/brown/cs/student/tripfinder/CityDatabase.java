@@ -14,7 +14,7 @@ public class CityDatabase {
   private static Connection conn = null;
   private PreparedStatement currentStatement;
   private ResultSet currentResultSet;
-  private Map<String, City> cityMap;
+  private Map<Double, City> cityMap;
 
 
   /**
@@ -53,7 +53,7 @@ public class CityDatabase {
    */
   private void readAllCities() throws SQLException {
 
-    PreparedStatement prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population FROM cities;");
+    PreparedStatement prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population, id FROM cities;");
     ResultSet rs = prep.executeQuery();
     double pop = Double.MAX_VALUE;
     while (rs.next() && pop > 1000000) {
@@ -62,7 +62,8 @@ public class CityDatabase {
       double lat = rs.getDouble(3);
       double lon = rs.getDouble(4);
       pop = rs.getDouble(5);
-      cityMap.put(name + "-" + state, new City(name, state, lat, lon, pop));
+      double id = rs.getDouble(6);
+      cityMap.put(id, new City(id, name, state, lat, lon, pop));
     }
     rs.close();
     prep.close();
