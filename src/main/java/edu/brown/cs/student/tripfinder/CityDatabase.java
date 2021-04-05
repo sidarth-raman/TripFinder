@@ -55,15 +55,14 @@ public class CityDatabase {
 
     PreparedStatement prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population FROM cities;");
     ResultSet rs = prep.executeQuery();
-    int i = 0;
-    while (rs.next()) {
+    double pop = Double.MAX_VALUE;
+    while (rs.next() && pop > 1000000) {
       String name = rs.getString(1);
       String state = rs.getString(2);
       double lat = rs.getDouble(3);
       double lon = rs.getDouble(4);
-      double pop = rs.getDouble(5);
+      pop = rs.getDouble(5);
       cityMap.put(name + "-" + state, new City(name, state, lat, lon, pop));
-      i++;
     }
     rs.close();
     prep.close();
