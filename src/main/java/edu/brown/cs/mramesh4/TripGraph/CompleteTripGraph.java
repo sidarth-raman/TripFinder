@@ -218,9 +218,12 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * of solving this is 2*optimal cost) for the Traveling Salesman
    * Problem. This algorithm approximates the Tsp
    * @param start The node to start from
-   * @return a list that represents a hamlitonian cycle
+   * @return a list that represents a hamlitonian cycle or null with bad inputs
    */
   public List<N> TwoOptTSP(N start){
+    if(start == null || !graph.containsKey(start.getName())){
+      return null;
+    }
     TripGraph<N, E> mst = this.Kruskals();
     List<N> mstDFS = this.dfsTree(mst, start);
     return mstDFS;
@@ -238,42 +241,51 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     Stack<N> stack = new Stack<>();
     String name = start.getName();
     N node = mst.getGraph().get(name);
+    ret.add(node);
     stack.push(node);
     visited.put(name, 1);
+    HashMap<String, Integer> visted = new HashMap<>();
     while(!stack.isEmpty()){
         N pop = stack.pop();
+        String currName = pop.getName();
         ret.add(pop);
-        for(N neighbor: pop.getNeighbors()){
-          String neigh = neighbor.getName();
-          if(!visited.containsKey(neigh) || visited.get(neigh) < 2){
-            stack.push(neighbor);
-            visited.put(neigh, visited.getOrDefault(neigh, 0) + 1);
+        System.out.println("visited" + currName +"now");
+        for(E edge: pop.getOutgoingEdges()){
+          N next = edge.getNodes().get(1);
+          String nextName = next.getName();
+          System.out.println("neighbor of" + currName +"is" + " " + nextName);
+          if(!visited.containsKey(nextName)) {
+            System.out.println("Added" + nextName);
+            stack.push(edge.getNodes().get(1));
+            visited.put(nextName, 1);
           }
         }
     }
-    return this.deleteDuplicates(ret, start);
+    ret.add(node);
+    return ret;
+    //return this.deleteDuplicates(ret, start);
   }
 
-  /**
-   * This deletes duplicates within the list.
-   * @param input the list to sort through
-   * @param start start node
-   * @return a non-duplicated list
-   */
-  public List<N> deleteDuplicates(List<N> input, N start){
-    HashSet<String> visited = new HashSet<>();
-    List<N> ret = new ArrayList<>();
-    ret.add(input.get(0));
-    visited.add(input.get(0).getName());
-    for(int i = 1; i < input.size() - 1; i++){
-      if(!visited.contains(input.get(i).getName())){
-        visited.add(input.get(i).getName());
-        ret.add(input.get(i));
-      }
-    }
-    ret.add(input.get(input.size()-1));
-    return ret;
-  }
+//  /**
+//   * This deletes duplicates within the list.
+//   * @param input the list to sort through
+//   * @param start start node
+//   * @return a non-duplicated list
+//   */
+//  public List<N> deleteDuplicates(List<N> input, N start){
+//    HashSet<String> visited = new HashSet<>();
+//    List<N> ret = new ArrayList<>();
+//    ret.add(input.get(0));
+//    visited.add(input.get(0).getName());
+//    for(int i = 1; i < input.size() - 1; i++){
+//      if(!visited.contains(input.get(i).getName())){
+//        visited.add(input.get(i).getName());
+//        ret.add(input.get(i));
+//      }
+//    }
+//    ret.add(input.get(input.size()-1));
+//    return ret;
+//  }
 
 
 
@@ -326,7 +338,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     while(!pq.isEmpty()){
       E curr = pq.poll();
       //see the edge we are on.
-      System.out.println("curr edge" + curr.getName());
+      //System.out.println("curr edge" + curr.getName());
 
       //if we have n-1 edges, we have a complete MST.
       if(mst.getNumEdges() == this.getGraph().values().size() - 1){
@@ -340,10 +352,10 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       //TODO: fix this cycle detection algorithm
       //if(isCyclic(mst)){
       if(UnionFind(mst) == 1){
-        System.out.println("deleted" + curr.getName());
+        //System.out.println("deleted" + curr.getName());
         mst.deleteEdge(curr.getNodes().get(0), curr.getNodes().get(1));
       }
-      System.out.println("curr edge size" + mst.getNumEdges());
+      //System.out.println("curr edge size" + mst.getNumEdges());
     }
       //if there was no minimum spanning tree: we return null, which indicates an issue.
     if(mst.getNumEdges() == this.getGraph().values().size() - 1){

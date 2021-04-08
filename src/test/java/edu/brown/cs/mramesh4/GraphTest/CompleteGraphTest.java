@@ -45,7 +45,7 @@ public class CompleteGraphTest {
   }
 
   @Before
-  public void setUp3(){
+  public void setUp3() {
     node = new CityNode("New York", 40.4, -73.56);
     node2 = new CityNode("Jersey City", 40.34, -74.04);
     node3 = new CityNode("Trenton", 40.13, -74.46);
@@ -61,7 +61,7 @@ public class CompleteGraphTest {
   }
 
   @Before
-  public void setUp2(){
+  public void setUp2() {
     node = new CityNode("New York", 40.4, -73.56);
     node2 = new CityNode("Jersey City", 40.34, -74.04);
     node3 = new CityNode("Trenton", 40.13, -74.46);
@@ -90,7 +90,7 @@ public class CompleteGraphTest {
   }
 
   @After
-  public void tearDown(){
+  public void tearDown() {
     node = null;
     node2 = null;
     node3 = null;
@@ -101,65 +101,65 @@ public class CompleteGraphTest {
   }
 
   @Test
-  public void testComplete(){
+  public void testComplete() {
     setUp();
     Collection<CityNode> nodes = tripGraph.getGraph().values();
     assertEquals(6, nodes.size(), DELTA);
-    for(CityNode node: nodes){
+    for (CityNode node : nodes) {
       assertEquals(5, node.getOutgoingEdges().size(), DELTA);
     }
     tearDown();
   }
 
   @Test
-  public void testAStarAlgo(){
+  public void testAStarAlgo() {
     setUp();
     List<CityNode> c = tripGraph.aStar("New York", "Pittsburgh");
     assertNotNull(c);
-    for(int i = 0; i < c.size(); i++){
+    for (int i = 0; i < c.size(); i++) {
       System.out.println("c name" + c.get(i).getName());
     }
     tearDown();
   }
 
   @Test
-  public void testInsert(){
+  public void testInsert() {
     setUp();
     node6 = new CityNode("Houston", 29.7604, -95.3689);
     tripGraph.insertNode(node6);
     Collection<CityNode> nodes = tripGraph.getGraph().values();
     assertEquals(nodes.size(), 7, DELTA);
-    for(CityNode node: nodes){
+    for (CityNode node : nodes) {
       assertEquals(6, node.getOutgoingEdges().size(), DELTA);
     }
     tearDown();
   }
 
   @Test
-  public void testDelete(){
+  public void testDelete() {
     setUp();
     tripGraph.deleteNode(node5);
     Collection<CityNode> nodes = tripGraph.getGraph().values();
     assertEquals(nodes.size(), 5, DELTA);
-    for(CityNode node: nodes){
+    for (CityNode node : nodes) {
       assertEquals(4, node.getOutgoingEdges().size(), DELTA);
     }
     tearDown();
   }
 
   @Test
-  public void testConstructor(){
+  public void testConstructor() {
     setUp2();
     Collection<CityNode> nodes = tripGraph.getGraph().values();
     assertEquals(6, nodes.size(), DELTA);
-    for(CityNode node: nodes){
+    for (CityNode node : nodes) {
       assertEquals(5, node.getOutgoingEdges().size(), DELTA);
     }
     tearDown();
   }
 
   @Test
-  public void testKruskalSimple(){
+  public void testKruskalSimple() {
     //we will generate a kruskal's test here with a simple rectangle
     CityNode a = new CityNode("A", 40, 72);
     CityNode b = new CityNode("B", 40, 81);
@@ -173,34 +173,44 @@ public class CompleteGraphTest {
     CompleteTripGraph<CityNode, CityEdge> cg = new CompleteTripGraph<>(nodes);
     TripGraph<CityNode, CityEdge> ret = cg.Kruskals();
     assertNotNull(ret);
-    for(CityNode node: ret.getGraph().values()){
-      for(CityEdge e: node.getConnectingEdges().values()) {
+    for (CityNode node : ret.getGraph().values()) {
+      for (CityEdge e : node.getConnectingEdges().values()) {
         System.out.println("Outgoing edges are for mst" + e.getName());
       }
     }
 
     List<CityNode> dfsRet = cg.dfsTree(ret, a);
     //assertNotNull(dfsRet);
-    for(CityNode c2: dfsRet){
+    for (CityNode c2 : dfsRet) {
       System.out.println("citynodename" + c2.getName());
     }
   }
 
   @Test
-  public void testAlgoComplex(){
+  public void testKruskalsSame() {
     setUp3();
     TripGraph<CityNode, CityEdge> ret = tripGraph.Kruskals();
     assertNotNull(ret);
-    for(CityNode node: ret.getGraph().values()){
-      for(CityEdge e: node.getConnectingEdges().values()) {
-       System.out.println("Outgoing edges are for mst" + e.getName());
+    for (CityNode node : ret.getGraph().values()) {
+      for (CityEdge e : node.getConnectingEdges().values()) {
+        System.out.println("Outgoing edges are for mst" + e.getName());
       }
     }
+  }
 
-    List<CityNode> dfsRet = tripGraph.TwoOptTSP(node);
-    assertNotNull(dfsRet);
-    for(CityNode c2: dfsRet){
-      System.out.println("citynodename" + c2.getName());
+  @Test
+  public void testDFS(){
+    setUp();
+    TripGraph<CityNode, CityEdge> ret = tripGraph.Kruskals();
+    assertNotNull(ret);
+
+    List<CityNode> returned = tripGraph.TwoOptTSP(node5);
+    for(CityNode node: returned){
+      System.out.println("node" + node.getName());
     }
+
+
+
   }
 }
+
