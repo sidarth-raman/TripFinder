@@ -208,9 +208,12 @@ public class CompleteGraphTest {
     for(CityNode node: returned){
       System.out.println("node" + node.getName());
     }
+  }
 
-
-
+  @Test
+  public void testChrist(){
+    setUp();
+    List<CityNode> ret = tripGraph.christTSP(node);
   }
 }
 

@@ -229,6 +229,24 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     return mstDFS;
   }
 
+  public List<N> christTSP(N start){
+    if(start == null || !graph.containsKey(start.getName())){
+      return null;
+    }
+    //generate a min cost tree
+    TripGraph<N, E> mst = this.Kruskals();
+    //find the edges of the min-cost perfect match and add it to the mst
+    mst = this.minCostMatch(mst);
+    //do a eulerian tour and then find the best path using shortcuts
+
+
+
+    return null;
+  }
+
+
+
+
   /**
    * Takes in the kruskal's tree and runs a DFS algorithm on it
    * in order to reduce the amount of nodes running.
@@ -479,6 +497,70 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   public void Union(int parent[], int x, int y) {
     parent[x] = y;
   }
+
+  public TripGraph<N, E> eulerTour(TripGraph<N,E> mst, int[][] add, HashMap<String,List<N>> nodes){
+    for(int i = 0; i < add.length; i++){
+      for(int k = 0; k < add[i].length; k++){
+        if(add[i][k] != 0){
+          String get = Integer.toString(i).concat(Integer.toString(k));
+          if(nodes.containsKey(get)){
+            List<N> edgeAdd = nodes.get(get);
+            mst.insertEdge(edgeAdd.get(0), edgeAdd.get(1));
+          } else{
+            System.out.println("Issue");
+          }
+        }
+      }
+    }
+    return mst;
+  }
+
+
+  public TripGraph<N,E> minCostMatch(TripGraph<N,E> mst){
+    List<N> nodes = new ArrayList<>();
+    for(N node: mst.getGraph().values()){
+      if(node.getNeighbors().size() % 2 != 0){
+        nodes.add(node);
+      }
+    }
+
+    HashMap<String, List<N>> costMatricesPos = new HashMap<>();
+    double[][] costMatrix = new double[nodes.size()][nodes.size()];
+    int start = 0;
+    for(N node: nodes){
+      String str = Integer.toString(start);
+      int pos = 0;
+      for(N connector: nodes){
+        if(!(connector.equals(node))){
+          str.concat(Integer.toString(pos));
+          List<N> matrix = new ArrayList<>();
+          matrix.add(node);
+          matrix.add(connector);
+          costMatricesPos.put(str, matrix);
+          costMatrix[start][pos] = node.distanceBetween(connector);
+        } else{
+          costMatrix[start][pos] = Double.MAX_VALUE;
+        }
+        pos++;
+      }
+      start++;
+    }
+
+    MinMatchCostMatrix match = new MinMatchCostMatrix(costMatrix);
+    int[][] assignment = match.findOptimalAssignment();
+    return eulerTour(mst,assignment, costMatricesPos);
+  }
+
+  /**
+   * Finds a eulerian tour within a graph in faster time.
+   * @param mst the minimum spanning tree to use
+   * @param start a start node
+   * @return a List of Nodes that comprise a Eulerian Tour
+   */
+  public List<N> eulerTourPath(TripGraph<N,E> mst, N start){
+    return null;
+  }
+
 
 
 
