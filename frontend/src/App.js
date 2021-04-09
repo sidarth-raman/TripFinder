@@ -15,6 +15,6 @@ function App() {
         <MapDrawing />
     </div>
   );
-}
+};
 
 export default App;

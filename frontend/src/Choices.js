@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import './choices.css';
+
 import { render } from 'react-dom';
 import {useState, useEffect} from 'react'
 
@@ -49,22 +51,23 @@ class Choices extends Component {
     render() {
         return (
             <>
+            <div className="formbox">
             <form onSubmit={this.handleSubmit}>
                 <label>
-                    Pick your origin city:
-                    <select value={this.state.value} onChange={this.handleChange}>
-                        {this.cityList.map((k)=>
-                            <option value={k}>{k}</option>)}
+                    <div className="question">Pick your origin city:</div>
+                    <select className="dropdown" value={this.state.value} onChange={this.handleChange}>
+                            {this.cityList.map((k)=>
+                                <option value={k}>{k}</option>)}
                     </select>
                     <br />
-                    Pick your ideal distance:
-                    <select value={this.state.dist} onChange={this.handleChangeDist}>
+                    <div className="question" >Pick your ideal distance:</div>
+                    <select className="dropdown" value={this.state.dist} onChange={this.handleChangeDist}>
                         {this.distList.map((k)=>
                             <option value={k}>{k}</option>)}
                     </select>
                     <br />
-                    Select your param:
-                    <select value={this.state.param} onChange={this.handleChangeParam}>
+                    <div className="question" >Select your param</div>
+                    <select className="dropdown" value={this.state.param} onChange={this.handleChangeParam}>
                         {this.paramList.map((k)=>
                             <option value={k}>{k}</option>)}
                     </select>
@@ -72,13 +75,13 @@ class Choices extends Component {
                 </label>
                 <input type="submit" value="Submit" />
             </form>
-               <div>
-                   <br />
-                   Origin City: {this.state.valueFinal}    <br />
-                   Ideal Distance: {this.state.distFinal}    <br />
-                   Param: {this.state.paramFinal}
-               </div>
-
+            </div>
+                <div className="question">
+                    <br />
+                    Origin City: {this.state.valueFinal}    <br />
+                    Ideal Distance: {this.state.distFinal}    <br />
+                    Param: {this.state.paramFinal}
+                </div>
             </>
         );
     }

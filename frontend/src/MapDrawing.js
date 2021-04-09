@@ -12,6 +12,9 @@ function MapDrawing() {
         ctx.canvas.width = 1024
         ctx.canvas.height = 633
         ctx.beginPath();
+        ctx.rect(0, 0, 1024, 633);
+        ctx.fillStyle = "white";
+        ctx.fill();
         ctx.moveTo(0,0);
         ctx.lineTo(0, 633);
         ctx.moveTo(0,633);
@@ -29,10 +32,10 @@ function MapDrawing() {
     }, [])
 
     return (
-        <div>
+        <div style = {{paddingLeft: 200}}>
             <canvas ref={canvasRef} />
         </div>
     );
-}
+};
 
 export default MapDrawing;
