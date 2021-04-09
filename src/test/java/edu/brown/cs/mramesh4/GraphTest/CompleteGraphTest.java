@@ -215,8 +215,11 @@ public class CompleteGraphTest {
     setUp();
     List<CityNode> ret = tripGraph.christTSP(node);
     for(CityNode city: ret){
+<<<<<<< HEAD
       System.out.println(city.getName());
+=======
+      System.out.println("testChrist: " + city.getName());
+>>>>>>> 1a5afc03143fe0f556c9f4c76285522049e9a600
     }
   }
 }
-

@@ -258,8 +258,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
         System.out.println("There is an edge between" + node.getName() + neighbor.getName());
       }
     }
-
-
+    
     //do a eulerian tour and then find the best path using shortcuts
     List<N> ret = this.eulerTourPath(mst, start);
     return ret;
@@ -609,6 +608,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     }
     //get the current start node
     N cur = start;
+    s.push(cur);
     while (!s.empty()) {
       if (!incidentOnUnusedEdges(edges, unvisited, cur)) {
         c.add(0, cur);
@@ -635,12 +635,24 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
         } else {
           System.out.println("ERROR: finding destination broken");
         }
-
-
       }
     }
+    return this.deleteRepeats(c);
+  }
 
-    return c;
+  //Step 5
+  private List<N> deleteRepeats(List<N> tour){
+    Set<N> cities = new HashSet<>();
+    List<Integer> deletions = new ArrayList<>();
+    for(int i = 0; i < tour.size() - 1; i++){ //Minus 1 bc we don't want to remove origin
+      if(!cities.add(tour.get(i))){
+        deletions.add(i);
+      }
+    }
+    for(int j : deletions){
+      tour.remove(j);
+    }
+    return tour;
   }
 
   private boolean incidentOnUnusedEdges(Set<E> edges, Set<E> unvisited, N cur) {
