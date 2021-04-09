@@ -32,7 +32,7 @@ public class CompleteGraphTest {
   CityNode node13;
   CityNode node14;
   CityNode node15;
-  
+
   private static final double DELTA = 0.01;
   CompleteTripGraph<CityNode, CityEdge> tripGraph;
 
