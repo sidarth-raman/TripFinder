@@ -245,7 +245,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   /**
    * This is a method for the christofedes algorithm
    * @param start the start node to return to
-   * @return the Hamiltonian cycle. 
+   * @return the Hamiltonian cycle.
    */
   public List<N> christTSP(N start) {
     if (start == null || !graph.containsKey(start.getName())) {
@@ -256,7 +256,25 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     TripGraph<N, E> mst = this.Kruskals();
     //find the edges of the min-cost perfect match and add it to the mst
     //Step 3
+
+    for(N node: mst.getGraph().values()){
+      for(N edge: node.getNeighbors()){
+        System.out.println("Graph has edge before" + node.getName() + "->" + edge.getName());
+      }
+    }
+
+
+
+
     mst = this.minCostMatch(mst);
+
+    for(N node: mst.getGraph().values()){
+      for(N edge: node.getNeighbors()){
+        System.out.println("Graph has edge after" + node.getName() + "->" + edge.getName());
+      }
+    }
+
+
 
     //do a eulerian tour and then find the best path using shortcuts
     List<N> ret = this.eulerTourPath(mst, start);
