@@ -1,5 +1,4 @@
 package edu.brown.cs.mramesh4.TripGraph;
-import edu.brown.cs.mramesh4.maps.WayNodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +27,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * @param lat  Latitude of city
    * @param lon  Longitude of city
    */
-  public CityNode(String name, double lat, double lon){
+  public CityNode(String name, double lat, double lon) {
     this.name = name;
     this.lat = lat;
     this.longit = lon;
@@ -41,14 +40,14 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * Returns the name of the cityNode.
    * @return The name of the City
    */
-  public String getName(){
+  public String getName() {
     return name;
   }
   /**
    * Returns the latitude of the city.
    * @return The lat of the city
    */
-  public double getLat(){
+  public double getLat() {
     return lat;
   }
   /**
@@ -56,7 +55,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * @return The longitude of the city
    */
 
-  public double getLong(){
+  public double getLong() {
     return longit;
   }
 
@@ -65,37 +64,45 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * @return weight
    */
   @Override
-  public double getWeight(){return weight;}
+  public double getWeight() {
+    return weight;
+  }
 
   /**
    * Setter method for distance.
    * @param dist distance to set the distance to.
    */
   @Override
-  public void setDistance(double dist){distance = dist;}
+  public void setDistance(double dist) {
+    distance = dist;
+  }
 
   @Override
-  public double getDistance(){return distance;}
+  public double getDistance() {
+    return distance;
+  }
 
   /**
    * Setter method for weight.
    * @param weight weight to set the weight to.
    */
-  public void setWeight(double weight){this.weight = weight;}
+  public void setWeight(double weight) {
+    this.weight = weight;
+  }
 
   /**
-   * Accessor method for the nodes map
+   * Accessor method for the nodes map.
    * @return map of nodes
    */
-  public HashMap<String, CityNode> getConnectingNodes(){
+  public HashMap<String, CityNode> getConnectingNodes() {
     return connectingNodes;
   }
 
   /**
-   * Accessor method for edges between nodes (undirected)
-   * @return
+   * Accessor method for edges between nodes (undirected).
+   * @return a Map of edges
    */
-  public HashMap<String, CityEdge> getConnectingEdges(){
+  public HashMap<String, CityEdge> getConnectingEdges() {
     return connectingEdges;
   }
   /**
@@ -104,8 +111,9 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * @return Boolean representing if nodes are the same node
    */
   @Override
-  public boolean equals(CityNode node){
-    return name.equals(node.getName()) && (lat == node.getLat()) && (longit ==  node.getLong());
+  public boolean equals(CityNode node) {
+    return name.equals(node.getName()) && (lat == node.getLat())
+      && (longit ==  node.getLong());
   }
 
   /**
@@ -114,26 +122,25 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * @param node node to insert edges between
    */
   @Override
-  public void insertEdges(CityNode node){
-    if(node != null) {
+  public void insertEdges(CityNode node) {
+    if (node != null && !node.equals(this)) {
       String name = node.getName();
-      CityEdge edge = new CityEdge(this, node);
-      CityEdge edge2 = new CityEdge(node, this);
+      String edgeName = this.name + "->" + node.getName();
+      CityEdge edge = new CityEdge(this, node, edgeName);
+      CityEdge edge2 = new CityEdge(node, this, edgeName);
       connectingNodes.put(name, node);
       connectingEdges.put(name, edge);
       node.getConnectingNodes().put(this.name, this);
       node.getConnectingEdges().put(this.name, edge2);
-    } else{
-      System.out.println("node is null");
     }
   }
 
   /**
-   * This is a method that deletes an edge between two nodes
+   * This is a method that deletes an edge between two nodes.
    * @param node edge to delete between two edges
    */
   @Override
-  public void deleteEdge(CityNode node){
+  public void deleteEdge(CityNode node) {
     String name = node.getName();
     connectingNodes.remove(name);
     connectingEdges.remove(name);
@@ -141,19 +148,25 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     node.getConnectingEdges().remove(this.name);
   }
 
+  @Override
+  public void clearGraphEdges() {
+    connectingNodes.clear();
+    connectingEdges.clear();
+  }
+
 
   //TODO: Change this to an A* or more significant path-finding version
   /**
-   * Returns the euclidean distance between two city nodes
+   * Returns the euclidean distance between two city nodes.
    * @param a a node to check distance from
    * @return distance between two cities
    */
   @Override
   public double distanceBetween(CityNode a) {
-      double aX = a.getLong();
-      double aY = a.getLat();
-      return Math.sqrt(Math.pow(Math.abs((aX - this.longit)), 2)
-        + Math.pow(Math.abs((aY - this.lat)), 2));
+    double aX = a.getLong();
+    double aY = a.getLat();
+    return Math.sqrt(Math.pow(Math.abs((aX - this.longit)), 2)
+      + Math.pow(Math.abs((aY - this.lat)), 2));
   }
 
   /**
@@ -161,10 +174,10 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * @return a list of outgoing edges.
    */
   @Override
-  public List<CityEdge> getOutgoingEdges(){
+  public List<CityEdge> getOutgoingEdges() {
     Collection<CityEdge> c  = this.getConnectingEdges().values();
     List<CityEdge> ret = new ArrayList<>();
-    for(CityEdge edge: c){
+    for (CityEdge edge: c) {
       ret.add(edge);
     }
     return ret;
@@ -175,17 +188,17 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * @return nodes of neighbors.
    */
   @Override
-  public List<CityNode> getNeighbors(){
+  public List<CityNode> getNeighbors() {
     Collection<CityNode> c  = this.getConnectingNodes().values();
     List<CityNode> ret = new ArrayList<>();
-    for(CityNode node: c){
+    for (CityNode node: c) {
       ret.add(node);
     }
     return ret;
   }
 
   /**
-   * This is for the aStar heuristic, using haversine distance
+   * This is for the aStar heuristic, using haversine distance.
    * @param goal goal to check from
    * @return a double for the A* function
    */
@@ -202,8 +215,8 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     double dlon = goalLon - thisLon;
     double dlat = goalLat - thisLat;
     double havernmath = Math.pow(Math.sin(dlat / 2), 2)
-      + Math.cos(thisLat) * Math.cos(goalLat)
-      * Math.pow(Math.sin(dlon / 2), 2);
+        + Math.cos(thisLat) * Math.cos(goalLat)
+        * Math.pow(Math.sin(dlon / 2), 2);
     double finalanswer = 2 * Math.asin(Math.sqrt(havernmath));
     // Radius of earth in kilometers. Use 3956 for miles
     return (finalanswer * EARTH_RADIUS_IN_KM);

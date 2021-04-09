@@ -115,8 +115,19 @@ public class GraphTest {
     assertEquals(5.541769, node3.distanceBetween(node5), DELTA);
     //Philly --> Pitt = 4.949747
     assertEquals(4.949747, node4.distanceBetween(node5), DELTA);
+    tearDown();
   }
-
+  @Test
+  public void testNumEdges(){
+    setUp();
+    assertEquals(11, tripGraph.getNumEdges(), DELTA);
+    CityEdge e = new CityEdge(node6, node2, "Harrison->JC");
+    tripGraph.insertEdge(e);
+    assertEquals(12, tripGraph.getNumEdges(), DELTA);
+    tripGraph.insertEdge(node6, node4);
+    assertEquals(13, tripGraph.getNumEdges(), DELTA);
+    tearDown();
+  }
   @Test
   public void testAStarEdge(){
     setUp();

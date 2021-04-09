@@ -16,6 +16,7 @@ edu/brown/cs/mramesh4/TripGraph/CityEdge.class
 edu/brown/cs/mramesh4/Graph/GraphEdge.class
 edu/brown/cs/mramesh4/SQLDatabase/UserSQLDatabase.class
 edu/brown/cs/mramesh4/REPLLoop/Parser.class
+edu/brown/cs/mramesh4/TripGraph/UserPreference.class
 edu/brown/cs/mramesh4/KDTree/KDTree$3.class
 edu/brown/cs/mramesh4/Main$UserPreferenceHandler.class
 edu/brown/cs/mramesh4/REPLLoop/REPL.class
@@ -23,6 +24,7 @@ edu/brown/cs/mramesh4/Graph/GraphNode.class
 edu/brown/cs/mramesh4/Dimensional/Dimensional.class
 edu/brown/cs/mramesh4/maps/GUIHandler$FrontHandler.class
 edu/brown/cs/mramesh4/KDTree/KDNode.class
+edu/brown/cs/mramesh4/TripGraph/TripGraphEdgeComparator.class
 edu/brown/cs/mramesh4/maps/GUIHandler$RouteStreetsHandler.class
 edu/brown/cs/mramesh4/Graph/Graph.class
 edu/brown/cs/mramesh4/stars/StarsLogic.class
@@ -39,6 +41,7 @@ edu/brown/cs/mramesh4/maps/Way.class
 edu/brown/cs/mramesh4/TripGraph/TripGraph.class
 edu/brown/cs/mramesh4/maps/GUIHandler$UserHandler.class
 edu/brown/cs/mramesh4/KDTree/KDTree$2.class
+edu/brown/cs/mramesh4/TripGraph/EulerTripNodeComparator.class
 edu/brown/cs/mramesh4/MockPerson/MockPersonMethod.class
 edu/brown/cs/mramesh4/stars/ActionMethod.class
 edu/brown/cs/mramesh4/TripGraph/TripGraphEdge.class

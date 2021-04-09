@@ -1,9 +1,14 @@
 package edu.brown.cs.mramesh4.TripGraph;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Stack;
 
 public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N, E>>{
   private HashMap<String, N> graph;
@@ -25,16 +30,27 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     for(int i = 0; i < nodes.size(); i++){
       N node = nodes.get(i);
       String name = node.getName();
-      //makes sure the graph is complete
-      if(node.getOutgoingEdges().size() != nodes.size() - 1) {
-        for (int j = i; j < nodes.size(); j++) {
-          node.insertEdges(nodes.get(j));
-        }
-      }
       if(!graph.containsKey(name)){
         graph.put(name, node);
       }
+      //System.out.println("node added" + node.getName());
     }
+
+  //to add all the edges to each other
+    for(int j = 0; j < nodes.size(); j++){
+      N node2 = nodes.get(j);
+     // System.out.println("node curr" + node2.getName());
+      for(N node: graph.values()){
+        String name = node.getName();
+        if(!node2.equals(node)) {
+          //System.out.println("inserted edge between nodes" + node2.getName() + node.getName());
+          node2.insertEdges(node);
+        }
+        graph.put(name, node);
+      }
+      graph.put(node2.getName(), node2);
+    }
+    //System.out.println("graph" + graph.size());
   }
   //TODO: use OOP to get rid of this and make this class more sensible
   /**
@@ -195,4 +211,359 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   public HashMap<String, N> getGraph(){
     return graph;
   }
+
+
+  /**
+   * This is a 2Opt-Algorithm (At worse the cost
+   * of solving this is 2*optimal cost) for the Traveling Salesman
+   * Problem. This algorithm approximates the Tsp
+   * @param start The node to start from
+   * @return a list that represents a hamlitonian cycle or null with bad inputs
+   */
+  public List<N> TwoOptTSP(N start){
+    if(start == null || !graph.containsKey(start.getName())){
+      return null;
+    }
+    TripGraph<N, E> mst = this.Kruskals();
+    List<N> mstDFS = this.dfsTree(mst, start);
+    return mstDFS;
+  }
+
+  public List<N> christTSP(N start){
+    if(start == null || !graph.containsKey(start.getName())){
+      return null;
+    }
+    //generate a min cost tree
+    //Step 2
+    TripGraph<N, E> mst = this.Kruskals();
+    //find the edges of the min-cost perfect match and add it to the mst
+    //Step 3
+    mst = this.minCostMatch(mst);
+    //do a eulerian tour and then find the best path using shortcuts
+
+
+
+    return null;
+  }
+
+
+
+
+  /**
+   * Takes in the kruskal's tree and runs a DFS algorithm on it
+   * in order to reduce the amount of nodes running.
+   * @param mst a dfs-searched tree.
+   * @return
+   */
+  public List<N> dfsTree(TripGraph<N,E> mst, N start){
+    List<N> ret = new ArrayList<>();
+    HashMap<String, Integer> visited = new HashMap<>();
+    Stack<N> stack = new Stack<>();
+    String name = start.getName();
+    N node = mst.getGraph().get(name);
+    ret.add(node);
+    stack.push(node);
+    visited.put(name, 1);
+    HashMap<String, Integer> visted = new HashMap<>();
+    while(!stack.isEmpty()){
+        N pop = stack.pop();
+        String currName = pop.getName();
+        ret.add(pop);
+        System.out.println("visited" + currName +"now");
+        for(E edge: pop.getOutgoingEdges()){
+          N next = edge.getNodes().get(1);
+          String nextName = next.getName();
+          System.out.println("neighbor of" + currName +"is" + " " + nextName);
+          if(!visited.containsKey(nextName)) {
+            System.out.println("Added" + nextName);
+            stack.push(edge.getNodes().get(1));
+            visited.put(nextName, 1);
+          }
+        }
+    }
+    ret.add(node);
+    return ret;
+    //return this.deleteDuplicates(ret, start);
+  }
+
+//  /**
+//   * This deletes duplicates within the list.
+//   * @param input the list to sort through
+//   * @param start start node
+//   * @return a non-duplicated list
+//   */
+//  public List<N> deleteDuplicates(List<N> input, N start){
+//    HashSet<String> visited = new HashSet<>();
+//    List<N> ret = new ArrayList<>();
+//    ret.add(input.get(0));
+//    visited.add(input.get(0).getName());
+//    for(int i = 1; i < input.size() - 1; i++){
+//      if(!visited.contains(input.get(i).getName())){
+//        visited.add(input.get(i).getName());
+//        ret.add(input.get(i));
+//      }
+//    }
+//    ret.add(input.get(input.size()-1));
+//    return ret;
+//  }
+
+
+
+  /**
+   * This is Kruskal's algorithm, which we use to generate a MST
+   * within the graph. Using the MST, we will do a DFS on the MST.
+   * @return an MST of the graph
+   */
+  public TripGraph<N, E> Kruskals(){
+    TripGraph<N, E> mst = new TripGraph<>();
+    //get the edgeList.
+    HashMap<String, E> edgeList = new HashMap<>();
+    //get all the edges within the graph and add them to the edgeList.
+    //we make sure not to readd edges twice.
+    for(N node: this.getGraph().values()){
+      for(N node2: this.getGraph().values()){
+        if(!node2.equals(node)){
+          E edge = node.getConnectingEdges().get(node2.getName());
+          if(edge!=null) {
+            String edgeName = edge.getName();
+            String[] edgeSplit = edgeName.split("->");
+            String reverseEdge = edgeSplit[1] + "->" + edgeSplit[0];
+            //we only add unique edges so we don't add it to the graph multiple times
+            if (!edgeList.containsKey(edgeName) && !edgeList.containsKey(reverseEdge)) {
+              edgeList.put(edgeName, edge);
+            }
+          }
+        }
+      }
+    }
+
+    //FIRST TEST: to see if all the edges are within the graph.
+    //System.out.println("This is the size of the edgeList" + edgeList.values().size());
+//    for(String s: edgeList.keySet()){
+//      System.out.println("Edge for" + s + "in set");
+//    }
+
+    //take the priorityQueue
+    PriorityQueue<E> pq = new PriorityQueue<E>(new TripGraphEdgeComparator<N, E>());
+    //add the list of sorted edges to the priorityqueue
+    for(E edge: edgeList.values()){
+      //make sure to clear the graph nodes.
+      for(N node: edge.getNodes()){
+        node.clearGraphEdges();
+      }
+      pq.add(edge);
+    }
+    HashMap<String, E> addedEdges = new HashMap<>();
+    //checks to see the elements in the pq.
+    while(!pq.isEmpty()){
+      E curr = pq.poll();
+      //see the edge we are on.
+      //System.out.println("curr edge" + curr.getName());
+
+      //if we have n-1 edges, we have a complete MST.
+      if(mst.getNumEdges() == this.getGraph().values().size() - 1){
+        return mst;
+      }
+      //add the edge to the graph otherwise
+      mst.insertEdge(curr);
+
+      //if there is a cycle because of this, we shouldn't add the node to the graph
+
+      //TODO: fix this cycle detection algorithm
+      //if(isCyclic(mst)){
+      if(UnionFind(mst) == 1){
+        //System.out.println("deleted" + curr.getName());
+        mst.deleteEdge(curr.getNodes().get(0), curr.getNodes().get(1));
+      }
+      //System.out.println("curr edge size" + mst.getNumEdges());
+    }
+      //if there was no minimum spanning tree: we return null, which indicates an issue.
+    if(mst.getNumEdges() == this.getGraph().values().size() - 1){
+      //System.out.println("Broke out of the pq loop");
+      return mst;
+    } else{
+       // System.out.println("There was an issue");
+      return null;
+    }
+  }
+
+  /**
+   * This is a helper method to test if a graph is cyclic using BFs
+   * @param mst: the graph to search:
+   * @param node the node we are at currently
+   * @param visited the visited edge.
+   * @return
+   */
+  public boolean isCyclicHelper(TripGraph<N,E> mst, N node, HashMap<String, Boolean> visited){
+    //we have a deque for a max elements with 50: for larger graph algorithms, we may want
+    //to use a different datastructure
+    Deque<N> deque = new ArrayDeque<>(50);
+    //the parent map
+    HashMap<N, N> parent = new HashMap<>();
+    for(N next: mst.getGraph().values()){
+      parent.put(next, next);
+    }
+
+    //this is a list of visited nodes
+    visited.put(node.getName(), true);
+    //System.out.println("Curr node added to visited" + node.getName());
+    deque.offerLast(node);
+    //we go through the deque
+    while(!deque.isEmpty()){
+      //find the neighbors
+      N curr = deque.getLast();
+      //System.out.println("Curr node" + curr.getName());
+      for(N neighbor: curr.getNeighbors()){
+        if(!visited.containsKey(neighbor.getName())) {
+          //System.out.println("Neighbor node, queued" + neighbor.getName());
+        } else if(visited.get(neighbor.getName()) == false) {
+          //System.out.println("Neighbor node, unvisited" + neighbor.getName());
+          visited.put(neighbor.getName(), true);
+          deque.offerLast(neighbor);
+          parent.put(neighbor, curr);
+        } else if(parent.containsKey(neighbor) && parent.get(neighbor).equals(curr) == false){
+          //System.out.println("Neighbor node, visited" + neighbor.getName() +
+           // "parent of neighbor" + parent.get(neighbor).getName());
+          return false;
+        } else{
+          //System.out.println(" the parent is the curr node" + curr + parent.get(neighbor).getName());
+        }
+      }
+    }
+    return true;
+  }
+
+  /**
+   * This method uses bfs to tell us if there is a cycle in the graph.
+   * @param mst: A minimum spanning tree graph
+   * @return a boolean if the mst is cyclic or not.
+   */
+  public boolean isCyclic(TripGraph<N,E> mst){
+    HashMap<String, Boolean> visited = new HashMap<>();
+    //set every node visited to false: this means we haven't visited yet
+    for(N node: mst.getGraph().values()){
+      //System.out.println("Nodes in the graph include" + node.getName());
+      visited.put(node.getName(), false);
+    }
+    //if we detect a cycle in the portion of the graph, we know there is a cycle
+    //in the graph
+    for(N node: mst.getGraph().values()){
+        //System.out.println("Running helper method on" + node.getName());
+        if(!visited.get(node.getName()) && isCyclicHelper(mst, node, visited)){
+          return true;
+        }
+    }
+    return false;
+  }
+
+
+  public int UnionFind(TripGraph<N,E> mst){
+    Collection<N> nodes = mst.getGraph().values();
+    int[] parent = new int[nodes.size()];
+    HashMap<N, Integer> nodesMap = new HashMap<>();
+    int i = 0;
+    for(N node: nodes){
+      parent[i] = -1;
+      nodesMap.put(node, i);
+      i++;
+    }
+    HashSet<String> visited = new HashSet<>();
+    for(N node: nodes){
+      for(E edge: node.getOutgoingEdges()){
+        //visited.add(edge.getName());
+        String edgeName = edge.getName();
+        String[] edgeSplit = edgeName.split("->");
+        String reverseEdge = edgeSplit[1] + "->" + edgeSplit[0];
+        //visited.add(reverseEdge);
+        if(!visited.contains(edgeName) && !visited.contains(reverseEdge)){
+          visited.add(reverseEdge);
+          visited.add(edge.getName());
+          int x = this.find(parent, nodesMap.get(node));
+          int y = this.find(parent, nodesMap.get(edge.getNodes().get(1)));
+          if (x == y)
+            return 1;
+          this.Union(parent, x, y);
+        }
+
+      }
+    }
+    return 0;
+  }
+
+  public int find(int[] parent, int i){
+    if (parent[i] == -1)
+      return i;
+    return find(parent, parent[i]);
+  }
+
+  public void Union(int parent[], int x, int y) {
+    parent[x] = y;
+  }
+
+  public TripGraph<N, E> eulerTour(TripGraph<N,E> mst, int[][] add, HashMap<String,List<N>> nodes){
+    for(int i = 0; i < add.length; i++){
+      for(int k = 0; k < add[i].length; k++){
+        if(add[i][k] != 0){
+          String get = Integer.toString(i).concat(Integer.toString(k));
+          if(nodes.containsKey(get)){
+            List<N> edgeAdd = nodes.get(get);
+            mst.insertEdge(edgeAdd.get(0), edgeAdd.get(1));
+          } else{
+            System.out.println("Issue");
+          }
+        }
+      }
+    }
+    return mst;
+  }
+
+
+  public TripGraph<N,E> minCostMatch(TripGraph<N,E> mst){
+    List<N> nodes = new ArrayList<>();
+    for(N node: mst.getGraph().values()){
+      if(node.getNeighbors().size() % 2 != 0){
+        nodes.add(node);
+      }
+    }
+
+    HashMap<String, List<N>> costMatricesPos = new HashMap<>();
+    double[][] costMatrix = new double[nodes.size()][nodes.size()];
+    int start = 0;
+    for(N node: nodes){
+      String str = Integer.toString(start);
+      int pos = 0;
+      for(N connector: nodes){
+        if(!(connector.equals(node))){
+          str.concat(Integer.toString(pos));
+          List<N> matrix = new ArrayList<>();
+          matrix.add(node);
+          matrix.add(connector);
+          costMatricesPos.put(str, matrix);
+          costMatrix[start][pos] = node.distanceBetween(connector);
+        } else{
+          costMatrix[start][pos] = Double.MAX_VALUE;
+        }
+        pos++;
+      }
+      start++;
+    }
+
+    MinMatchCostMatrix match = new MinMatchCostMatrix(costMatrix);
+    int[][] assignment = match.findOptimalAssignment();
+    return eulerTour(mst,assignment, costMatricesPos);
+  }
+
+  /**
+   * Finds a eulerian tour within a graph in faster time.
+   * @param mst the minimum spanning tree to use
+   * @param start a start node
+   * @return a List of Nodes that comprise a Eulerian Tour
+   */
+  public List<N> eulerTourPath(TripGraph<N,E> mst, N start){
+    return null;
+  }
+
+
+
+
 }

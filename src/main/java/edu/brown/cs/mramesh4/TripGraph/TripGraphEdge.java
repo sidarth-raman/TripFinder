@@ -7,4 +7,5 @@ public interface TripGraphEdge<N extends TripGraphNode<N, E>, E extends TripGrap
   double getWeight();
   List<N> getNodes();
   boolean equals(E edge);
+  String getName();
 }

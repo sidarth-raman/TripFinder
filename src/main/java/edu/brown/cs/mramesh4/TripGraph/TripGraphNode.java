@@ -19,4 +19,5 @@ public interface TripGraphNode<N extends TripGraphNode<N, E>, E extends TripGrap
   HashMap<String, E> getConnectingEdges();
   double toGoal(N node);
   void deleteEdge(N node);
+  void clearGraphEdges();
 }
