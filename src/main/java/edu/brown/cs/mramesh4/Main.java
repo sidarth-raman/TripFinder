@@ -1,22 +1,34 @@
-package edu.brown.cs.mramesh4.maps;
+package edu.brown.cs.mramesh4;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
 import edu.brown.cs.mramesh4.REPLLoop.REPL;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
 import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
+import edu.brown.cs.mramesh4.TripGraph.CityNode;
+import edu.brown.cs.mramesh4.TripGraph.GraphBuilder;
+import edu.brown.cs.mramesh4.maps.CheckinThread;
+import edu.brown.cs.mramesh4.maps.GUIHandler;
+import edu.brown.cs.mramesh4.maps.MapsLogic;
 import edu.brown.cs.mramesh4.stars.ActionMethod;
 import edu.brown.cs.mramesh4.stars.StarsLogic;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import org.json.JSONObject;
 import spark.ExceptionHandler;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 import freemarker.template.Configuration;
@@ -55,6 +67,11 @@ public final class Main {
   }
 
   private void run() {
+//    List<String> citiesToVisit = new ArrayList<>();
+//    citiesToVisit.add("Los Angeles");
+//    citiesToVisit.add("New York");
+//    GraphBuilder g = new GraphBuilder("Chicago", 1000, 5, citiesToVisit);
+//    g.getOrigin();
     db = new StarsLogic();
     map = new MapsLogic();
     MockPersonMethod m = new MockPersonMethod();
@@ -80,6 +97,7 @@ public final class Main {
     methods.put("route", map);
     REPL repl = new REPL(methods);
     repl.read();
+
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -124,17 +142,31 @@ public final class Main {
     CheckinThread check = new CheckinThread(database);
     check.start();
     GUIHandler gui = new GUIHandler(database, map, db, check);
-    Spark.get("/stars", gui.methodTVR("FrontHandler"), freeMarker);
-    Spark.post("/radius", gui.methodTVR("RadiusHandler"), freeMarker);
-    Spark.post("/neighbors", gui.methodTVR("NeighborsHandler"), freeMarker);
-    Spark.post("/routeCoors", gui.method("RouteCoorsHandler"));
-    Spark.post("/routeStreets", gui.method("RouteStreetsHandler"));
-    Spark.post("/ways", gui.method("WayHandler"));
-    Spark.post("/nearest", gui.method("NearestHandler"));
-    Spark.post("/user", gui.method("UserHandler"));
-    Spark.post("/checkin", gui.method("CheckInHandler"));
+    System.out.println("hi");
+    Spark.post("/route", new RouteHandler());
+
+  }
+
+  private static class RouteHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+
+      JSONObject data = new JSONObject(request.body());
+
+      //Retrieving preferences
+      String origin = data.getString("origin");
+      double maxDist = data.getDouble("maxDist");
+      int maxNumCities = data.getInt("maxNumCities");
 
 
+
+
+      GraphBuilder graph = new GraphBuilder(origin, maxDist, maxNumCities, new ArrayList<String>());
+      List<CityNode> path = graph.getPath();
+      Map<String, Object> variables = ImmutableMap.of("route", path);
+
+      return GSON.toJson(variables);
+    }
   }
 
   /**

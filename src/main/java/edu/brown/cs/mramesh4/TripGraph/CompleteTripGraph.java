@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Stack;
 
@@ -560,8 +561,29 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * @return a List of Nodes that comprise a Eulerian Tour
    */
   public List<N> eulerTourPath(TripGraph<N,E> mst, N start){
-    return null;
+    Stack<N> s = new Stack<>();
+    List<N> c = new ArrayList<>();
+
+//    N v = start;
+//
+////    start.getConnectingEdges();
+//    Map<String, E> edgesOfGraph = new HashMap<>();
+//
+//
+//    while(!s.empty()){
+////      CityNode v = s.pop();
+//      if(v){
+//        c.add(0, v);
+//        v = s.pop();
+//      } else {
+//
+//      }
+//    }
+
+    return c;
   }
+
+
 
 
 

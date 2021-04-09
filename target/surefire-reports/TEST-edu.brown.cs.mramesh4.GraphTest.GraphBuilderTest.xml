@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="edu.brown.cs.mramesh4.GraphTest.NodeTest" time="0.005" tests="6" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest" time="0.383" tests="4" errors="0" skipped="0" failures="0">
   <properties>
     <property name="gopherProxySet" value="false"/>
     <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
@@ -10,7 +10,7 @@
     <property name="java.vm.vendor" value="Oracle Corporation"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.vendor.url" value="https://openjdk.java.net/"/>
-    <property name="user.timezone" value="America/New_York"/>
+    <property name="user.timezone" value=""/>
     <property name="java.vm.specification.version" value="11"/>
     <property name="os.name" value="Mac OS X"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
@@ -61,10 +61,8 @@
     <property name="java.class.version" value="55.0"/>
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
   </properties>
-  <testcase name="testAccessors" classname="edu.brown.cs.mramesh4.GraphTest.NodeTest" time="0.001"/>
-  <testcase name="testEdges" classname="edu.brown.cs.mramesh4.GraphTest.NodeTest" time="0"/>
-  <testcase name="testOutgoing" classname="edu.brown.cs.mramesh4.GraphTest.NodeTest" time="0"/>
-  <testcase name="testEquals" classname="edu.brown.cs.mramesh4.GraphTest.NodeTest" time="0"/>
-  <testcase name="testActivities" classname="edu.brown.cs.mramesh4.GraphTest.NodeTest" time="0.001"/>
-  <testcase name="testDistanceBetween" classname="edu.brown.cs.mramesh4.GraphTest.NodeTest" time="0"/>
+  <testcase name="testVisitingSelection" classname="edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest" time="0.341"/>
+  <testcase name="testOriginSelector" classname="edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest" time="0.006"/>
+  <testcase name="testNoSuggestions" classname="edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest" time="0.009"/>
+  <testcase name="tooManyToVisit" classname="edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest" time="0.013"/>
 </testsuite>
