@@ -600,16 +600,16 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     Set<E> edges = new HashSet<>();
     Set<E> unvisited = new HashSet<>();
 
+    //setup visited and unvisited edges
     for (N node : mst.getGraph().values()) {
       for (E edge : node.getOutgoingEdges()) {
         edges.add(edge);
         unvisited.add(edge);
       }
     }
-
+    //get the current start node
     N cur = start;
     while (!s.empty()) {
-
       if (!incidentOnUnusedEdges(edges, unvisited, cur)) {
         c.add(0, cur);
         cur = s.pop();
