@@ -234,8 +234,10 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       return null;
     }
     //generate a min cost tree
+    //Step 2
     TripGraph<N, E> mst = this.Kruskals();
     //find the edges of the min-cost perfect match and add it to the mst
+    //Step 3
     mst = this.minCostMatch(mst);
     //do a eulerian tour and then find the best path using shortcuts
 
