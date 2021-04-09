@@ -14,6 +14,7 @@ import edu.brown.cs.mramesh4.REPLLoop.REPL;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
 import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
+import edu.brown.cs.mramesh4.TripGraph.CityDatabaseReader;
 import edu.brown.cs.mramesh4.TripGraph.CityNode;
 import edu.brown.cs.mramesh4.TripGraph.GraphBuilder;
 import edu.brown.cs.mramesh4.maps.CheckinThread;
@@ -59,6 +60,7 @@ public final class Main {
   private static StarsLogic db;
   private static MapsLogic map;
   private static final Gson GSON = new Gson();
+  private static CityDatabaseReader database;
   //private static UserSQLDatabase database;
   //private static CheckinThread check;
 
@@ -72,6 +74,8 @@ public final class Main {
 //    citiesToVisit.add("New York");
 //    GraphBuilder g = new GraphBuilder("Chicago", 1000, 5, citiesToVisit);
 //    g.getOrigin();
+    database = new CityDatabaseReader("data.sqlite");
+    database.readDB();
     db = new StarsLogic();
     map = new MapsLogic();
     MockPersonMethod m = new MockPersonMethod();
@@ -142,8 +146,9 @@ public final class Main {
     CheckinThread check = new CheckinThread(database);
     check.start();
     GUIHandler gui = new GUIHandler(database, map, db, check);
-    System.out.println("hi");
     Spark.post("/route", new RouteHandler());
+    Spark.post("/city", new AllCityHandler());
+
 
   }
 
@@ -157,15 +162,22 @@ public final class Main {
       String origin = data.getString("origin");
       double maxDist = data.getDouble("maxDist");
       int maxNumCities = data.getInt("maxNumCities");
+      Object a = data.get("origin");
 
 
 
-
-      GraphBuilder graph = new GraphBuilder(origin, maxDist, maxNumCities, new ArrayList<String>());
+      GraphBuilder graph = new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, new ArrayList<String>());
       List<CityNode> path = graph.getPath();
       Map<String, Object> variables = ImmutableMap.of("route", path);
 
       return GSON.toJson(variables);
+    }
+  }
+
+  private static class AllCityHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+      return GSON.toJson(database.getCities().toArray());
     }
   }
 
