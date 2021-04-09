@@ -32,14 +32,14 @@ public class GraphBuilder {
    * @param maxNumCities is the maximum number of cities they're willing to visit.
    * @param citiesToVisit is the cities they would like to visit in their travel.
    */
-  public GraphBuilder(String origin, double maxDist, int maxNumCities, List<String> citiesToVisit) {
+  public GraphBuilder(Connection conn, String origin, double maxDist, int maxNumCities, List<String> citiesToVisit) {
     this.maxDist = maxDist;
     this.maxNumCities = maxNumCities;
     cityNodesToVisit = new ArrayList<>();
     citiesInGraph = new ArrayList<>();
     this.citiesToVisit = citiesToVisit;
+    this.conn = conn;
 
-    this.setupConnection();
     this.findOrigin(origin);
     this.pullCities();
 
@@ -153,24 +153,6 @@ public class GraphBuilder {
     }
   }
 
-  /**
-   * Helper method that sets up the connection to the database.
-   */
-  private void setupConnection() {
-    Connection c = null;
-    try {
-      Class.forName("org.sqlite.JDBC");
-    } catch (ClassNotFoundException e) {
-      System.out.println("ERROR: connection failed");
-    }
-    String url = "jdbc:sqlite:" + filepath;
-    try {
-      c = DriverManager.getConnection(url);
-    } catch (SQLException e) {
-      System.out.println("ERROR: connection failed");
-    }
-    conn = c;
-  }
 
   /**
    * Getter for the String of the origin, mainly for testing purposes.

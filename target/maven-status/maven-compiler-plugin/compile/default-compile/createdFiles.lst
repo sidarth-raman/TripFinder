@@ -1,5 +1,6 @@
 edu/brown/cs/mramesh4/KDTree/KDTree.class
 edu/brown/cs/mramesh4/maps/GUIHandler$RouteCoorsHandler.class
+edu/brown/cs/mramesh4/TripGraph/CityDatabaseReader.class
 edu/brown/cs/mramesh4/maps/GUIHandler.class
 edu/brown/cs/mramesh4/TripGraph/CompleteTripGraph.class
 edu/brown/cs/mramesh4/TripGraph/TripGraphNodeComparator.class
@@ -15,6 +16,7 @@ edu/brown/cs/mramesh4/Dimensional/DimensionalComparator.class
 edu/brown/cs/mramesh4/TripGraph/CityEdge.class
 edu/brown/cs/mramesh4/Graph/GraphEdge.class
 edu/brown/cs/mramesh4/SQLDatabase/UserSQLDatabase.class
+edu/brown/cs/mramesh4/Main$AllCityHandler.class
 edu/brown/cs/mramesh4/REPLLoop/Parser.class
 edu/brown/cs/mramesh4/KDTree/KDTree$3.class
 edu/brown/cs/mramesh4/REPLLoop/REPL.class
