@@ -14,7 +14,8 @@ import edu.brown.cs.mramesh4.REPLLoop.REPL;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
 import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
-import edu.brown.cs.mramesh4.TripGraph.UserPreference;
+import edu.brown.cs.mramesh4.TripGraph.CityNode;
+import edu.brown.cs.mramesh4.TripGraph.GraphBuilder;
 import edu.brown.cs.mramesh4.maps.CheckinThread;
 import edu.brown.cs.mramesh4.maps.GUIHandler;
 import edu.brown.cs.mramesh4.maps.MapsLogic;
@@ -66,6 +67,11 @@ public final class Main {
   }
 
   private void run() {
+//    List<String> citiesToVisit = new ArrayList<>();
+//    citiesToVisit.add("Los Angeles");
+//    citiesToVisit.add("New York");
+//    GraphBuilder g = new GraphBuilder("Chicago", 1000, 5, citiesToVisit);
+//    g.getOrigin();
     db = new StarsLogic();
     map = new MapsLogic();
     MockPersonMethod m = new MockPersonMethod();
@@ -91,6 +97,7 @@ public final class Main {
     methods.put("route", map);
     REPL repl = new REPL(methods);
     repl.read();
+
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -136,11 +143,11 @@ public final class Main {
     check.start();
     GUIHandler gui = new GUIHandler(database, map, db, check);
     System.out.println("hi");
-    Spark.post("/preference", new UserPreferenceHandler());
+    Spark.post("/route", new RouteHandler());
 
   }
 
-  private static class UserPreferenceHandler implements Route {
+  private static class RouteHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
 
@@ -152,12 +159,13 @@ public final class Main {
       int maxNumCities = data.getInt("maxNumCities");
 
 
-      UserPreference pref = new UserPreference(origin, maxDist, maxNumCities);
-
-//      Map<String, Object> variables = ImmutableMap.of("deleted", new ArrayList<>());
 
 
-      return GSON.toJson(origin);
+      GraphBuilder graph = new GraphBuilder(origin, maxDist, maxNumCities, new ArrayList<String>());
+      List<CityNode> path = graph.getPath();
+      Map<String, Object> variables = ImmutableMap.of("route", path);
+
+      return GSON.toJson(variables);
     }
   }
 
