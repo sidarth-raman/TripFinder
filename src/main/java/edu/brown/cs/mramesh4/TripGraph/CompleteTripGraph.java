@@ -258,7 +258,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
         System.out.println("There is an edge between" + node.getName() + neighbor.getName());
       }
     }
-    
+
     //do a eulerian tour and then find the best path using shortcuts
     List<N> ret = this.eulerTourPath(mst, start);
     return ret;
