@@ -242,6 +242,11 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     return this.deleteRepeats(mstDFS);
   }
 
+  /**
+   * This is a method for the christofedes algorithm
+   * @param start the start node to return to
+   * @return the Hamiltonian cycle. 
+   */
   public List<N> christTSP(N start) {
     if (start == null || !graph.containsKey(start.getName())) {
       return null;
