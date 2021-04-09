@@ -252,10 +252,17 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     //find the edges of the min-cost perfect match and add it to the mst
     //Step 3
     mst = this.minCostMatch(mst);
+
+    for(N node: mst.getGraph().values()){
+      for(N neighbor: node.getNeighbors()) {
+        System.out.println("There is an edge between" + node.getName() + neighbor.getName());
+      }
+    }
+
+
     //do a eulerian tour and then find the best path using shortcuts
-
-
-    return null;
+    List<N> ret = this.eulerTourPath(mst, start);
+    return ret;
   }
 
 
@@ -275,7 +282,6 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     ret.add(node);
     stack.push(node);
     visited.put(name, 1);
-    HashMap<String, Integer> visted = new HashMap<>();
     while (!stack.isEmpty()) {
       N pop = stack.pop();
       String currName = pop.getName();
@@ -515,14 +521,25 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     parent[x] = y;
   }
 
+
+
   public TripGraph<N, E> eulerTour(TripGraph<N, E> mst, int[][] add,
                                    HashMap<String, List<N>> nodes) {
+    for(String k: nodes.keySet()){
+      System.out.println("value" + k);
+    }
+
+
     for (int i = 0; i < add.length; i++) {
       for (int k = 0; k < add[i].length; k++) {
         if (add[i][k] != 0) {
           String get = Integer.toString(i).concat(Integer.toString(k));
+          String get2 = Integer.toString(k).concat(Integer.toString(i));
           if (nodes.containsKey(get)) {
             List<N> edgeAdd = nodes.get(get);
+            mst.insertEdge(edgeAdd.get(0), edgeAdd.get(1));
+          } else if (nodes.containsKey(get2)) {
+            List<N> edgeAdd = nodes.get(get2);
             mst.insertEdge(edgeAdd.get(0), edgeAdd.get(1));
           } else {
             System.out.println("Issue");
@@ -549,12 +566,12 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       String str = Integer.toString(start);
       int pos = 0;
       for (N connector : nodes) {
+        String strCopy = str.concat(Integer.toString(pos));
+        List<N> matrix = new ArrayList<>();
+        matrix.add(node);
+        matrix.add(connector);
         if (!(connector.equals(node))) {
-          str.concat(Integer.toString(pos));
-          List<N> matrix = new ArrayList<>();
-          matrix.add(node);
-          matrix.add(connector);
-          costMatricesPos.put(str, matrix);
+          costMatricesPos.put(strCopy, matrix);
           costMatrix[start][pos] = node.distanceBetween(connector);
         } else {
           costMatrix[start][pos] = Double.MAX_VALUE;
@@ -583,16 +600,17 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     Set<E> edges = new HashSet<>();
     Set<E> unvisited = new HashSet<>();
 
+    //setup visited and unvisited edges
     for (N node : mst.getGraph().values()) {
       for (E edge : node.getOutgoingEdges()) {
         edges.add(edge);
         unvisited.add(edge);
       }
     }
-
+    //get the current start node
     N cur = start;
+    s.push(cur);
     while (!s.empty()) {
-
       if (!incidentOnUnusedEdges(edges, unvisited, cur)) {
         c.add(0, cur);
         cur = s.pop();
@@ -618,12 +636,24 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
         } else {
           System.out.println("ERROR: finding destination broken");
         }
-
-
       }
     }
+    return this.deleteRepeats(c);
+  }
 
-    return c;
+  //Step 5
+  private List<N> deleteRepeats(List<N> tour){
+    Set<N> cities = new HashSet<>();
+    List<Integer> deletions = new ArrayList<>();
+    for(int i = 0; i < tour.size() - 1; i++){ //Minus 1 bc we don't want to remove origin
+      if(!cities.add(tour.get(i))){
+        deletions.add(i);
+      }
+    }
+    for(int j : deletions){
+      tour.remove(j);
+    }
+    return tour;
   }
 
   private boolean incidentOnUnusedEdges(Set<E> edges, Set<E> unvisited, N cur) {

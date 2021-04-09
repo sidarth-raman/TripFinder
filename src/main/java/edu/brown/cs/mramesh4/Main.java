@@ -15,8 +15,11 @@ import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
 import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
 import edu.brown.cs.mramesh4.TripGraph.CityDatabaseReader;
+import edu.brown.cs.mramesh4.TripGraph.CityEdge;
 import edu.brown.cs.mramesh4.TripGraph.CityNode;
+import edu.brown.cs.mramesh4.TripGraph.CompleteTripGraph;
 import edu.brown.cs.mramesh4.TripGraph.GraphBuilder;
+import edu.brown.cs.mramesh4.TripGraph.TripGraph;
 import edu.brown.cs.mramesh4.maps.CheckinThread;
 import edu.brown.cs.mramesh4.maps.GUIHandler;
 import edu.brown.cs.mramesh4.maps.MapsLogic;
@@ -61,6 +64,15 @@ public final class Main {
   private static MapsLogic map;
   private static final Gson GSON = new Gson();
   private static CityDatabaseReader database;
+  CityNode node;
+  CityNode node2;
+  CityNode node3;
+  CityNode node4;
+  CityNode node5;
+  CityNode node6;
+  private static final double DELTA = 0.01;
+  CompleteTripGraph<CityNode, CityEdge> tripGraph;
+  private TripGraph<CityNode, CityEdge> tGraph1;
   //private static UserSQLDatabase database;
   //private static CheckinThread check;
 
@@ -69,13 +81,28 @@ public final class Main {
   }
 
   private void run() {
-//    List<String> citiesToVisit = new ArrayList<>();
-//    citiesToVisit.add("Los Angeles");
-//    citiesToVisit.add("New York");
-//    GraphBuilder g = new GraphBuilder("Chicago", 1000, 5, citiesToVisit);
-//    g.getOrigin();
-    database = new CityDatabaseReader("data.sqlite");
-    database.readDB();
+
+
+    node = new CityNode("New York", 40.4, -73.56);
+    node2 = new CityNode("Jersey City", 40.34, -74.04);
+    node3 = new CityNode("Trenton", 40.13, -74.46);
+    node4 = new CityNode("Philadelphia", 39.57, -75.10);
+    node5 = new CityNode("Pittsburgh", 40.27, -80);
+    node6 = new CityNode("Harrison", 40.35, -79.6501);
+    List<CityNode> graphList = new ArrayList<>();
+    graphList.add(node);
+    graphList.add(node2);
+    graphList.add(node3);
+    graphList.add(node4);
+    graphList.add(node5);
+    graphList.add(node6);
+    tripGraph = new CompleteTripGraph<>(graphList);
+    List<CityNode> ret = tripGraph.christTSP(node);
+    for(CityNode city: ret){
+      System.out.println("ETTN: " + city.getName());
+    }
+//    database = new CityDatabaseReader("data.sqlite");
+//    database.readDB();
     db = new StarsLogic();
     map = new MapsLogic();
     MockPersonMethod m = new MockPersonMethod();
