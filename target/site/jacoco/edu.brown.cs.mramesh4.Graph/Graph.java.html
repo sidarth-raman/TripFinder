@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Graph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.Graph</a> &gt; <span class="el_source">Graph.java</span></div><h1>Graph.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.Graph;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.concurrent.ExecutionException;
+
+/**
+ * This class holds our A* implementation, which we allow to be generic by passing in any node
+ * type N that implements GraphNode and any edge that implements GraphEdge.
+ * @param &lt;N&gt; representing the type of Node
+ * @param &lt;E&gt; representing the type of Edge
+ */
+public class Graph&lt;N extends GraphNode&lt;N, E&gt;, E extends GraphEdge&lt;N, E&gt;&gt; {
+
+  private GraphNodeNeighborsCache&lt;N, E&gt; neighborscache;
+
+  /**
+   * In the constructor for Graph, we initialize our cache instance variable, which we use
+   * during the A* algorithm.
+   */
+<span class="nc" id="L22">  public Graph() {</span>
+<span class="nc" id="L23">    neighborscache = new GraphNodeNeighborsCache&lt;N, E&gt;();</span>
+<span class="nc" id="L24">  }</span>
+
+  /**
+   * This method contians our A* implementation.
+   * @param source representing the starting node.
+   * @param end representing the ending node of the path
+   * @return the ending node, with an updated from value, which allows us to trace
+   * the path backwards.
+   */
+  public N aStar(N source, N end) {
+<span class="nc" id="L34">    PriorityQueue&lt;N&gt; pq = new PriorityQueue&lt;&gt;(new GraphNodeComparator&lt;N, E&gt;());</span>
+    //current node should have distance 0, add it to PQ
+<span class="nc" id="L36">    pq.add(source);</span>
+    //checks for visited nodes so we don't readd them
+<span class="nc" id="L38">    HashMap&lt;String, N&gt; visited = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L39">    visited.put(source.getName(), source);</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    while (!pq.isEmpty()) {</span>
+<span class="nc" id="L41">      N curr = pq.poll();</span>
+      //check if we have reached the end node
+<span class="nc bnc" id="L43" title="All 2 branches missed.">      if (curr.equals(end)) {</span>
+<span class="nc" id="L44">        return curr;</span>
+      }
+      List&lt;N&gt; neighbors;
+      //trying to get a list of neighbors from our cache
+      try {
+<span class="nc" id="L49">        neighbors = neighborscache.getNode(curr);</span>
+<span class="nc" id="L50">      } catch (ExecutionException e) {</span>
+<span class="nc" id="L51">        neighbors = curr.neighbors();</span>
+<span class="nc" id="L52">      }</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">      for (N next : neighbors) {</span>
+<span class="nc" id="L54">        Double dist = curr.getCurrentDistance() + next.getFrom().getWeight();</span>
+<span class="nc" id="L55">        Double totalWeight = dist + next.toGoal(end);</span>
+        //if we have already visited a Node
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (!visited.containsKey(next.getName())) {</span>
+<span class="nc" id="L58">          next.setCurrentDistance(dist);</span>
+<span class="nc" id="L59">          next.setTotalWeight(totalWeight);</span>
+<span class="nc" id="L60">          visited.put(next.getName(), next);</span>
+<span class="nc" id="L61">          pq.add(next);</span>
+        } else {
+          //checking if we want to update the weight and distance
+<span class="nc bnc" id="L64" title="All 2 branches missed.">          if (visited.get(next.getName()).getTotalWeight() &gt; totalWeight) {</span>
+<span class="nc" id="L65">            next.setCurrentDistance(dist);</span>
+<span class="nc" id="L66">            next.setTotalWeight(totalWeight);</span>
+<span class="nc" id="L67">            visited.put(next.getName(), next);</span>
+<span class="nc" id="L68">            pq.add(next);</span>
+          }
+        }
+<span class="nc" id="L71">      }</span>
+<span class="nc" id="L72">    }</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">    if (visited.containsKey(end.getName())) {</span>
+<span class="nc" id="L74">      return visited.get(end.getName());</span>
+    } else {
+      //if no path has been found- we haven't reached the end Node
+<span class="nc" id="L77">      return null;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

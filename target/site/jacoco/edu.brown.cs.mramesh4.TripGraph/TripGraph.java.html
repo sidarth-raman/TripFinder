@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TripGraph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.TripGraph</a> &gt; <span class="el_source">TripGraph.java</span></div><h1>TripGraph.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.TripGraph;
+
+
+import edu.brown.cs.mramesh4.Graph.GraphNodeComparator;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+
+
+/**
+ * This is a class representing a Graph with nodes with undirected edges. We represent
+ * undirected edges by just doubling direction.
+ * @param &lt;N&gt; Type of Node used [Will be CityNode]
+ * @param &lt;E&gt; Type of Node used [Will be CityEdge]
+ */
+public class TripGraph&lt;N extends TripGraphNode&lt;N, E&gt;, E extends TripGraphEdge&lt;N, E&gt;&gt;{
+    private HashMap&lt;String, N&gt; graph;
+
+  /**
+   * Empty constructor for a graph with no nodes.
+   */
+<span class="fc" id="L28">  public TripGraph() {</span>
+<span class="fc" id="L29">    graph = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L30">  }</span>
+
+  /**
+   * This is a constructor for a graph with a list of nodes
+   * If duplicates add the node
+   * @param nodes list of nodes
+   */
+<span class="fc" id="L37">  public TripGraph(List&lt;N&gt; nodes){</span>
+    //fill our list of nodes
+<span class="fc" id="L39">    graph = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">      for(N node: nodes){</span>
+<span class="fc" id="L41">        String name = node.getName();</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if(!graph.containsKey(name)){</span>
+<span class="fc" id="L43">          graph.put(name, node);</span>
+        }
+<span class="fc" id="L45">      }</span>
+<span class="fc" id="L46">  }</span>
+
+  /**
+   * This is a method to run aStar on a graph.
+   * @param start the name of the start city
+   * @param end the name of the end city.
+   * @return a list of nodes to visit
+   */
+  public List&lt;N&gt; aStar(String start, String end){
+<span class="fc" id="L55">    List&lt;N&gt; ret = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L56" title="All 4 branches covered.">    if(!graph.containsKey(start) || !graph.containsKey(end)){</span>
+<span class="fc" id="L57">      return null;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    } else if(start.equals(end)){</span>
+<span class="fc" id="L59">      ret.add(graph.get(start));</span>
+<span class="fc" id="L60">      return ret;</span>
+    } else{
+<span class="fc" id="L62">      ret = aStarHelper(graph.get(start), graph.get(end));</span>
+<span class="fc" id="L63">      return ret;</span>
+    }
+  }
+
+
+
+  /**
+   * This is a helper to run aStar within the graph that we are writing
+   * @param start the start node to search from
+   * @param end the end node to start from
+   * @return a list of nodes
+   */
+  public List&lt;N&gt; aStarHelper(N start, N end){
+<span class="fc" id="L76">    ArrayList&lt;N&gt; ret = new ArrayList&lt;&gt;();</span>
+    //create a comparator that sorts them by a weight aStar assigns them
+<span class="fc" id="L78">    PriorityQueue&lt;N&gt; pq = new PriorityQueue&lt;N&gt;(new TripGraphNodeComparator&lt;N, E&gt;());</span>
+    //set the distance travelled to 0
+<span class="fc" id="L80">    start.setDistance(0);</span>
+<span class="fc" id="L81">    start.setWeight(0);</span>
+    //keep track of a visited
+<span class="fc" id="L83">    HashMap&lt;String, N&gt; visited = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L84">    HashMap&lt;N, List&lt;E&gt;&gt; deletedEdges = new HashMap&lt;&gt;();</span>
+    //put them in the visited
+<span class="fc" id="L86">    visited.put(start.getName(), start);</span>
+<span class="fc" id="L87">    List&lt;N&gt; nodes = new ArrayList&lt;&gt;();</span>
+    //nodes.add(start);
+<span class="fc" id="L89">    pq.add(start);</span>
+<span class="fc" id="L90">    return aStarHelp(end, pq, nodes, visited);</span>
+  }
+
+  /**
+   * Helper method to conduct the AStar search recursively and use backtracking
+   * to save the route, since this method could not be used previously.
+   * @param end the end node to search for
+   * @param pq priorityqueue to use
+   * @param nodes nodes of curr path
+   * @param visited map of visited
+   * @return a list of Nodes.
+   */
+  public List&lt;N&gt; aStarHelp(N end, PriorityQueue&lt;N&gt; pq, List&lt;N&gt; nodes, HashMap&lt;String, N&gt; visited){
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">    if(!pq.isEmpty()){</span>
+<span class="fc" id="L104">      N curr = pq.poll();</span>
+<span class="fc" id="L105">      nodes.add(curr);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">      if (curr.equals(end)) {</span>
+        //return a copy in order to prevent alteration
+<span class="fc" id="L108">        return new ArrayList&lt;&gt;(nodes);</span>
+      }
+<span class="fc" id="L110">      List&lt;N&gt; neighbors = curr.getNeighbors();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">      for(N next: neighbors){</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if(next.equals(curr)) {</span>
+<span class="nc" id="L113">          continue;</span>
+        } else{
+<span class="fc" id="L115">          String name = next.getName();</span>
+<span class="fc" id="L116">          Double dist = curr.getDistance() + curr.getConnectingEdges().get(name).getWeight();</span>
+<span class="fc" id="L117">          Double totalWeight = dist + next.toGoal(end);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">          if (!visited.containsKey(next.getName())) {</span>
+<span class="fc" id="L119">            next.setDistance(dist);</span>
+<span class="fc" id="L120">            next.setWeight(totalWeight);</span>
+<span class="fc" id="L121">            visited.put(next.getName(), next);</span>
+<span class="fc" id="L122">            pq.add(next);</span>
+          } else {
+<span class="fc" id="L124">            N prev = visited.get(next.getName());</span>
+            //checking if we want to update the weight and distance
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">            if (prev.getWeight() &gt; totalWeight) {</span>
+<span class="nc" id="L127">              next.setDistance(dist);</span>
+<span class="nc" id="L128">              next.setWeight(totalWeight);</span>
+<span class="nc" id="L129">              visited.put(next.getName(), next);</span>
+<span class="nc" id="L130">              pq.add(next);</span>
+            }
+          }
+        }
+<span class="fc" id="L134">      }</span>
+      //backtracking
+<span class="fc" id="L136">      List&lt;N&gt; ret = aStarHelp(end, pq, nodes, visited);</span>
+<span class="fc" id="L137">      nodes.remove(curr);</span>
+<span class="fc" id="L138">      return ret;</span>
+    } else{
+<span class="nc bnc" id="L140" title="All 2 branches missed.">       if(visited.containsKey(end)){</span>
+<span class="nc" id="L141">         return nodes;</span>
+       } else{
+<span class="nc" id="L143">         return null;</span>
+       }
+    }
+  }
+
+  /**
+   * Node to insert and a List of Nodes to have edges with.
+   * If we put in a node we already have encountered, it will not reinsert.
+   * @param node node to add to graph
+   * @param nodes list of nodes to connect it to.
+   */
+  public void insertNode(N node, List&lt;N&gt; nodes){
+<span class="fc" id="L155">    String nodeName = node.getName();</span>
+
+<span class="pc bpc" id="L157" title="2 of 6 branches missed.">    if(!graph.containsKey(nodeName) || (graph.containsKey(nodeName) &amp;&amp; !graph.get(nodeName).equals(node))) {</span>
+      //for all the nodes within the list of nodes to add to
+      //make sure they are in the graph
+<span class="fc bfc" id="L160" title="All 2 branches covered.">      for (N neighbor : nodes) {</span>
+<span class="fc" id="L161">        String name = neighbor.getName();</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        if (graph.containsKey(name)) {</span>
+          //add an edge between them
+<span class="fc" id="L164">          node.insertEdges(neighbor);</span>
+        }
+<span class="fc" id="L166">      }</span>
+      //if there is an edge between node and another node
+      //in the graph, this is valid, push it to the graph
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">      if (!node.getOutgoingEdges().isEmpty()) {</span>
+<span class="fc" id="L170">        graph.put(node.getName(), node);</span>
+      }
+    }
+<span class="fc" id="L173">  }</span>
+
+  /**
+   * This is how to delete a node from the graph.
+   * @param node node to delete in the graph
+   */
+  public void deleteNode(N node){
+    //delete from the list of graph
+<span class="fc" id="L181">    String name = node.getName();</span>
+<span class="fc" id="L182">    graph.remove(name);</span>
+    //delete from each nodes
+<span class="fc bfc" id="L184" title="All 2 branches covered.">    for(N graph : graph.values()){</span>
+<span class="fc" id="L185">      graph.getConnectingEdges().remove(name);</span>
+<span class="fc" id="L186">      graph.getConnectingNodes().remove(name);</span>
+<span class="fc" id="L187">    }</span>
+<span class="fc" id="L188">  }</span>
+
+  /**
+   * This clears all the edges in the graph, you will still have access
+   * to the nodes.
+   */
+  public void clearGraphEdges(){
+<span class="nc bnc" id="L195" title="All 2 branches missed.">    for(N node: graph.values()){</span>
+<span class="nc" id="L196">      node.clearGraphEdges();</span>
+<span class="nc" id="L197">    }</span>
+<span class="nc" id="L198">  }</span>
+
+  /**
+   * Gets the number of edges in graph
+   * @return number of edges
+   */
+  public int getNumEdges(){
+<span class="fc" id="L205">    int k = 0;</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">    for(N node: graph.values()){</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">      for(N node2: graph.values()){</span>
+<span class="fc bfc" id="L208" title="All 4 branches covered.">        if(!node2.equals(node) &amp;&amp; node.getConnectingNodes().containsKey(node2.getName())){</span>
+<span class="fc" id="L209">          k++;</span>
+        }
+<span class="fc" id="L211">      }</span>
+<span class="fc" id="L212">    }</span>
+<span class="fc" id="L213">    return k/2;</span>
+  }
+
+
+
+  /**
+   * This method deletes an edge between two nodes
+   * @param start one node to delete from
+   * @param end end node to delete from
+   */
+  public void deleteEdge(N start, N end){
+    //delete edges from both sides
+<span class="pc bpc" id="L225" title="2 of 4 branches missed.">    if(graph.containsKey(start.getName()) &amp;&amp; graph.containsKey(end.getName())) {</span>
+<span class="fc" id="L226">      N getStart = graph.get(start.getName());</span>
+<span class="fc" id="L227">      getStart.deleteEdge(end);</span>
+<span class="fc" id="L228">      N getEnd = graph.get(end.getName());</span>
+<span class="fc" id="L229">      getEnd.deleteEdge(start);</span>
+<span class="fc" id="L230">      graph.put(start.getName(), getStart);</span>
+<span class="fc" id="L231">      graph.put(end.getName(), getEnd);</span>
+    }
+<span class="fc" id="L233">  }</span>
+
+  /**
+   * This method adds an edge between two nodes within the graph.
+   * @param start one node to an add an edge from
+   * @param end end node to add an edge from
+   */
+  public void insertEdge(N start, N end){
+    //call insertEdge
+<span class="fc" id="L242">    start.insertEdges(end);</span>
+<span class="fc" id="L243">  }</span>
+
+  /**
+   * Inserts an edge into the graph along with the nodes
+   * @param edge edge to insert
+   */
+  public void insertEdge(E edge){
+<span class="fc" id="L250">    List&lt;N&gt; node = edge.getNodes();</span>
+<span class="fc" id="L251">    N start = node.get(0);</span>
+<span class="fc" id="L252">    N end = node.get(1);</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">    if(!graph.containsKey(start.getName())){</span>
+<span class="fc" id="L254">      graph.put(start.getName(), start);</span>
+    }
+<span class="fc bfc" id="L256" title="All 2 branches covered.">    if(!graph.containsKey(end.getName())){</span>
+<span class="fc" id="L257">      graph.put(end.getName(), end);</span>
+    }
+<span class="fc" id="L259">    graph.get(start.getName()).insertEdges(end);</span>
+<span class="fc" id="L260">  }</span>
+
+  /**
+   * Accesor method for graph.
+   * @return a graph.
+   */
+  public HashMap&lt;String, N&gt; getGraph(){
+<span class="fc" id="L267">    return graph;</span>
+  }
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

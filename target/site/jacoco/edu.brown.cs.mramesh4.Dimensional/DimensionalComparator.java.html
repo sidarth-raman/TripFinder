@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DimensionalComparator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.Dimensional</a> &gt; <span class="el_source">DimensionalComparator.java</span></div><h1>DimensionalComparator.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.Dimensional;
+
+import java.util.Comparator;
+
+/**
+ * This is a class to compare two dimensional objects.
+ */
+public class DimensionalComparator implements Comparator&lt;Dimensional&gt; {
+  private int dimension;
+
+  /**.
+   * Custom comparator to compare dimensions at a specific coordinate
+   * @param dimension represents a dimension to search on.
+   */
+<span class="nc" id="L15">  public DimensionalComparator(int dimension) {</span>
+<span class="nc" id="L16">    this.dimension = dimension;</span>
+<span class="nc" id="L17">  }</span>
+
+  /**.
+   * A compare function to sort two dimensional objects
+   * @param a Dimensional object 1
+   * @param b Dimensional object 2
+   * @return int representing order to compare
+   */
+  @Override
+  public int compare(Dimensional a, Dimensional b) {
+<span class="nc" id="L27">    return Double.compare(a.getCoordinate(dimension), b.getCoordinate(dimension));</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
