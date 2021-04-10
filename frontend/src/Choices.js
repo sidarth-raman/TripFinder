@@ -1,90 +1,152 @@
-import React, { Component } from 'react';
 import './choices.css';
 
 import { render } from 'react-dom';
-import {useState, useEffect} from 'react'
+import axios from 'axios';
+import React, {Component, useState, useEffect, useRef} from 'react';
+
+function Choices() {
+    const [cityList, setCityList] = useState(["Select City", "Los Angeles", "San Francisco", "Chicago"]);
+    const [distList, setDistList] = useState(["Select Max Distance", "< 250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "4000+ Miles"]);
+    const [numList, setNumList] = useState(["Select Number", "1", "2", "3", "4", "5+"]);
+
+    const [outuput, setOutput] = useState([]);
+
+    const [value, setValue] = useState("");
+    const [valueFinal, setValueFinal] = useState("");
+
+    const [dist, setDist] = useState("");
+    const [distFinal, setDistFinal] = useState("");
+
+    const [num, setNum] = useState("");
+    const [numFinal, setNumFinal] = useState("");
+
+    const [city, setCity] = useState("");
+    const [cityFinal, setCityFinal] = useState("");
 
 
-class Choices extends Component {
-    cityList = ["Select City", "Chicago", "New York", "Los Angeles"];
-    distList = ["Ideal Distance", "0-100 Miles", "100-250 Miles", "250+ Miles"];
-    paramList = ["Select Param", "Param 1", "Param 2", "Param 3"];
-    origin = "Null";
+    const handleInputChangeOrigin = (event) => {
+        event.persist();
+        setValue(event.target.value);
+    }
 
-    constructor(props) {
-        super(props);
-        this.state = {value: 'coconut',
-            valueFinal: '',
-            dist: '',
-            distFinal: '',
-            param: '',
-            paramFinal: ''
+    const handleInputChangeDist = (event) => {
+        event.persist();
+        setDist(event.target.value);
+    }
+
+    const handleInputChangeNum = (event) => {
+        event.persist();
+        setNum(event.target.value);
+    }
+
+    const handleInputChangeCity = (event) => {
+        event.persist();
+        setCity(event.target.value);
+    }
+
+    const handleSubmit = (e) => {
+        setValueFinal(value);
+        setDistFinal(dist);
+        setNumFinal(num);
+        setCityFinal(city);
+        sendData();
+        e.preventDefault();
+    }
+
+
+    const requestCity = async () => {
+        const toSend = {
+            //Nothing To send
         };
-
-        this.handleChange = this.handleChange.bind(this);
-        this.handleChangeDist = this.handleChangeDist.bind(this);
-        this.handleChangeParam = this.handleChangeParam.bind(this);
-
-        this.handleSubmit = this.handleSubmit.bind(this);
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        let response = await axios.post(
+            "http://localhost:4567/city",
+            toSend,
+            config
+        )
+        setCityList(response.data["cityList"]);
     }
 
-    handleChange(event) {
-        this.setState({value: event.target.value});
+    useEffect(() => {
+        requestCity()
+    }, [])
+
+    const sendData = async () => {
+        const toSend = {
+            origin : valueFinal,
+            maxDist : distFinal,
+            numberOfCities : numFinal,
+            city : cityFinal
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        let response = await axios.post(
+            "http://localhost:4567/city",
+            toSend,
+            config
+        )
+        setOutput(response.data["output"]);
     }
 
-    handleChangeDist(event) {
-        this.setState({dist: event.target.value});
-    }
-
-    handleChangeParam(event) {
-        this.setState({param: event.target.value});
-    }
-
-    handleSubmit(event) {
-        this.setState({valueFinal: this.state.value})
-        this.setState({distFinal: this.state.dist})
-        this.setState({paramFinal: this.state.param})
-
-        event.preventDefault();
-    }
-
-    render() {
-        return (
-            <>
+    return (
+        <>
             <div className="formbox">
-            <form onSubmit={this.handleSubmit}>
-                <label>
-                    <div className="question">Pick your origin city:</div>
-                    <select className="dropdown" value={this.state.value} onChange={this.handleChange}>
-                            {this.cityList.map((k)=>
+                <form onSubmit={handleSubmit}>
+                    <label>
+                        <div className="question">Pick your origin city:</div>
+                        <select className="dropdown" onChange={handleInputChangeOrigin} value={value}>                      >
+                            {cityList.map((k)=>
+                                <option key={k}>{k}</option>)}
+                        </select>
+
+                        <br />
+
+                        <div className="question" >Pick your maximum distance:</div>
+                        <select className="dropdown" onChange={handleInputChangeDist} value={dist}>
+                            {distList.map((k)=>
                                 <option value={k}>{k}</option>)}
-                    </select>
-                    <br />
-                    <div className="question" >Pick your ideal distance:</div>
-                    <select className="dropdown" value={this.state.dist} onChange={this.handleChangeDist}>
-                        {this.distList.map((k)=>
-                            <option value={k}>{k}</option>)}
-                    </select>
-                    <br />
-                    <div className="question" >Select your param</div>
-                    <select className="dropdown" value={this.state.param} onChange={this.handleChangeParam}>
-                        {this.paramList.map((k)=>
-                            <option value={k}>{k}</option>)}
-                    </select>
-                    <br />
-                </label>
-                <input type="submit" value="Submit" />
-            </form>
+                        </select>
+
+                        <br />
+
+                        <div className="question" >Select the number of cities you wish to vist:)</div>
+                        <select className="dropdown" onChange={handleInputChangeNum} value={num}>
+                            {numList.map((k)=>
+                                <option value={k}>{k}</option>)}
+                        </select>
+
+                        <br />
+
+                        <div className="question" >Select a City you want to visit: (If you have no specific city, leave this blank)</div>
+                        <select className="dropdown" onChange={handleInputChangeCity} value={city}>
+                            {cityList.map((k)=>
+                                <option value={k}>{k}</option>)}
+                        </select>
+
+                    </label>
+                    <input type="submit" value="Submit" />
+                </form>
             </div>
-                <div className="question">
-                    <br />
-                    Origin City: {this.state.valueFinal}    <br />
-                    Ideal Distance: {this.state.distFinal}    <br />
-                    Param: {this.state.paramFinal}
-                </div>
-            </>
-        );
-    }
+            <div className="question">
+                <br />
+                Origin City: {valueFinal}    <br />
+                Number of Cities: {numFinal}    <br />
+                Specific Cities: {cityFinal}    <br />
+                Max Dist: {distFinal}    <br />
+
+
+            </div>
+        </>
+    );
 }
 
 export default Choices;

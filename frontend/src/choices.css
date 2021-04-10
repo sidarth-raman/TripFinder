@@ -1,9 +1,10 @@
 .question {
-    font-size: 25px;
+    font-size: 15px;
 }
 
 input[type=submit] {
-    width: 40%;
+    width: 100%;
+    font-size: 15px;
     background-color: #4CAF50;
     color: white;
     padding: 14px 20px;
