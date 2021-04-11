@@ -31,6 +31,7 @@ function MapDrawing() {
         }
     }, [])
 
+
     return (
         <div style = {{paddingLeft: 200}}>
             <canvas ref={canvasRef} />

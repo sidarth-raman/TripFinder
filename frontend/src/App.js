@@ -12,7 +12,6 @@ function App() {
         <Navbar />
         <Route exact path="/about" component={About}/>
         <Choices />
-        <MapDrawing />
     </div>
   );
 };
