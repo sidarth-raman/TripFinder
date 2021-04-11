@@ -75,10 +75,10 @@ public class GraphBuilder {
     try {
       prep = conn.prepareStatement(
           "SELECT city, state_id, lat, lng, population, id FROM cities where lat between ? and ? and lng between ? and ?;");
-      prep.setDouble(1, Math.round((originCity.getLat() - maxDistLat)) / 2);
-      prep.setDouble(2, Math.round((originCity.getLat() + maxDistLat)) / 2);
-      prep.setDouble(3, Math.round(originCity.getLong() - maxDistLong) / 2);
-      prep.setDouble(4, Math.round(originCity.getLong() + maxDistLong) / 2);
+      prep.setDouble(1, Math.round((originCity.getLat() - maxDistLat)));
+      prep.setDouble(2, Math.round((originCity.getLat() + maxDistLat)));
+      prep.setDouble(3, Math.round(originCity.getLong() - maxDistLong));
+      prep.setDouble(4, Math.round(originCity.getLong() + maxDistLong));
 
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
@@ -88,7 +88,6 @@ public class GraphBuilder {
           double lon = rs.getDouble(4);
           int pop = rs.getInt(5);
           bestCities.add(new CityNode(name, lat, lon, pop));
-//          System.out.println("adding to best cities: " + name);
         }
       }
       rs.close();

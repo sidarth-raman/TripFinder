@@ -66,9 +66,7 @@ public final class Main {
   private void run() {
     database = new CityDatabaseReader("data.sqlite");
     database.readDB();
-    for (String s : database.getCities()) {
-      System.out.println(s);
-    }
+
 
     // Parse command line arguments
     OptionParser parser = new OptionParser();
@@ -118,11 +116,7 @@ public final class Main {
 
 
     Spark.exception(Exception.class, new ExceptionPrinter());
-//    UserSQLDatabase database = new UserSQLDatabase("data/maps/smallMaps.sqlite3");
     FreeMarkerEngine freeMarker = createEngine();
-//    CheckinThread check = new CheckinThread(database);
-//    check.start();
-//    GUIHandler gui = new GUIHandler(database, map, db, check);
     Spark.post("/route", new RouteHandler());
     Spark.post("/city", new AllCityHandler());
 
@@ -134,50 +128,63 @@ public final class Main {
     public Object handle(Request request, Response response) throws Exception {
 
       JSONObject data = new JSONObject(request.body());
+      boolean error = false;
+      String origin = null;
+      double maxDist = 0;
+      int maxNumCities = 0;
+      String cities = null;
 
-      String origin = data.getString("origin");
+      try {
+        origin = data.getString("origin");
+        maxDist = Double.parseDouble(data.getString("maxDist").split(" ")[0]);
+        maxNumCities = data.getInt("numberOfCities");
+        cities = data.getString("city");
+      } catch(Exception e){
+        System.out.println("ERROR: parsing data sent from frontend");
+        error = true;
+      }
 
-      double maxDist = Double.parseDouble(data.getString("maxDist").split(" ")[0]);
-
-      int maxNumCities = data.getInt("numberOfCities");
-
+      //TODO: Coordinate with Sid to handle passing in multiple cities to visit
 //      String[] cities = data.getString("city").split(",");
-      String cities = data.getString("city");
 
-      List<String> citiesToVisit = new ArrayList<>();
+      if(!error) {
+        List<String> citiesToVisit = new ArrayList<>();
 //      citiesToVisit = Arrays.asList(cities);
-      citiesToVisit.add(cities);
+        citiesToVisit.add(cities);
 
-      System.out.println("Origin received: " + origin);
-      System.out.println("MaxDist received: " + maxDist);
-      System.out.println("MaxNumCities received: " + maxNumCities);
-      System.out.println("CitiesToVisit received: " + citiesToVisit.toString());
-      List<CityNode> path = null;
-      if (origin.length() > 1) {
-        GraphBuilder
-            graph =
-            new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
-        for (CityNode n : graph.getCitiesOfGraph()) {
-          System.out.println("graphbuilder contains: " + n.getName());
+        System.out.println("Origin received: " + origin);
+        System.out.println("MaxDist received: " + maxDist);
+        System.out.println("MaxNumCities received: " + maxNumCities);
+        System.out.println("CitiesToVisit received: " + citiesToVisit.toString());
+        List<CityNode> path = null;
+        if (origin.length() > 1) {
+          GraphBuilder
+              graph =
+              new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
+          for (CityNode n : graph.getCitiesOfGraph()) {
+            System.out.println("graphbuilder contains: " + n.getName());
+          }
+          path = graph.getPath();
+          for (CityNode n : path) {
+            System.out.println("city in path returned: " + n.getName());
+          }
+          System.out.println("path size: " + path.size());
         }
-        path = graph.getPath();
-        for (CityNode n : path) {
-          System.out.println("city in path returned: " + n.getName());
+        List<String> cityNames = new ArrayList<>();
+        double[][] latLong = new double[path.size()][2];
+
+        for (int i = 0; i < path.size(); i++) {
+          CityNode n = path.get(i);
+          cityNames.add(n.getName());
+          latLong[i][0] = n.getLat();
+          latLong[i][1] = n.getLong();
         }
-        System.out.println("path size: " + path.size());
-      }
-      List<String> cityNames = new ArrayList<>();
-      double[][] latLong = new double[path.size()][2];
+        Map<String, Object> variables = ImmutableMap.of("output", cityNames, "latLong", latLong);
 
-      for (int i = 0; i < path.size(); i++) {
-        CityNode n = path.get(i);
-        cityNames.add(n.getName());
-        latLong[i][0] = n.getLat();
-        latLong[i][1] = n.getLong();
+        return GSON.toJson(variables);
+      } else {
+        return GSON.toJson("Error: invalid input");
       }
-      Map<String, Object> variables = ImmutableMap.of("output", cityNames, "latLong", latLong);
-
-      return GSON.toJson(variables);
     }
   }
 
