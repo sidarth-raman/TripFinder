@@ -59,24 +59,22 @@ public class GraphBuilder {
     double maxDistLat = (maxDist/EARTH_RADIUS) * RAD_TO_DEGREE;
     double r = EARTH_RADIUS*Math.cos(originCity.getLat()*DEGREE_TO_RAD);
     double maxDistLong = (maxDist/r) * RAD_TO_DEGREE;
-    String maxLatBound = "\"" + (originCity.getLat() + maxDistLat) + "\"";
-    String minLatBound = "\"" +  (originCity.getLat() - maxDistLat) + "\"";
-    String maxLongBound = "\"" + (originCity.getLong() + maxDistLong) + "\"";
-    String minLongBound = "\"" + (originCity.getLong() - maxDistLong) + "\"";
+    String maxLatBound = "\"" + Math.round((originCity.getLat() + maxDistLat)) + "\"";
+    String minLatBound = "\"" +  Math.round((originCity.getLat() - maxDistLat)) + "\"";
+    String maxLongBound = "\"" + Math.round(originCity.getLong() + maxDistLong) + "\"";
+    String minLongBound = "\"" + Math.round(originCity.getLong() - maxDistLong) + "\"";
     System.out.println("LAT BOUNDS: " + minLatBound + "-" + maxLatBound + " LONG BOUNDS: " + minLongBound + "-" + maxLongBound);
     List<CityNode> bestCities = new ArrayList<>();
 
 
 
-    //TODO: Change query such that we are searching within the above bounds.
     PreparedStatement prep = null;
     try {
-      prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population, id FROM cities limit 500;");
-//      where lat between ? and ? and lng between ? and ?
-//      prep.setString(1, minLatBound);
-//      prep.setString(2, maxLatBound);
-//      prep.setString(3, minLongBound);
-//      prep.setString(4, maxLongBound);
+      prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population, id FROM cities where lat between ? and ? and lng between ? and ?;");
+      prep.setDouble(1, Math.round((originCity.getLat() - maxDistLat))/2);
+      prep.setDouble(2, Math.round((originCity.getLat() + maxDistLat))/2);
+      prep.setDouble(3, Math.round(originCity.getLong() - maxDistLong)/2);
+      prep.setDouble(4, Math.round(originCity.getLong() + maxDistLong)/2);
 
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
