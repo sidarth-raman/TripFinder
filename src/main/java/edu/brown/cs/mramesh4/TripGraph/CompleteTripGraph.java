@@ -446,7 +446,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
             List<N> edgeAdd = nodes.get(get2);
             mst.insertEdge(edgeAdd.get(0), edgeAdd.get(1));
           } else {
-            System.out.println("Issue");
+            continue;
           }
         }
       }

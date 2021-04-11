@@ -18,6 +18,7 @@ public class CityDatabaseReader {
 
   public CityDatabaseReader(String filepath){
     cityList = new ArrayList<>();
+    cityNodes = new ArrayList<>();
     this.filepath = filepath;
     this.setupConnection();
   }
@@ -63,7 +64,7 @@ public class CityDatabaseReader {
     }
   }
 
-  public void loadCity(){
+  public void loadCityDB(){
     PreparedStatement prep = null;
 
     try {
@@ -72,8 +73,9 @@ public class CityDatabaseReader {
       while (rs.next()) {
         String name = rs.getString(1) + ", " + rs.getString(2);
         double lat = rs.getDouble(3);
-        double longit = rs.getDouble(4);
-        cityNodes.add(new CityNode(name, lat, longit));
+        double longitude = rs.getDouble(4);
+        CityNode curr = new CityNode(name, lat, longitude);
+        cityNodes.add(curr);
       }
       rs.close();
       prep.close();
