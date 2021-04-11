@@ -17,8 +17,8 @@ public class NodeTest{
   private static final double DELTA = 0.01;
   @Before
   public void setUp() {
-     node = new CityNode("New York", 40.7128, -74.0060);
-     node2 = new CityNode("New Jersey", 40.0583, -74.4057);
+     node = new CityNode("New York", 40.7128, -74.0060, 10);
+     node2 = new CityNode("New Jersey", 40.0583, -74.4057, 10);
   }
   @After
   public void tearDown(){
@@ -60,8 +60,8 @@ public class NodeTest{
     setUp();
     //make sure this doesn't work
     assertFalse(node.equals(node2));
-    CityNode node3 = new CityNode("New York", 40.7128, -74.0060);
-    CityNode node4 = new CityNode("New York", 40.7128, -74.0060);
+    CityNode node3 = new CityNode("New York", 40.7128, -74.0060, 10);
+    CityNode node4 = new CityNode("New York", 40.7128, -74.0060, 10);
     //test this does work
     assertTrue(node.equals(node3));
     //test symmetry

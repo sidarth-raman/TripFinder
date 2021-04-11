@@ -72,18 +72,20 @@ public class GraphBuilder {
     PreparedStatement prep = null;
     try {
       prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population, id FROM cities limit 500;");
+//      where lat between ? and ? and lng between ? and ?
 //      prep.setString(1, minLatBound);
 //      prep.setString(2, maxLatBound);
-//      prep.setString(3, maxLongBound);
-//      prep.setString(4, minLongBound);
+//      prep.setString(3, minLongBound);
+//      prep.setString(4, maxLongBound);
 
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
-        if(!citiesToVisit.contains(rs.getString(1)) && !originCity.getName().equals(rs.getString(1))) {
-          String name = rs.getString(1) + ", " + rs.getString(2);
+        String name = rs.getString(1) + ", " + rs.getString(2);
+        if(!citiesToVisit.contains(name) && !originCity.getName().equals(name)) {
           double lat = rs.getDouble(3);
           double lon = rs.getDouble(4);
-          bestCities.add(new CityNode(name, lat, lon));
+          int pop = rs.getInt(5);
+          bestCities.add(new CityNode(name, lat, lon, pop));
 //          System.out.println("adding to best cities: " + name);
         }
       }
@@ -142,10 +144,12 @@ public class GraphBuilder {
         String name = rs.getString(1) + ", " + rs.getString(2);
         double lat = rs.getDouble(3);
         double lon = rs.getDouble(4);
+        int pop = rs.getInt(5);
         if (name.equals(temp)){
-          originCity = new CityNode(name, lat, lon);
+          originCity = new CityNode(name, lat, lon, pop);
         } else if (citiesToVisit.contains(name) && !name.equals(temp)){
-          CityNode toVisit = new CityNode(name, lat, lon);
+          System.out.println("Adding city to visit: " + name);
+          CityNode toVisit = new CityNode(name, lat, lon, pop);
           cityNodesToVisit.add(toVisit);
           citiesInGraph.add(toVisit);
         }

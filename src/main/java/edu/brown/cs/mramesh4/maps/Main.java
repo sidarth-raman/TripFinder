@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,12 +57,7 @@ public final class Main {
 
   private static final Gson GSON = new Gson();
   private static CityDatabaseReader database;
-  CityNode node;
-  CityNode node2;
-  CityNode node3;
-  CityNode node4;
-  CityNode node5;
-  CityNode node6;
+
   private static final double DELTA = 0.01;
   CompleteTripGraph<CityNode, CityEdge> tripGraph;
   private TripGraph<CityNode, CityEdge> tGraph1;
@@ -71,26 +67,6 @@ public final class Main {
   }
 
   private void run() {
-
-
-    node = new CityNode("New York", 40.4, -73.56);
-    node2 = new CityNode("Jersey City", 40.34, -74.04);
-    node3 = new CityNode("Trenton", 40.13, -74.46);
-    node4 = new CityNode("Philadelphia", 39.57, -75.10);
-    node5 = new CityNode("Pittsburgh", 40.27, -80);
-    node6 = new CityNode("Harrison", 40.35, -79.6501);
-    List<CityNode> graphList = new ArrayList<>();
-    graphList.add(node);
-    graphList.add(node2);
-    graphList.add(node3);
-    graphList.add(node4);
-    graphList.add(node5);
-    graphList.add(node6);
-    tripGraph = new CompleteTripGraph<>(graphList);
-    List<CityNode> ret = tripGraph.christTSP(node);
-    for(CityNode city: ret){
-      System.out.println("ETTN: " + city.getName());
-    }
     database = new CityDatabaseReader("data.sqlite");
     database.readDB();
     for(String s : database.getCities()){
@@ -164,19 +140,17 @@ public final class Main {
       JSONObject data = new JSONObject(request.body());
 
       String origin = data.getString("origin");
-      System.out.println("checkpt 1");
+
       double maxDist = Double.parseDouble(data.getString("maxDist").split(" ")[0]);
-      System.out.println("checkpt 2");
 
       int maxNumCities =  data.getInt("numberOfCities");
-      System.out.println("checkpt 3");
 
-      String[] cities = data.getString("city").split(",");
-      System.out.println("checkpt 4");
+//      String[] cities = data.getString("city").split(",");
+      String cities = data.getString("city");
 
-      List<String> citiesToVisit;
-      citiesToVisit = Arrays.asList(cities);
-      System.out.println("checkpt 5");
+      List<String> citiesToVisit = new ArrayList<>();
+//      citiesToVisit = Arrays.asList(cities);
+      citiesToVisit.add(cities);
 
       System.out.println("Origin received: " + origin);
       System.out.println("MaxDist received: " + maxDist);
@@ -187,12 +161,10 @@ public final class Main {
         GraphBuilder
             graph =
             new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
-        System.out.println("checkpt 6");
         for (CityNode n : graph.getCitiesOfGraph()) {
           System.out.println("graphbuilder contains: " + n.getName());
         }
         path = graph.getPath();
-        System.out.println("checkpt 7");
         for (CityNode n : path) {
           System.out.println("city in path returned: " + n.getName());
         }
@@ -216,7 +188,9 @@ public final class Main {
   private static class AllCityHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-      Map<String, Object> variables = ImmutableMap.of("cityList", database.getCities().toArray());
+      List<String> alphabetizedCities = database.getCities();
+      Collections.sort(alphabetizedCities);
+      Map<String, Object> variables = ImmutableMap.of("cityList", alphabetizedCities.toArray());
       return GSON.toJson(variables);
     }
   }

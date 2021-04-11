@@ -27,12 +27,12 @@ public class GraphTest {
 
   @Before
   public void setUp() {
-    node = new CityNode("New York", 40.4, -73.56);
-    node2 = new CityNode("Jersey City", 40.34, -74.04);
-    node3 = new CityNode("Trenton", 40.13, -74.46);
-    node4 = new CityNode("Philadelphia", 39.57, -75.10);
-    node5 = new CityNode("Pittsburgh", 40.27, -80);
-    node6 = new CityNode("Harrison", 40.35, -79.6501);
+    node = new CityNode("New York", 40.4, -73.56, 10);
+    node2 = new CityNode("Jersey City", 40.34, -74.04, 10);
+    node3 = new CityNode("Trenton", 40.13, -74.46, 10);
+    node4 = new CityNode("Philadelphia", 39.57, -75.10, 10);
+    node5 = new CityNode("Pittsburgh", 40.27, -80, 10);
+    node6 = new CityNode("Harrison", 40.35, -79.6501, 10);
     node.insertEdges(node2);
     node.insertEdges(node3);
     node.insertEdges(node4);
@@ -55,12 +55,12 @@ public class GraphTest {
   }
   @Before
   public void setUp2(){
-    node = new CityNode("New York", 40.4, -73.56);
-    node2 = new CityNode("Jersey City", 40.34, -74.04);
-    node3 = new CityNode("Trenton", 40.13, -74.46);
-    node4 = new CityNode("Philadelphia", 39.57, -75.10);
-    node5 = new CityNode("Pittsburgh", 40.27, -80);
-    node6 = new CityNode("Harrison", 40.35, -79.6501);
+    node = new CityNode("New York", 40.4, -73.56, 10);
+    node2 = new CityNode("Jersey City", 40.34, -74.04, 10);
+    node3 = new CityNode("Trenton", 40.13, -74.46, 10);
+    node4 = new CityNode("Philadelphia", 39.57, -75.10, 10);
+    node5 = new CityNode("Pittsburgh", 40.27, -80, 10);
+    node6 = new CityNode("Harrison", 40.35, -79.6501, 10);
     node.insertEdges(node2);
     node.insertEdges(node3);
     node.insertEdges(node4);
@@ -203,8 +203,8 @@ public class GraphTest {
     graphList.add(node5);
     graphList.add(node6);
 
-    CityNode node7 = new CityNode("Philadelphia", 39.57, -75.10);
-    CityNode node8 = new CityNode("newname", 40.1, -78.10);
+    CityNode node7 = new CityNode("Philadelphia", 39.57, -75.10, 10);
+    CityNode node8 = new CityNode("newname", 40.1, -78.10, 10);
     //if we insert something that exists, it doesn't change
     tripGraph.insertNode(node7, graphList);
     assertEquals(tripGraph.getGraph().size(), 6, DELTA);

@@ -74,7 +74,8 @@ public class CityDatabaseReader {
         String name = rs.getString(1) + ", " + rs.getString(2);
         double lat = rs.getDouble(3);
         double longitude = rs.getDouble(4);
-        CityNode curr = new CityNode(name, lat, longitude);
+        int pop = rs.getInt(5);
+        CityNode curr = new CityNode(name, lat, longitude, pop);
         cityNodes.add(curr);
       }
       rs.close();

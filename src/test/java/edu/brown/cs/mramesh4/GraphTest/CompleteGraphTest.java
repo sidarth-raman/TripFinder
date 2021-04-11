@@ -38,12 +38,12 @@ public class CompleteGraphTest {
 
   @Before
   public void setUp() {
-    node = new CityNode("New York", 40.4, -73.56);
-    node2 = new CityNode("Jersey City", 40.34, -74.04);
-    node3 = new CityNode("Trenton", 40.13, -74.46);
-    node4 = new CityNode("Philadelphia", 39.57, -75.10);
-    node5 = new CityNode("Pittsburgh", 40.27, -80);
-    node6 = new CityNode("Harrison", 40.35, -79.6501);
+    node = new CityNode("New York", 40.4, -73.56, 100000);
+    node2 = new CityNode("Jersey City", 40.34, -74.04, 100000);
+    node3 = new CityNode("Trenton", 40.13, -74.46, 100000);
+    node4 = new CityNode("Philadelphia", 39.57, -75.10, 100000);
+    node5 = new CityNode("Pittsburgh", 40.27, -80, 100000);
+    node6 = new CityNode("Harrison", 40.35, -79.6501, 100000);
     List<CityNode> graphList = new ArrayList<>();
     graphList.add(node);
     graphList.add(node2);
@@ -56,11 +56,11 @@ public class CompleteGraphTest {
 
   @Before
   public void setUp3() {
-    node = new CityNode("New York", 40.4, -73.56);
-    node2 = new CityNode("Jersey City", 40.34, -74.04);
-    node3 = new CityNode("Trenton", 40.13, -74.46);
-    node4 = new CityNode("Philadelphia", 39.57, -75.10);
-    node5 = new CityNode("Pittsburgh", 40.27, -80);
+    node = new CityNode("New York", 40.4, -73.56, 100000);
+    node2 = new CityNode("Jersey City", 40.34, -74.04, 100000);
+    node3 = new CityNode("Trenton", 40.13, -74.46, 100000);
+    node4 = new CityNode("Philadelphia", 39.57, -75.10, 100000);
+    node5 = new CityNode("Pittsburgh", 40.27, -80, 100000);
     List<CityNode> graphList = new ArrayList<>();
     graphList.add(node);
     graphList.add(node2);
@@ -72,12 +72,12 @@ public class CompleteGraphTest {
 
   @Before
   public void setUp2() {
-    node = new CityNode("New York", 40.4, -73.56);
-    node2 = new CityNode("Jersey City", 40.34, -74.04);
-    node3 = new CityNode("Trenton", 40.13, -74.46);
-    node4 = new CityNode("Philadelphia", 39.57, -75.10);
-    node5 = new CityNode("Pittsburgh", 40.27, -80);
-    node6 = new CityNode("Harrison", 40.35, -79.6501);
+    node = new CityNode("New York", 40.4, -73.56, 100000);
+    node2 = new CityNode("Jersey City", 40.34, -74.04, 100000);
+    node3 = new CityNode("Trenton", 40.13, -74.46, 100000);
+    node4 = new CityNode("Philadelphia", 39.57, -75.10, 100000);
+    node5 = new CityNode("Pittsburgh", 40.27, -80, 100000);
+    node6 = new CityNode("Harrison", 40.35, -79.6501, 100000);
     node.insertEdges(node2);
     node.insertEdges(node3);
     node.insertEdges(node4);
@@ -101,21 +101,21 @@ public class CompleteGraphTest {
 
   @Test
   public void setUp4(){
-    node = new CityNode("City A", -0.0000000400893815, 0.0000000358808126);
-    node2 = new CityNode("City B", -21.4983260706612533, -7.3194159498090388);
-    node3 = new CityNode("City C", -28.8732862244731230 ,  -0.0000008724121069);
-    node4 = new CityNode("City D", -43.0700258454450875 , -14.5548396888330487);
-    node5 = new CityNode("City E", -50.4808382862985496, -7.3744722432402208);
-    node6 = new CityNode("City F", -64.7472605264735108,  -21.8981713360336698);
-    node7 = new CityNode("City G", -72.0785319657452987,  -0.1815834632498404);
-    node8 = new CityNode("City H", -79.2915791686897506 ,  21.4033307581457670);
-    node9 = new CityNode("City I", -65.0865638413727368,   36.0624693073746769);
-    node10 = new CityNode("City J", -57.5687244704708050 , 43.2505562436354225);
-    node11 = new CityNode("City K", -50.5859026832315024, 21.5881966132975371);
-    node12 = new CityNode("City L", -36.0366489745023770, 21.6135482886620949);
-    node13 = new CityNode("City M", -29.0584693142401171 , 43.2167287683090606);
-    node14 = new CityNode("City N", -14.6577381710829471 ,  43.3895496964974043);
-    node15 = new CityNode("City O", -0.1358203773809326,  28.7292896751977480);
+    node = new CityNode("City A", -0.0000000400893815, 0.0000000358808126, 10);
+    node2 = new CityNode("City B", -21.4983260706612533, -7.3194159498090388, 10);
+    node3 = new CityNode("City C", -28.8732862244731230 ,  -0.0000008724121069, 10);
+    node4 = new CityNode("City D", -43.0700258454450875 , -14.5548396888330487, 10);
+    node5 = new CityNode("City E", -50.4808382862985496, -7.3744722432402208, 10);
+    node6 = new CityNode("City F", -64.7472605264735108,  -21.8981713360336698, 10);
+    node7 = new CityNode("City G", -72.0785319657452987,  -0.1815834632498404, 10);
+    node8 = new CityNode("City H", -79.2915791686897506 ,  21.4033307581457670, 10);
+    node9 = new CityNode("City I", -65.0865638413727368,   36.0624693073746769, 10);
+    node10 = new CityNode("City J", -57.5687244704708050 , 43.2505562436354225, 10);
+    node11 = new CityNode("City K", -50.5859026832315024, 21.5881966132975371, 10);
+    node12 = new CityNode("City L", -36.0366489745023770, 21.6135482886620949, 10);
+    node13 = new CityNode("City M", -29.0584693142401171 , 43.2167287683090606, 10);
+    node14 = new CityNode("City N", -14.6577381710829471 ,  43.3895496964974043, 10);
+    node15 = new CityNode("City O", -0.1358203773809326,  28.7292896751977480, 10);
     List<CityNode> graphList = new ArrayList<>();
     graphList.add(node);
     graphList.add(node2);
@@ -171,7 +171,7 @@ public class CompleteGraphTest {
   @Test
   public void testInsert() {
     setUp();
-    node6 = new CityNode("Houston", 29.7604, -95.3689);
+    node6 = new CityNode("Houston", 29.7604, -95.3689, 10);
     tripGraph.insertNode(node6);
     Collection<CityNode> nodes = tripGraph.getGraph().values();
     assertEquals(nodes.size(), 7, DELTA);
@@ -207,10 +207,10 @@ public class CompleteGraphTest {
   @Test
   public void testKruskalSimple() {
     //we will generate a kruskal's test here with a simple rectangle
-    CityNode a = new CityNode("A", 40, 72);
-    CityNode b = new CityNode("B", 40, 81);
-    CityNode c = new CityNode("C", 56, 72);
-    CityNode d = new CityNode("D", 56, 81);
+    CityNode a = new CityNode("A", 40, 72, 10);
+    CityNode b = new CityNode("B", 40, 81, 10);
+    CityNode c = new CityNode("C", 56, 72, 10);
+    CityNode d = new CityNode("D", 56, 81, 10);
     List<CityNode> nodes = new ArrayList<>();
     nodes.add(a);
     nodes.add(b);

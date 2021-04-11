@@ -18,6 +18,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   private HashMap<String, CityEdge> connectingEdges;
   private double weight;
   private double distance;
+  private int pop;
   private static final double EARTH_RADIUS_IN_KM = 6371;
 
   /**
@@ -27,7 +28,8 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * @param lat  Latitude of city
    * @param lon  Longitude of city
    */
-  public CityNode(String name, double lat, double lon) {
+  public CityNode(String name, double lat, double lon, int pop) {
+    this.pop = pop;
     this.name = name;
     this.lat = lat;
     this.longit = lon;
@@ -80,6 +82,10 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   @Override
   public double getDistance() {
     return distance;
+  }
+
+  public int getPop(){
+    return pop;
   }
 
   /**

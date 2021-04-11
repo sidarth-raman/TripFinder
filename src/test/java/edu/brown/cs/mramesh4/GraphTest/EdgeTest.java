@@ -18,8 +18,8 @@ public class EdgeTest {
   CityEdge edge2;
   @Before
   public void setUp() {
-    node = new CityNode("New York", 40.7128, -74.0060);
-    node2 = new CityNode("New Jersey", 40.0583, -74.4057);
+    node = new CityNode("New York", 40.7128, -74.0060, 10);
+    node2 = new CityNode("New Jersey", 40.0583, -74.4057, 10);
     edge1 = new CityEdge(node, node2, "NY-NJ");
     edge2 = new CityEdge(node2, node, "NY-NJ");
   }
@@ -48,7 +48,7 @@ public class EdgeTest {
     //makes sure that it fails with different nodes
     CityEdge edge4 = new CityEdge(node, node, "NEW NODE", 0);
     assertFalse(edge1.equals(edge4));
-    CityNode node4 = new CityNode("New Thirty", 40.3, -74.4043);
+    CityNode node4 = new CityNode("New Thirty", 40.3, -74.4043, 10);
     CityEdge edge5 = new CityEdge(node4, node2, "NEXT NODE");
     assertFalse(edge1.equals(edge5));
     assertFalse(edge4.equals(edge5));
