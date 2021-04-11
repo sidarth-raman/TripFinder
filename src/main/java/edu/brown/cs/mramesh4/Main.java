@@ -1,10 +1,11 @@
-package edu.brown.cs.mramesh4;
+package edu.brown.cs.mramesh4.TripGraph;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +15,6 @@ import edu.brown.cs.mramesh4.REPLLoop.REPL;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
 import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
-import edu.brown.cs.mramesh4.TripGraph.CityDatabaseReader;
-import edu.brown.cs.mramesh4.TripGraph.CityEdge;
-import edu.brown.cs.mramesh4.TripGraph.CityNode;
-import edu.brown.cs.mramesh4.TripGraph.CompleteTripGraph;
-import edu.brown.cs.mramesh4.TripGraph.GraphBuilder;
-import edu.brown.cs.mramesh4.TripGraph.TripGraph;
 import edu.brown.cs.mramesh4.maps.CheckinThread;
 import edu.brown.cs.mramesh4.maps.GUIHandler;
 import edu.brown.cs.mramesh4.maps.MapsLogic;
@@ -73,8 +68,6 @@ public final class Main {
   private static final double DELTA = 0.01;
   CompleteTripGraph<CityNode, CityEdge> tripGraph;
   private TripGraph<CityNode, CityEdge> tGraph1;
-  //private static UserSQLDatabase database;
-  //private static CheckinThread check;
 
   private Main(String[] args) {
     this.args = args;
@@ -101,8 +94,11 @@ public final class Main {
     for(CityNode city: ret){
       System.out.println("ETTN: " + city.getName());
     }
-//    database = new CityDatabaseReader("data.sqlite");
-//    database.readDB();
+    database = new CityDatabaseReader("data.sqlite");
+    database.readDB();
+    for(String s : database.getCities()){
+      System.out.println(s);
+    }
     db = new StarsLogic();
     map = new MapsLogic();
     MockPersonMethod m = new MockPersonMethod();
@@ -188,14 +184,13 @@ public final class Main {
       //Retrieving preferences
       String origin = data.getString("origin");
       double maxDist = data.getDouble("maxDist");
-      int maxNumCities = data.getInt("maxNumCities");
-      Object a = data.get("origin");
-
-
-
-      GraphBuilder graph = new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, new ArrayList<String>());
+      int maxNumCities = data.getInt("numberOfCities");
+      String[] cities = data.getString("city").split(".");
+      List<String> citiesToVisit = Arrays.asList(cities);
+      GraphBuilder graph = new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
       List<CityNode> path = graph.getPath();
-      Map<String, Object> variables = ImmutableMap.of("route", path);
+      Map<String, Object> variables = ImmutableMap.of("output", path.toArray());
+
 
       return GSON.toJson(variables);
     }
@@ -204,7 +199,8 @@ public final class Main {
   private static class AllCityHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-      return GSON.toJson(database.getCities().toArray());
+      Map<String, Object> variables = ImmutableMap.of("cityList", database.getCities().toArray());
+      return GSON.toJson(variables);
     }
   }
 

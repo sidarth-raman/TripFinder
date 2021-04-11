@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CityDatabaseReader {
@@ -15,6 +16,7 @@ public class CityDatabaseReader {
 
 
   public CityDatabaseReader(String filepath){
+    cityList = new ArrayList<>();
     this.filepath = filepath;
     this.setupConnection();
   }
@@ -47,7 +49,7 @@ public class CityDatabaseReader {
     PreparedStatement prep = null;
 
     try {
-      prep = conn.prepareStatement("select * from cities;");
+      prep = conn.prepareStatement("select city, state_id from cities;");
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
         String name = rs.getString(1) + ", " + rs.getString(2);

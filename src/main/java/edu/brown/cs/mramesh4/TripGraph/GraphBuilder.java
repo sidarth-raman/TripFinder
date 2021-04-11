@@ -24,6 +24,9 @@ public class GraphBuilder {
   private List<CityNode> citiesInGraph;
   private CompleteTripGraph graph;
   private String filepath = "data.sqlite";
+  private final double EARTH_RADIUS = 3960; //In miles
+  private final double RAD_TO_DEGREE = (180 / Math.PI);
+  private final double DEGREE_TO_RAD = (Math.PI / 180);
 
   /**
    * Constructor for the GraphBuilder object, calls helper methods and TS algorithm.
@@ -57,12 +60,17 @@ public class GraphBuilder {
    * database for these cities and sorts them appropriately.
    */
   private void pullCities() {
-    String maxLatBound = "\"" + (originCity.getLat() + maxDist) + "\"";
-    String minLatBound = "\"" +  (originCity.getLat() - maxDist) + "\"";
-    String maxLongBound = "\"" + (originCity.getLong() + maxDist) + "\"";
-    String minLongBound = "\"" + (originCity.getLong() - maxDist) + "\"";
-
+    double maxDistLat = (maxDist/EARTH_RADIUS) * RAD_TO_DEGREE;
+    double r = EARTH_RADIUS*Math.cos(originCity.getLat()*DEGREE_TO_RAD);
+    double maxDistLong = (maxDist/r) * RAD_TO_DEGREE;
+    String maxLatBound = "\"" + (originCity.getLat() + maxDistLat) + "\"";
+    String minLatBound = "\"" +  (originCity.getLat() - maxDistLat) + "\"";
+    String maxLongBound = "\"" + (originCity.getLong() + maxDistLong) + "\"";
+    String minLongBound = "\"" + (originCity.getLong() - maxDistLong) + "\"";
+    System.out.println("LAT BOUNDS: " + minLatBound + "-" + maxLatBound + " LONG BOUNDS: " + minLongBound + "-" + maxLongBound);
     List<CityNode> bestCities = new ArrayList<>();
+
+
 
     //TODO: Change query such that we are searching within the above bounds.
     PreparedStatement prep = null;

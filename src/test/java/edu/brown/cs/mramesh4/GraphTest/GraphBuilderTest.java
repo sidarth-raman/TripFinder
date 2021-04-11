@@ -97,17 +97,17 @@ public class GraphBuilderTest {
     tearDown();
   }
 
-//  @Test
-//  public void maxDist(){
-//    setUp();
-////    citiesToVisit.add("Madison");
-////    citiesToVisit.add("Chicago");
-//    GraphBuilder g = new GraphBuilder("New York", 10, 3, citiesToVisit);
-//    for(CityNode n : g.getCitiesOfGraph()){
-//      System.out.println("node of graph: " + n.getName());
-//    }
-//    tearDown();
-//  }
+  @Test
+  public void maxDist(){
+    setUp();
+    citiesToVisit.add("Madison");
+    citiesToVisit.add("Chicago");
+    GraphBuilder g = new GraphBuilder(conn,"New York", 10, 3, citiesToVisit);
+    for(CityNode n : g.getCitiesOfGraph()){
+      System.out.println("node of graph: " + n.getName());
+    }
+    tearDown();
+  }
 
 
 }
