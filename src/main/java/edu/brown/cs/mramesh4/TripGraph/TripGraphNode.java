@@ -2,7 +2,6 @@ package edu.brown.cs.mramesh4.TripGraph;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public interface TripGraphNode<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N, E>> {
   double distanceBetween(N node);

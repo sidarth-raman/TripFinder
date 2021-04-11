@@ -1,7 +1,6 @@
 package edu.brown.cs.mramesh4.TripGraph;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +21,7 @@ public class GraphBuilder {
   private List<CityNode> cityNodesToVisit;
   private List<String> citiesToVisit;
   private List<CityNode> citiesInGraph;
-  private CompleteTripGraph graph;
+  private CompleteTripGraph<CityNode, CityEdge> graph;
   private String filepath = "data.sqlite";
   private final double EARTH_RADIUS = 3960; //In miles
   private final double RAD_TO_DEGREE = (180 / Math.PI);
@@ -46,12 +45,8 @@ public class GraphBuilder {
     this.findOrigin(origin);
     this.pullCities();
 
-    for(CityNode n : citiesInGraph){
-      System.out.println(n.getName());
-    }
+    graph = new CompleteTripGraph<>(citiesInGraph);
 
-    graph = new CompleteTripGraph(citiesInGraph);
-    graph.TwoOptTSP(originCity);
   }
 
   /**
@@ -75,19 +70,21 @@ public class GraphBuilder {
     //TODO: Change query such that we are searching within the above bounds.
     PreparedStatement prep = null;
     try {
-      prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population, id FROM cities where lat between ? and ? and lng between ? and ? limit 150;");
-      prep.setString(1, minLatBound);
-      prep.setString(2, maxLatBound);
-      prep.setString(3, minLongBound);
-      prep.setString(4, maxLongBound);
+      prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population, id FROM cities limit 500;");
+//      prep.setString(1, minLatBound);
+//      prep.setString(2, maxLatBound);
+//      prep.setString(3, maxLongBound);
+//      prep.setString(4, minLongBound);
 
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
-        String name = rs.getString(1) + ", " + rs.getString(2);
-        double lat = rs.getDouble(3);
-        double lon = rs.getDouble(4);
-        bestCities.add(new CityNode(name, lat, lon));
-        System.out.println(name);
+        if(!citiesToVisit.contains(rs.getString(1)) && !originCity.getName().equals(rs.getString(1))) {
+          String name = rs.getString(1) + ", " + rs.getString(2);
+          double lat = rs.getDouble(3);
+          double lon = rs.getDouble(4);
+          bestCities.add(new CityNode(name, lat, lon));
+//          System.out.println("adding to best cities: " + name);
+        }
       }
       rs.close();
       prep.close();
@@ -97,8 +94,9 @@ public class GraphBuilder {
 
     Collections.sort(bestCities, new CityComparator(originCity, cityNodesToVisit));
 
-    if(maxNumCities > citiesInGraph.size()){
-      for(int i = 0; i < maxNumCities - citiesInGraph.size(); i++){
+    int temp = citiesInGraph.size();
+    if(maxNumCities > temp){
+      for(int i = 0; i < maxNumCities - temp; i++){
         if(!bestCities.isEmpty()) {
           citiesInGraph.add(bestCities.remove(0));
         }

@@ -9,7 +9,7 @@ function Choices() {
     const [distList, setDistList] = useState(["Select Max Distance", "< 250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "4000+ Miles"]);
     const [numList, setNumList] = useState(["Select Number", "1", "2", "3", "4", "5+"]);
 
-    const [outuput, setOutput] = useState([]);
+    const [output, setOutput] = useState([]);
 
     const [value, setValue] = useState("");
     const [valueFinal, setValueFinal] = useState("");
@@ -77,6 +77,10 @@ function Choices() {
     }, [])
 
     const sendData = async () => {
+        console.log(valueFinal);
+        console.log(distFinal)
+        console.log(numFinal)
+        console.log(cityFinal)
         const toSend = {
             origin : valueFinal,
             maxDist : distFinal,
@@ -90,7 +94,7 @@ function Choices() {
             }
         }
         let response = await axios.post(
-            "http://localhost:4567/city",
+            "http://localhost:4567/route",
             toSend,
             config
         )
@@ -142,7 +146,7 @@ function Choices() {
                 Number of Cities: {numFinal}    <br />
                 Specific Cities: {cityFinal}    <br />
                 Max Dist: {distFinal}    <br />
-
+                Output: {output}
 
             </div>
         </>

@@ -1,4 +1,4 @@
-package edu.brown.cs.mramesh4.TripGraph;
+package edu.brown.cs.mramesh4.maps;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +15,12 @@ import edu.brown.cs.mramesh4.REPLLoop.REPL;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
 import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
-import edu.brown.cs.mramesh4.maps.CheckinThread;
-import edu.brown.cs.mramesh4.maps.GUIHandler;
-import edu.brown.cs.mramesh4.maps.MapsLogic;
+import edu.brown.cs.mramesh4.TripGraph.CityDatabaseReader;
+import edu.brown.cs.mramesh4.TripGraph.CityEdge;
+import edu.brown.cs.mramesh4.TripGraph.CityNode;
+import edu.brown.cs.mramesh4.TripGraph.CompleteTripGraph;
+import edu.brown.cs.mramesh4.TripGraph.GraphBuilder;
+import edu.brown.cs.mramesh4.TripGraph.TripGraph;
 import edu.brown.cs.mramesh4.stars.ActionMethod;
 import edu.brown.cs.mramesh4.stars.StarsLogic;
 import joptsimple.OptionParser;
@@ -164,11 +167,11 @@ public final class Main {
 
 
     Spark.exception(Exception.class, new ExceptionPrinter());
-    UserSQLDatabase database = new UserSQLDatabase("data/maps/smallMaps.sqlite3");
+//    UserSQLDatabase database = new UserSQLDatabase("data/maps/smallMaps.sqlite3");
     FreeMarkerEngine freeMarker = createEngine();
-    CheckinThread check = new CheckinThread(database);
-    check.start();
-    GUIHandler gui = new GUIHandler(database, map, db, check);
+//    CheckinThread check = new CheckinThread(database);
+//    check.start();
+//    GUIHandler gui = new GUIHandler(database, map, db, check);
     Spark.post("/route", new RouteHandler());
     Spark.post("/city", new AllCityHandler());
 
@@ -180,19 +183,47 @@ public final class Main {
     public Object handle(Request request, Response response) throws Exception {
 
       JSONObject data = new JSONObject(request.body());
-
+      System.out.println("handler called");
       //Retrieving preferences
-      String origin = data.getString("origin");
-      double maxDist = data.getDouble("maxDist");
-      int maxNumCities = data.getInt("numberOfCities");
-      String[] cities = data.getString("city").split(".");
-      List<String> citiesToVisit = Arrays.asList(cities);
-      GraphBuilder graph = new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
-      List<CityNode> path = graph.getPath();
-      Map<String, Object> variables = ImmutableMap.of("output", path.toArray());
+      String origin = data.getString("origin").split(",")[0];
+      System.out.println("checkpt 1");
+      double maxDist = Double.parseDouble(data.getString("maxDist").split(" ")[0]);
+      System.out.println("checkpt 2");
 
+      int maxNumCities =  data.getInt("numberOfCities");
+      System.out.println("checkpt 3");
 
-      return GSON.toJson(variables);
+      String[] cities = data.getString("city").split(",");
+      System.out.println("checkpt 4");
+
+      List<String> citiesToVisit = new ArrayList<>();
+      citiesToVisit.add(cities[0]);
+      System.out.println("checkpt 5");
+
+      System.out.println("O1: " + origin);
+      System.out.println("O2: " + maxDist);
+      System.out.println("O3: " + maxNumCities);
+      System.out.println("O4: " + citiesToVisit.toString());
+      List<CityNode> path = null;
+      if(origin.length() > 1) {
+        GraphBuilder
+            graph =
+            new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
+        System.out.println("checkpt 6");
+        for (CityNode n : graph.getCitiesOfGraph()) {
+          System.out.println("graphbuilder contains: " + n.getName());
+        }
+        path = graph.getPath();
+        System.out.println("checkpt 7");
+        for (CityNode n : path) {
+          System.out.println("city in path returned: " + n.getName());
+        }
+        System.out.println("path size: " + path.size());
+      }
+//      Map<String, Object> variables = ImmutableMap.of("output", path);
+
+return null;
+//      return GSON.toJson(variables);
     }
   }
 
