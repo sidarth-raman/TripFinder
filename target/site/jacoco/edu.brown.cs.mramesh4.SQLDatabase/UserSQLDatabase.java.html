@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserSQLDatabase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.SQLDatabase</a> &gt; <span class="el_source">UserSQLDatabase.java</span></div><h1>UserSQLDatabase.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.SQLDatabase;
+
+import edu.brown.cs.mramesh4.maps.UserCheckin;
+
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * This class allows us to create and access our user database.
+ */
+public class UserSQLDatabase {
+  private String url;
+  private Connection conn;
+
+  /**
+   * This is a constructor to access our database.
+   * @param datafile This is the datafile to access
+   */
+<span class="nc" id="L26">  public UserSQLDatabase(String datafile)  {</span>
+    try {
+<span class="nc" id="L28">      url = datafile;</span>
+<span class="nc" id="L29">      setConnection();</span>
+<span class="nc" id="L30">      Statement stat = conn.createStatement();</span>
+<span class="nc" id="L31">      stat.executeUpdate(&quot;PRAGMA foreign_keys=ON;&quot;);</span>
+<span class="nc" id="L32">      stat.executeUpdate(&quot;CREATE TABLE IF NOT EXISTS users (&quot;</span>
+          + &quot;id INTEGER NOT NULL,&quot;
+          + &quot;name VARCHAR(255) NOT NULL, &quot;
+          + &quot;ts FLOAT NOT NULL,&quot;
+          + &quot;lat FLOAT NOT NULL,&quot;
+          + &quot;lon FLOAT NOT NULL);&quot;);
+<span class="nc" id="L38">      stat.close();</span>
+<span class="nc" id="L39">    } catch (SQLException e) {</span>
+<span class="nc" id="L40">      System.err.println(e);</span>
+<span class="nc" id="L41">    }</span>
+
+<span class="nc" id="L43">  }</span>
+
+  /**
+   * Returns a connection.
+   * @return conn
+   */
+  public Connection getConnection() {
+<span class="nc" id="L50">    return conn;</span>
+  }
+
+  /**
+   * This is a method to set a connection our database.
+   */
+  public void setConnection() {
+    try {
+<span class="nc" id="L58">      Class.forName(&quot;org.sqlite.JDBC&quot;);</span>
+<span class="nc" id="L59">      String urlToDB = &quot;jdbc:sqlite:&quot; + url;</span>
+<span class="nc" id="L60">      conn = DriverManager.getConnection(urlToDB);</span>
+      //return conn;
+<span class="nc" id="L62">    } catch (ClassNotFoundException | SQLException e) {</span>
+<span class="nc" id="L63">      System.err.println(e);</span>
+<span class="nc" id="L64">    }</span>
+<span class="nc" id="L65">  }</span>
+
+  /**
+   * This is a method to add a user to the database.
+   * @param userData this is a List of parameters to put on the
+   */
+  public void addUser(List&lt;String&gt; userData) {
+    try {
+<span class="nc" id="L73">      PreparedStatement insertionPrep = conn.prepareStatement(&quot;INSERT OR IGNORE INTO users &quot;</span>
+          + &quot;(id, name, ts, lat, lon)&quot;
+          + &quot;VALUES (?, ?, ?, ?, ?)&quot;);
+<span class="nc" id="L76">      int id = Integer.parseInt(userData.get(0));</span>
+<span class="nc" id="L77">      String name = userData.get(1);</span>
+<span class="nc" id="L78">      Double big = new BigDecimal(userData.get(2)).doubleValue();</span>
+<span class="nc" id="L79">      Double lat = Double.parseDouble(userData.get(3));</span>
+<span class="nc" id="L80">      Double lon = Double.parseDouble(userData.get(4));</span>
+<span class="nc" id="L81">      insertionPrep.setInt(1, id);</span>
+<span class="nc" id="L82">      insertionPrep.setString(2, name);</span>
+<span class="nc" id="L83">      insertionPrep.setDouble(3, big);</span>
+<span class="nc" id="L84">      insertionPrep.setDouble(4, lat);</span>
+<span class="nc" id="L85">      insertionPrep.setDouble(5, lon);</span>
+<span class="nc" id="L86">      insertionPrep.executeUpdate();</span>
+<span class="nc" id="L87">      insertionPrep.close();</span>
+<span class="nc" id="L88">    } catch (NumberFormatException | ArrayIndexOutOfBoundsException | SQLException e) {</span>
+<span class="nc" id="L89">      System.err.println(e);</span>
+<span class="nc" id="L90">    }</span>
+<span class="nc" id="L91">  }</span>
+
+  /**.
+   * This is our method to delete a user.
+   * @param id This is the id of the user to delete
+   * @throws SQLException exception thrown if problems deleting
+   */
+  public void deleteUser(String id) throws SQLException {
+<span class="nc" id="L99">    PreparedStatement deletionPrep = conn.prepareStatement(&quot;DELETE FROM users WHERE id = ?&quot;);</span>
+<span class="nc" id="L100">    deletionPrep.setString(1, id);</span>
+<span class="nc" id="L101">    deletionPrep.executeUpdate();</span>
+<span class="nc" id="L102">    deletionPrep.close();</span>
+<span class="nc" id="L103">  }</span>
+
+  /**
+   * This method gets all a users checkins.
+   * @param id the id of the user
+   * @return a list of checkins
+   * @throws SQLException sql exception
+   */
+  public List&lt;UserCheckin&gt; getUserInfo(String id) throws SQLException {
+<span class="nc" id="L112">    PreparedStatement queryPrep = conn.prepareStatement(&quot;SELECT * FROM users WHERE id = ?&quot;);</span>
+<span class="nc" id="L113">    queryPrep.setString(1, id);</span>
+<span class="nc" id="L114">    ResultSet rs = queryPrep.executeQuery();</span>
+<span class="nc" id="L115">    List&lt;UserCheckin&gt; ret = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    while (rs.next()) {</span>
+      UserCheckin curr;
+      try {
+<span class="nc" id="L119">        int getID = rs.getInt(1);</span>
+<span class="nc" id="L120">        String getName = rs.getString(2);</span>
+<span class="nc" id="L121">        Double ts = rs.getBigDecimal(3).doubleValue();</span>
+<span class="nc" id="L122">        Double lat = rs.getDouble(4);</span>
+<span class="nc" id="L123">        Double lon = rs.getDouble(5);</span>
+<span class="nc" id="L124">        curr = new UserCheckin(getID, getName, ts, lat, lon);</span>
+<span class="nc" id="L125">        ret.add(curr);</span>
+<span class="nc" id="L126">      } catch (NumberFormatException | SQLException | NullPointerException e) {</span>
+<span class="nc" id="L127">        System.err.println(&quot;Can't get user info&quot;);</span>
+<span class="nc" id="L128">      }</span>
+    }
+<span class="nc" id="L130">    rs.close();</span>
+<span class="nc" id="L131">    queryPrep.close();</span>
+<span class="nc" id="L132">    return ret;</span>
+  }
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

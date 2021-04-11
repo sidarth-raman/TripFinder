@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockPerson.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.MockPerson</a> &gt; <span class="el_source">MockPerson.java</span></div><h1>MockPerson.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.MockPerson;
+import edu.brown.cs.mramesh4.stars.IllegalArgumentException;
+
+import java.util.ArrayList;
+
+/**.
+ * This is a class for MockPerson
+ */
+public class MockPerson {
+  private String firstName;
+  private String lastName;
+  private String dateTime;
+  private String email;
+  private String gender;
+  private String street;
+  private String ip;
+  private static final int MONTH = 13;
+  private static final int DAY = 32;
+  /**.
+   * This is the constructor for MockPerson
+   * @param firstName string representing first-name
+   * @param lastName string representing last-name
+   * @param dateTime string represening date-time
+   * @param email string representing email
+   * @param gender string representing gender
+   * @param street string representing street address
+   * @param ip string representing ip address
+   * @throws IllegalArgumentException if input is malformed
+   */
+  public MockPerson(String firstName, String lastName, String email, String dateTime,
+             String gender, String street, String ip) throws
+<span class="nc" id="L32">            IllegalArgumentException {</span>
+<span class="nc" id="L33">    this.firstName = firstName;</span>
+<span class="nc" id="L34">    this.lastName = lastName;</span>
+<span class="nc" id="L35">    this.dateTime = dateTime;</span>
+<span class="nc" id="L36">    this.email = email;</span>
+<span class="nc" id="L37">    this.gender = gender;</span>
+<span class="nc" id="L38">    this.street = street;</span>
+<span class="nc" id="L39">    this.ip = ip;</span>
+
+<span class="nc" id="L41">    ArrayList&lt;String&gt; inv = getInvalidItems();</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">    if (inv.size() &gt; 0) {</span>
+<span class="nc" id="L43">      throw new IllegalArgumentException(&quot;ERROR: MALFORMED INPUT&quot;);</span>
+    }
+<span class="nc" id="L45">  }</span>
+
+  /**.
+   * Returns a stringified version of the inputs
+   * @return a string to print of the MockPerson
+   */
+  public String toString() {
+<span class="nc" id="L52">    String ret = &quot;Name: &quot; + firstName + &quot; &quot; + lastName</span>
+        + &quot;,&quot;  + &quot;Address:&quot; + &quot; &quot; +  street + &quot;,&quot;
+        + &quot;Gender:&quot; + &quot; &quot; +  gender + &quot;,&quot;
+        + &quot;E-mail:&quot; + &quot; &quot; +  email + &quot;,&quot;
+        + &quot;Date:&quot; + &quot; &quot; +  dateTime + &quot;,&quot;
+        + &quot;Ip-Address:&quot; + &quot; &quot; +  ip;
+<span class="nc" id="L58">    return ret;</span>
+  }
+
+  /**.
+   * Figures out if a user's name is invalid
+   * @param fn
+   *          String representing first name
+   * @param ln
+   *          String representing last name
+   * @return boolean if field is valid
+   */
+  public boolean isValidName(String fn, String ln) {
+<span class="nc bnc" id="L70" title="All 4 branches missed.">    if (fn == null || ln == null) {</span>
+<span class="nc" id="L71">      return false;</span>
+    }
+<span class="nc bnc" id="L73" title="All 4 branches missed.">    if (fn.equals(&quot;&quot;) || ln.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L74">      return false;</span>
+    }
+<span class="nc" id="L76">    return true;</span>
+  }
+
+  /**.
+   * Checking if the gender field is valid
+   * @param gen
+   *           String representing gender
+   * @return boolean
+   */
+  public boolean isValidGender(String gen) {
+<span class="nc bnc" id="L86" title="All 2 branches missed.">    if (gen == null) {</span>
+<span class="nc" id="L87">      return false;</span>
+    }
+<span class="nc bnc" id="L89" title="All 2 branches missed.">    if (gen.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L90">      return false;</span>
+    }
+<span class="nc" id="L92">    return true;</span>
+  }
+  /**.
+   * Checking if the email field is valid
+   * @param mail
+   *           String representing email
+   * @return boolean
+   */
+  public boolean isValidEmail(String mail) {
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    if (mail == null) {</span>
+<span class="nc" id="L102">      return false;</span>
+    }
+<span class="nc" id="L104">    String charStr = &quot;@&quot;;</span>
+<span class="nc bnc" id="L105" title="All 4 branches missed.">    if (mail.indexOf(charStr.charAt(0)) &lt; 0 || mail.indexOf(charStr.charAt(0)) &gt;= mail.length()) {</span>
+<span class="nc" id="L106">      return false;</span>
+    }
+<span class="nc bnc" id="L108" title="All 2 branches missed.">    if (mail.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L109">      return false;</span>
+    }
+<span class="nc" id="L111">    return true;</span>
+  }
+  /**.
+   * Checking if the date field is valid
+   * @param date
+   *           String representing date-time
+   * @return boolean
+   */
+  public boolean isValidDate(String date) {
+<span class="nc bnc" id="L120" title="All 2 branches missed.">    if (date == null) {</span>
+<span class="nc" id="L121">      return false;</span>
+    }
+<span class="nc bnc" id="L123" title="All 2 branches missed.">    if (date.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L124">      return false;</span>
+    }
+<span class="nc bnc" id="L126" title="All 4 branches missed.">    if (date.lastIndexOf(&quot;/&quot;) != date.length() - 3 &amp;&amp; date.lastIndexOf(&quot;/&quot;) != date.length() - 5) {</span>
+<span class="nc" id="L127">      return false;</span>
+    }
+<span class="nc bnc" id="L129" title="All 4 branches missed.">    if (date.indexOf(&quot;/&quot;) != 1 &amp;&amp; date.indexOf(&quot;/&quot;) != 2) {</span>
+<span class="nc" id="L130">      return false;</span>
+    }
+<span class="nc" id="L132">    String[] dateSpl = date.split(&quot;/&quot;);</span>
+    try {
+<span class="nc bnc" id="L134" title="All 2 branches missed.">      if (Integer.parseInt(dateSpl[0]) &gt; MONTH) {</span>
+        //System.out.println(&quot;There's an issue w month&quot; + Integer.parseInt(dateSpl[0]));
+<span class="nc" id="L136">        return false;</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">      } else if (Integer.parseInt(dateSpl[1]) &gt; DAY) {</span>
+        //System.out.println(&quot;There's an issue w day&quot; + Integer.parseInt(dateSpl[1]));
+<span class="nc" id="L139">        return false;</span>
+      }
+<span class="nc" id="L141">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L142">      return false;</span>
+<span class="nc" id="L143">    }</span>
+<span class="nc" id="L144">    return true;</span>
+  }
+
+  /**.
+   * Returns if the ip is valid
+   * @param ipaddress
+   *            String of Ip address
+   * @return boolean
+   */
+  public boolean isValidIp(String ipaddress) {
+<span class="nc bnc" id="L154" title="All 2 branches missed.">    if (ipaddress == null) {</span>
+<span class="nc" id="L155">      return false;</span>
+    }
+<span class="nc bnc" id="L157" title="All 2 branches missed.">    if (ipaddress.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L158">      return false;</span>
+    }
+<span class="nc" id="L160">    String[] ipSplit = ipaddress.split(&quot;.&quot;);</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">    for (String piece: ipSplit) {</span>
+      try {
+<span class="nc" id="L163">        double c = Double.parseDouble(piece);</span>
+<span class="nc" id="L164">      } catch (NumberFormatException e) {</span>
+<span class="nc" id="L165">        return false;</span>
+<span class="nc" id="L166">      }</span>
+    }
+<span class="nc" id="L168">    return true;</span>
+  }
+  /**.
+   * Calculates all the invalid items
+   * @return a list of invalid items
+   */
+  public ArrayList&lt;String&gt; getInvalidItems() {
+<span class="nc" id="L175">    ArrayList&lt;String&gt; invalid =  new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">    if (!isValidGender(this.gender)) {</span>
+<span class="nc" id="L177">      invalid.add(&quot;Gender&quot;);</span>
+    }
+<span class="nc bnc" id="L179" title="All 2 branches missed.">    if (!isValidName(this.firstName, this.lastName)) {</span>
+<span class="nc" id="L180">      invalid.add(&quot;Name&quot;);</span>
+    }
+<span class="nc bnc" id="L182" title="All 2 branches missed.">    if (!isValidEmail(this.email)) {</span>
+<span class="nc" id="L183">      invalid.add(&quot;Email&quot;);</span>
+    }
+<span class="nc bnc" id="L185" title="All 2 branches missed.">    if (!isValidDate(this.dateTime)) {</span>
+<span class="nc" id="L186">      invalid.add(&quot;Date&quot;);</span>
+    }
+<span class="nc bnc" id="L188" title="All 2 branches missed.">    if (!isValidIp(this.ip)) {</span>
+<span class="nc" id="L189">      invalid.add(&quot;Ip&quot;);</span>
+    }
+<span class="nc" id="L191">    return invalid;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

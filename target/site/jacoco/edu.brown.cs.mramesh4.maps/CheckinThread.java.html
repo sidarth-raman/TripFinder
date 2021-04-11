@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CheckinThread.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.maps</a> &gt; <span class="el_source">CheckinThread.java</span></div><h1>CheckinThread.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.maps;
+import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * thread that continuously communicates with checkin server.
+ */
+public final class CheckinThread extends Thread {
+<span class="nc" id="L22">  private long last = 0;</span>
+  private Map checkins;
+<span class="nc" id="L24">  private boolean pause = false;</span>
+  static final long MSCONVERSION = 1000;
+  private UserSQLDatabase database;
+
+  /**
+   * Instantiates a checkin thread.
+   * @param data database
+   */
+<span class="nc" id="L32">  public CheckinThread(UserSQLDatabase data) {</span>
+<span class="nc" id="L33">    checkins = Collections.synchronizedMap(new HashMap&lt;&gt;());</span>
+<span class="nc" id="L34">    database = data;</span>
+<span class="nc" id="L35">  }</span>
+
+  /**
+   * Runs the thread by querying the url for information on user checkins.
+   */
+  public synchronized void run() {
+<span class="nc" id="L41">    List&lt;List&lt;String&gt;&gt; updates = null;</span>
+
+<span class="nc" id="L43">    long lastSec = 0;</span>
+
+    while (true) {
+<span class="nc" id="L46">      long sec = System.currentTimeMillis() / MSCONVERSION;</span>
+<span class="nc bnc" id="L47" title="All 4 branches missed.">      if (sec != lastSec &amp;&amp; !pause) {</span>
+        try {
+<span class="nc" id="L49">          updates = this.update();</span>
+<span class="nc" id="L50">        } catch (IOException e) {</span>
+<span class="nc" id="L51">          e.printStackTrace();</span>
+<span class="nc" id="L52">        }</span>
+
+<span class="nc bnc" id="L54" title="All 4 branches missed.">        if (updates != null &amp;&amp; !updates.isEmpty()) {</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">          for (List&lt;String&gt; el : updates) {</span>
+<span class="nc" id="L56">            double timestamp = Double.parseDouble(el.get(0));</span>
+<span class="nc" id="L57">            int id = Integer.parseInt(el.get(1));</span>
+<span class="nc" id="L58">            String name = el.get(2);</span>
+<span class="nc" id="L59">            double lat = Double.parseDouble(el.get(3));</span>
+<span class="nc" id="L60">            double lon = Double.parseDouble(el.get(4));</span>
+
+            // put our current user concurrent hashmap
+<span class="nc" id="L63">            UserCheckin uc = new UserCheckin(id, name, timestamp, lat, lon);</span>
+<span class="nc" id="L64">            checkins.put(timestamp, uc);</span>
+<span class="nc" id="L65">            List&lt;String&gt; push = new ArrayList&lt;&gt;();</span>
+            //try to add it to database
+            try {
+<span class="nc" id="L68">              BigDecimal stamp = new BigDecimal(timestamp);</span>
+<span class="nc" id="L69">              push.add(0, Integer.toString(id));</span>
+<span class="nc" id="L70">              push.add(1, name);</span>
+<span class="nc" id="L71">              push.add(2, stamp.toPlainString());</span>
+<span class="nc" id="L72">              push.add(3, Double.toString(lat));</span>
+<span class="nc" id="L73">              push.add(4, Double.toString(lon));</span>
+<span class="nc" id="L74">              database.addUser(push);</span>
+<span class="nc" id="L75">            } catch (NullPointerException | NumberFormatException e) {</span>
+<span class="nc" id="L76">              System.out.println(e);</span>
+<span class="nc" id="L77">              continue;</span>
+<span class="nc" id="L78">            }</span>
+<span class="nc" id="L79">          }</span>
+        }
+<span class="nc" id="L81">        lastSec = sec;</span>
+      }
+<span class="nc" id="L83">    }</span>
+  }
+  private synchronized List&lt;List&lt;String&gt;&gt; update() throws IOException {
+<span class="nc" id="L86">    URL serverURL = new URL(&quot;http://localhost:8080?last=&quot; + last);</span>
+<span class="nc" id="L87">    last = Instant.now().getEpochSecond();</span>
+
+<span class="nc" id="L89">    HttpURLConnection conn = (HttpURLConnection) serverURL.openConnection();</span>
+<span class="nc" id="L90">    conn.setRequestMethod(&quot;GET&quot;);</span>
+
+<span class="nc" id="L92">    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));</span>
+<span class="nc" id="L93">    Pattern pattern = Pattern.compile(&quot;\\[(.*?)\\, (.*?)\\, \&quot;(.*?)\&quot;, (.*?)\\, (.*?)\\]&quot;);</span>
+    String line;
+
+<span class="nc" id="L96">    List&lt;List&lt;String&gt;&gt; output = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">    while ((line = br.readLine()) != null) {</span>
+<span class="nc" id="L98">      Matcher matcher = pattern.matcher(line);</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">      while (matcher.find()) {</span>
+<span class="nc" id="L100">        List&lt;String&gt; data = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L101">        String parsedTimestamp = matcher.group(1);</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (parsedTimestamp.charAt(0) == '[') {</span>
+<span class="nc" id="L103">          data.add(parsedTimestamp.substring(1));</span>
+        } else {
+<span class="nc" id="L105">          data.add(parsedTimestamp);</span>
+        }
+<span class="nc" id="L107">        data.add(matcher.group(2));</span>
+<span class="nc" id="L108">        data.add(matcher.group(3));</span>
+<span class="nc" id="L109">        data.add(matcher.group(4));</span>
+<span class="nc" id="L110">        data.add(matcher.group(5));</span>
+<span class="nc" id="L111">        output.add(data);</span>
+<span class="nc" id="L112">      }</span>
+<span class="nc" id="L113">    }</span>
+<span class="nc" id="L114">    return output;</span>
+  }
+
+
+  /**
+   * gets the latest checkin updates. Refreshes hashmap so only new
+   * checkin updates are returned next time.
+   * @return map from a string to a double of timestamps to checkin objects
+   */
+  public Map&lt;Double, UserCheckin&gt; getLatestCheckins() {
+<span class="nc" id="L124">    pause = true;</span>
+<span class="nc" id="L125">    Map&lt;Double, UserCheckin&gt; temp = checkins;</span>
+<span class="nc" id="L126">    checkins = Collections.synchronizedMap(new HashMap&lt;&gt;());</span>
+<span class="nc" id="L127">    pause = false;</span>
+<span class="nc" id="L128">    return temp;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

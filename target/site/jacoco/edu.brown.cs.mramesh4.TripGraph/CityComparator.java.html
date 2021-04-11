@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CityComparator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.TripGraph</a> &gt; <span class="el_source">CityComparator.java</span></div><h1>CityComparator.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.TripGraph;
+
+import java.util.Comparator;
+import java.util.List;
+
+public class CityComparator implements Comparator&lt;CityNode&gt; {
+  private CityNode start;
+  private List&lt;CityNode&gt; toVisit;
+
+<span class="fc" id="L10">  public CityComparator(CityNode start, List&lt;CityNode&gt; toVisit) {</span>
+<span class="fc" id="L11">    this.start = start;</span>
+<span class="fc" id="L12">    this.toVisit = toVisit;</span>
+
+<span class="fc" id="L14">  }</span>
+
+  @Override
+  public int compare(CityNode a, CityNode b) {
+<span class="nc" id="L18">    double yTotals = 0;</span>
+<span class="nc" id="L19">    double xTotals = 0;</span>
+
+<span class="nc bnc" id="L21" title="All 2 branches missed.">    for(CityNode n : toVisit){</span>
+<span class="nc" id="L22">      yTotals += n.getLat();</span>
+<span class="nc" id="L23">      xTotals += n.getLong();</span>
+<span class="nc" id="L24">    }</span>
+<span class="nc" id="L25">    yTotals += start.getLat();</span>
+<span class="nc" id="L26">    xTotals += start.getLong();</span>
+
+<span class="nc" id="L28">    double midpointY = yTotals / (toVisit.size() + 1);</span>
+<span class="nc" id="L29">    double midpointX = xTotals / (toVisit.size() + 1);</span>
+
+<span class="nc" id="L31">    double aDist = Math.hypot(Math.abs(Math.abs(a.getLat()) - Math.abs(midpointY)), Math.abs(Math.abs(a.getLong()) - Math.abs(midpointX)));</span>
+<span class="nc" id="L32">    double bDist = Math.hypot(Math.abs(Math.abs(b.getLat()) - Math.abs(midpointY)), Math.abs(Math.abs(b.getLong()) - Math.abs(midpointX)));</span>
+
+<span class="nc" id="L34">    return Double.compare(aDist, bDist);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

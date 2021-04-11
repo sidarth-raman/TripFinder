@@ -11,18 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import edu.brown.cs.mramesh4.REPLLoop.REPL;
-import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
-import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
 import edu.brown.cs.mramesh4.TripGraph.CityDatabaseReader;
 import edu.brown.cs.mramesh4.TripGraph.CityEdge;
 import edu.brown.cs.mramesh4.TripGraph.CityNode;
 import edu.brown.cs.mramesh4.TripGraph.CompleteTripGraph;
 import edu.brown.cs.mramesh4.TripGraph.GraphBuilder;
 import edu.brown.cs.mramesh4.TripGraph.TripGraph;
-import edu.brown.cs.mramesh4.stars.ActionMethod;
-import edu.brown.cs.mramesh4.stars.StarsLogic;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
@@ -58,8 +53,7 @@ public final class Main {
   }
 
   private String[] args;
-  private static StarsLogic db;
-  private static MapsLogic map;
+
   private static final Gson GSON = new Gson();
   private static CityDatabaseReader database;
   CityNode node;
@@ -102,9 +96,7 @@ public final class Main {
     for(String s : database.getCities()){
       System.out.println(s);
     }
-    db = new StarsLogic();
-    map = new MapsLogic();
-    MockPersonMethod m = new MockPersonMethod();
+
     // Parse command line arguments
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
@@ -114,19 +106,6 @@ public final class Main {
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
     }
-    HashMap<String, ActionMethod<?>> methods = new HashMap<>();
-    methods.put("stars", db);
-    methods.put("naive_neighbors", db);
-    methods.put("naive_radius", db);
-    methods.put("mock", m);
-    methods.put("neighbors", db);
-    methods.put("radius", db);
-    methods.put("map", map);
-    methods.put("ways", map);
-    methods.put("nearest", map);
-    methods.put("route", map);
-    REPL repl = new REPL(methods);
-    repl.read();
 
   }
 

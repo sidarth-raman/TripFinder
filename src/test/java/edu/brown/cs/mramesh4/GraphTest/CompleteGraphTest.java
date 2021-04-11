@@ -23,6 +23,16 @@ public class CompleteGraphTest {
   CityNode node4;
   CityNode node5;
   CityNode node6;
+  CityNode node7;
+  CityNode node8;
+  CityNode node9;
+  CityNode node10;
+  CityNode node11;
+  CityNode node12;
+  CityNode node13;
+  CityNode node14;
+  CityNode node15;
+
   private static final double DELTA = 0.01;
   CompleteTripGraph<CityNode, CityEdge> tripGraph;
 
@@ -87,6 +97,42 @@ public class CompleteGraphTest {
     graphList.add(node6);
     TripGraph<CityNode, CityEdge> tGraph = new TripGraph<>(graphList);
     tripGraph = new CompleteTripGraph<>(tGraph);
+  }
+
+  @Test
+  public void setUp4(){
+    node = new CityNode("City A", -0.0000000400893815, 0.0000000358808126);
+    node2 = new CityNode("City B", -21.4983260706612533, -7.3194159498090388);
+    node3 = new CityNode("City C", -28.8732862244731230 ,  -0.0000008724121069);
+    node4 = new CityNode("City D", -43.0700258454450875 , -14.5548396888330487);
+    node5 = new CityNode("City E", -50.4808382862985496, -7.3744722432402208);
+    node6 = new CityNode("City F", -64.7472605264735108,  -21.8981713360336698);
+    node7 = new CityNode("City G", -72.0785319657452987,  -0.1815834632498404);
+    node8 = new CityNode("City H", -79.2915791686897506 ,  21.4033307581457670);
+    node9 = new CityNode("City I", -65.0865638413727368,   36.0624693073746769);
+    node10 = new CityNode("City K", -57.5687244704708050 , 43.2505562436354225);
+    node11 = new CityNode("City L", -50.5859026832315024, 21.5881966132975371);
+    node12 = new CityNode("City M", -36.0366489745023770, 21.6135482886620949);
+    node13 = new CityNode("City N", -29.0584693142401171 , 43.2167287683090606);
+    node14 = new CityNode("City O", -14.6577381710829471 ,  43.3895496964974043);
+    node15 = new CityNode("City P", -0.1358203773809326,  28.7292896751977480);
+    List<CityNode> graphList = new ArrayList<>();
+    graphList.add(node);
+    graphList.add(node2);
+    graphList.add(node3);
+    graphList.add(node4);
+    graphList.add(node5);
+    graphList.add(node6);
+    graphList.add(node7);
+    graphList.add(node8);
+    graphList.add(node9);
+    graphList.add(node10);
+    graphList.add(node11);
+    graphList.add(node12);
+    graphList.add(node13);
+    graphList.add(node14);
+    graphList.add(node15);
+    tripGraph = new CompleteTripGraph<>(graphList);
   }
 
   @After
@@ -200,11 +246,11 @@ public class CompleteGraphTest {
 
   @Test
   public void testDFS(){
-    setUp();
+    setUp4();
     TripGraph<CityNode, CityEdge> ret = tripGraph.Kruskals();
     assertNotNull(ret);
 
-    List<CityNode> returned = tripGraph.TwoOptTSP(node5);
+    List<CityNode> returned = tripGraph.TwoOptTSP(node);
     for(CityNode node: returned){
       System.out.println("node" + node.getName());
     }
@@ -212,7 +258,7 @@ public class CompleteGraphTest {
 
   @Test
   public void testChrist(){
-    setUp();
+    setUp4();
     List<CityNode> ret = tripGraph.christTSP(node);
     for(CityNode city: ret){
       System.out.println("testChrist: " + city.getName());

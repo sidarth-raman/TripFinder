@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphNodeNeighborsCache.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.Graph</a> &gt; <span class="el_source">GraphNodeNeighborsCache.java</span></div><h1>GraphNodeNeighborsCache.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.Graph;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * This class represents a cache used in the Graph class for A* to improve
+ * runtime. It maps Nodes to a list of their neighbors.
+ * @param &lt;N&gt; representing type of Node being used in graph.
+ * @param &lt;E&gt; representing type of Edge being used in graph.
+ */
+public class GraphNodeNeighborsCache&lt;N extends GraphNode&lt;N, E&gt;, E extends GraphEdge&lt;N, E&gt;&gt; {
+
+  private LoadingCache&lt;N, List&lt;N&gt;&gt; cache;
+
+  /**
+   * In the constructor for this class, we initialize our cache.
+   */
+<span class="nc" id="L23">  public GraphNodeNeighborsCache() {</span>
+<span class="nc" id="L24">    cache = CacheBuilder.newBuilder()</span>
+<span class="nc" id="L25">      .refreshAfterWrite(2, TimeUnit.SECONDS)</span>
+<span class="nc" id="L26">      .build(new CacheLoader&lt;N, List&lt;N&gt;&gt;() {</span>
+        @Override
+        public List&lt;N&gt; load(N key) throws Exception {
+<span class="nc" id="L29">          return key.neighbors();</span>
+        }
+      });
+<span class="nc" id="L32">  }</span>
+
+  /**
+   * This method gets the neighbors of the node passed in from the cache.
+   * @param key representing current Node we are
+   * @return the neighbors of the Node.
+   * @throws ExecutionException if our cache cannot execute the query
+   */
+  public List&lt;N&gt; getNode(N key) throws ExecutionException {
+<span class="nc" id="L41">    return cache.get(key);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

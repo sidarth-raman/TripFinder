@@ -186,7 +186,9 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * to the nodes.
    */
   public void clearGraphEdges(){
-
+    for(N node: graph.values()){
+      node.clearGraphEdges();
+    }
   }
 
   /**

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphNodeComparator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.Graph</a> &gt; <span class="el_source">GraphNodeComparator.java</span></div><h1>GraphNodeComparator.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.Graph;
+
+import java.util.Comparator;
+
+/**
+ * This class is a custom comparator for our priority queue used in the Graph class.
+ * It takes in any type of Node that implements GraphNode.
+ * @param &lt;N&gt; representing type of Node we want to compare
+ * @param &lt;E&gt; representing type of Edge we want to compare
+ */
+<span class="nc" id="L11">public class GraphNodeComparator&lt;N extends GraphNode&lt;N, E&gt;, E extends GraphEdge&lt;N, E&gt;&gt;</span>
+        implements Comparator&lt;N&gt; {
+
+  @Override
+  public int compare(N a, N b) {
+    //compare total weight (distance to node + distance to goal)
+<span class="nc" id="L17">    return Double.compare(a.getTotalWeight(), b.getTotalWeight());</span>
+  }
+
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

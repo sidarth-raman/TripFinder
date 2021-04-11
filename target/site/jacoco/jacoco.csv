@@ -1,0 +1,52 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+TripFinder,edu.brown.cs.mramesh4.KDTree,KDTree,520,0,68,0,98,0,42,0,8,0
+TripFinder,edu.brown.cs.mramesh4.KDTree,KDTree.new Comparator() {...},19,0,0,0,2,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.KDTree,KDTree.new Comparator() {...},19,0,0,0,2,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.KDTree,KDTree.new Comparator() {...},19,0,0,0,2,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.KDTree,KDNode,44,0,2,0,15,0,8,0,7,0
+TripFinder,edu.brown.cs.mramesh4.TripGraph,TripGraphNodeComparator,0,9,0,0,0,2,0,2,0,2
+TripFinder,edu.brown.cs.mramesh4.TripGraph,CityEdge,0,98,3,7,0,24,3,11,0,9
+TripFinder,edu.brown.cs.mramesh4.TripGraph,MinMatchCostMatrix,380,314,57,33,64,50,34,20,3,6
+TripFinder,edu.brown.cs.mramesh4.TripGraph,GraphBuilder,61,319,3,17,17,81,4,13,1,6
+TripFinder,edu.brown.cs.mramesh4.TripGraph,CompleteTripGraph,261,1023,48,96,54,215,37,56,4,17
+TripFinder,edu.brown.cs.mramesh4.TripGraph,EulerTripNodeComparator,15,0,0,0,2,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.TripGraph,TripGraphEdgeComparator,0,9,0,0,0,2,0,2,0,2
+TripFinder,edu.brown.cs.mramesh4.TripGraph,TripGraph,43,473,14,42,12,96,13,28,1,12
+TripFinder,edu.brown.cs.mramesh4.TripGraph,CityNode,0,295,4,10,0,68,4,21,0,18
+TripFinder,edu.brown.cs.mramesh4.TripGraph,CityComparator,92,9,2,0,13,4,2,1,1,1
+TripFinder,edu.brown.cs.mramesh4.Graph,GraphNodeComparator,9,0,0,0,2,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.Graph,GraphNodeNeighborsCache,20,0,0,0,6,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.Graph,GraphNodeNeighborsCache.new CacheLoader() {...},9,0,0,0,2,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.Graph,Graph,145,0,12,0,33,0,8,0,2,0
+TripFinder,edu.brown.cs.mramesh4.stars,IllegalArgumentException,10,0,0,0,4,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.stars,StarsLogic.new Comparator() {...},19,0,0,0,3,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.stars,StarsLogic,1566,0,246,0,380,0,147,0,22,0
+TripFinder,edu.brown.cs.mramesh4.stars,StarsLogic.new Comparator() {...},19,0,0,0,3,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.stars,Star,193,0,22,0,41,0,25,0,14,0
+TripFinder,edu.brown.cs.mramesh4.CSVParser,CSVParser,126,0,10,0,37,0,11,0,6,0
+TripFinder,edu.brown.cs.mramesh4.maps,CheckinThread,266,0,16,0,66,0,12,0,4,0
+TripFinder,edu.brown.cs.mramesh4.maps,WayNodes,237,0,6,0,63,0,22,0,19,0
+TripFinder,edu.brown.cs.mramesh4.maps,GUIHandler,89,0,11,0,33,0,13,0,4,0
+TripFinder,edu.brown.cs.mramesh4.maps,UserCheckin,33,0,0,0,12,0,6,0,6,0
+TripFinder,edu.brown.cs.mramesh4.maps,MapsLogic,1312,0,143,0,336,0,89,0,16,0
+TripFinder,edu.brown.cs.mramesh4.maps,GUIHandler.RouteStreetsHandler,57,0,0,0,9,0,1,0,1,0
+TripFinder,edu.brown.cs.mramesh4.maps,GUIHandler.RouteCoorsHandler,72,0,0,0,13,0,1,0,1,0
+TripFinder,edu.brown.cs.mramesh4.maps,Way,122,0,4,0,31,0,11,0,9,0
+TripFinder,edu.brown.cs.mramesh4.maps,GUIHandler.FrontHandler,20,0,2,0,5,0,2,0,1,0
+TripFinder,edu.brown.cs.mramesh4.maps,GUIHandler.NearestHandler,43,0,0,0,7,0,1,0,1,0
+TripFinder,edu.brown.cs.mramesh4.maps,GUIHandler.WayHandler,79,0,0,0,11,0,1,0,1,0
+TripFinder,edu.brown.cs.mramesh4.maps,GUIHandler.RadiusHandler,156,0,22,0,37,0,12,0,1,0
+TripFinder,edu.brown.cs.mramesh4.maps,WayNodeCache,21,0,0,0,6,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.maps,GUIHandler.UserHandler,22,0,0,0,5,0,1,0,1,0
+TripFinder,edu.brown.cs.mramesh4.maps,WayNodeCache.new CacheLoader() {...},44,0,2,0,9,0,3,0,2,0
+TripFinder,edu.brown.cs.mramesh4.maps,GUIHandler.NeighborsHandler,144,0,18,0,33,0,10,0,1,0
+TripFinder,edu.brown.cs.mramesh4.maps,GUIHandler.CheckInHandler,11,0,0,0,3,0,1,0,1,0
+TripFinder,edu.brown.cs.mramesh4,Main,235,0,6,0,58,0,11,0,8,0
+TripFinder,edu.brown.cs.mramesh4,Main.ExceptionPrinter,26,0,0,0,8,0,1,0,1,0
+TripFinder,edu.brown.cs.mramesh4,Main.RouteHandler,39,0,0,0,8,0,1,0,1,0
+TripFinder,edu.brown.cs.mramesh4.SQLDatabase,UserSQLDatabase,207,0,2,0,59,0,7,0,6,0
+TripFinder,edu.brown.cs.mramesh4.Dimensional,DimensionalComparator,16,0,0,0,4,0,2,0,2,0
+TripFinder,edu.brown.cs.mramesh4.REPLLoop,REPL,44,0,4,0,12,0,4,0,2,0
+TripFinder,edu.brown.cs.mramesh4.REPLLoop,Parser,61,0,4,0,19,0,5,0,3,0
+TripFinder,edu.brown.cs.mramesh4.MockPerson,MockPerson,271,0,54,0,72,0,35,0,8,0
+TripFinder,edu.brown.cs.mramesh4.MockPerson,MockPersonMethod,214,0,28,0,52,0,18,0,4,0

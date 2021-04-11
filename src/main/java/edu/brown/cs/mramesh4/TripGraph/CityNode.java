@@ -148,6 +148,9 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     node.getConnectingEdges().remove(this.name);
   }
 
+  /**
+   * This is a method that clears all the graph edges and graph nodes
+   */
   @Override
   public void clearGraphEdges() {
     connectingNodes.clear();
@@ -155,7 +158,6 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   }
 
 
-  //TODO: Change this to an A* or more significant path-finding version
   /**
    * Returns the euclidean distance between two city nodes.
    * @param a a node to check distance from
@@ -222,7 +224,5 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     return (finalanswer * EARTH_RADIUS_IN_KM);
   }
 
-
-  //TODO: Code a getActivities() method
 
 }

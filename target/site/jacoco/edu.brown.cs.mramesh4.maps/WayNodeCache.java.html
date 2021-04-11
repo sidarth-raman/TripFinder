@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WayNodeCache.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.maps</a> &gt; <span class="el_source">WayNodeCache.java</span></div><h1>WayNodeCache.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.maps;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * This class represents a cache used in the MapsLogic class to improve runtime
+ * for searching WayNodes by ID. The cache maps IDS to Nodes in the database.
+ */
+public class WayNodeCache {
+
+  private LoadingCache&lt;String, edu.brown.cs.mramesh4.maps.WayNodes&gt; cache;
+
+  /**
+   * In the constructor of this class, we initialize our cache.
+   * @param conn representing database connection.
+   */
+<span class="nc" id="L24">  public WayNodeCache(Connection conn) {</span>
+<span class="nc" id="L25">    cache = CacheBuilder.newBuilder()</span>
+<span class="nc" id="L26">      .refreshAfterWrite(2, TimeUnit.SECONDS)</span>
+<span class="nc" id="L27">      .build(new CacheLoader&lt;String, edu.brown.cs.mramesh4.maps.WayNodes&gt;() {</span>
+        @Override
+        public edu.brown.cs.mramesh4.maps.WayNodes load(String key) throws Exception {
+<span class="nc" id="L30">          PreparedStatement getNode = conn.prepareStatement(&quot;SELECT * FROM node WHERE node.id = ?&quot;);</span>
+<span class="nc" id="L31">          getNode.setString(1, key);</span>
+<span class="nc" id="L32">          ResultSet answer1 = getNode.executeQuery();</span>
+<span class="nc" id="L33">          edu.brown.cs.mramesh4.maps.WayNodes ws = null;</span>
+          //instantiate WayNode object
+<span class="nc bnc" id="L35" title="All 2 branches missed.">          while (answer1.next()) {</span>
+<span class="nc" id="L36">            ws = new edu.brown.cs.mramesh4.maps.WayNodes(answer1.getString(1),</span>
+<span class="nc" id="L37">                    answer1.getDouble(2), answer1.getDouble(3), conn);</span>
+          }
+<span class="nc" id="L39">          return ws;</span>
+        }
+      });
+<span class="nc" id="L42">  }</span>
+
+  /**
+   * This method finds the WayNode in our cache corresponding to the ID
+   * we pass in.
+   * @param key representing ID of WayNode we are looking for
+   * @return representing WayNode found
+   * @throws ExecutionException if our cache cannot execute the query
+   */
+  public edu.brown.cs.mramesh4.maps.WayNodes getNode(String key) throws ExecutionException {
+<span class="nc" id="L52">    return cache.get(key);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

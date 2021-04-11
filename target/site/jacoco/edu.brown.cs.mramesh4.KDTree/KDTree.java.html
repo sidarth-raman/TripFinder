@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KDTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.KDTree</a> &gt; <span class="el_source">KDTree.java</span></div><h1>KDTree.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.KDTree;
+import edu.brown.cs.mramesh4.Dimensional.DimensionalComparator;
+import edu.brown.cs.mramesh4.Dimensional.Dimensional;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+/**.
+ * Class representing a KDTree
+ * @param &lt;T&gt; Dimensional object that Tree stores
+ */
+public class KDTree&lt;T extends Dimensional&gt; {
+  private static final double RAND = 0.5;
+  private KDNode&lt;T&gt; root;
+  private int dimensionType;
+
+  /**.
+   * Constructor for the KD Tree
+   * @param elements  list of elems to fill the kd tree
+   * @param dimensions number of dimensions
+   * @throws IllegalArgumentException  if the elements or dimensions are bad
+   */
+<span class="nc" id="L25">  public KDTree(List&lt;T&gt; elements, int dimensions) throws IllegalArgumentException {</span>
+<span class="nc bnc" id="L26" title="All 4 branches missed.">    if (elements == null || elements.size() == 0) {</span>
+<span class="nc" id="L27">      throw new IllegalArgumentException(&quot;ERROR: Empty list&quot;);</span>
+    }
+<span class="nc bnc" id="L29" title="All 2 branches missed.">    if (dimensions &lt;= 0) {</span>
+<span class="nc" id="L30">      throw new IllegalArgumentException(&quot;ERROR: Enter correct number of Dimensions&quot;);</span>
+    }
+<span class="nc" id="L32">    dimensionType = dimensions;</span>
+<span class="nc" id="L33">    root = buildKDTree(elements, 0, elements.size(), 0);</span>
+<span class="nc" id="L34">  }</span>
+
+  /**.
+   * Builds the KDTree in memory, recursively
+   * @param elements list of elements to insert
+   * @param low  low index of List to add
+   * @param high high index of List to add
+   * @param dimension coordinate plane we are on in this step
+   * @return a root to the tree, with pointers to other elems
+   */
+  public KDNode&lt;T&gt; buildKDTree(List&lt;T&gt; elements, int low, int high, int dimension) {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">    if (low &gt;= high) {</span>
+<span class="nc" id="L46">      return null;</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">    } else if (low == (high - 1)) {</span>
+     // System.out.println(&quot;tree contains&quot; + elements.get(low).getInfo(&quot;id&quot;));
+<span class="nc" id="L49">      return new KDNode&lt;T&gt;(elements.get(low), null, null, dimensionType, true);</span>
+    }
+    //otherwise get the list from low --&gt; high
+<span class="nc" id="L52">    List&lt;T&gt; subList = elements.subList(low, high);</span>
+    int dim;
+<span class="nc bnc" id="L54" title="All 2 branches missed.">    if (dimension == 0) {</span>
+<span class="nc" id="L55">      dim = 0;</span>
+    } else {
+<span class="nc" id="L57">      dim = (dimension % dimensionType);</span>
+    }
+    //sort them by a dimensional comparator, that takes in dimension
+<span class="nc" id="L60">    Collections.sort(subList, new DimensionalComparator(dim));</span>
+    //get the median and median element
+<span class="nc" id="L62">    int median = subList.size() / 2;</span>
+<span class="nc" id="L63">    T elem = subList.get(median);</span>
+    //System.out.println(&quot;tree contains&quot; + elem.getInfo(&quot;id&quot;));
+    //recursive calls
+<span class="nc" id="L66">    KDNode&lt;T&gt; left = buildKDTree(subList, 0, median, dimension + 1);</span>
+<span class="nc" id="L67">    KDNode&lt;T&gt; right = buildKDTree(subList, median + 1, subList.size(), dimension + 1);</span>
+    //return root
+<span class="nc bnc" id="L69" title="All 4 branches missed.">    return new KDNode&lt;T&gt;(elem, left, right, dim,</span>
+      (left == null &amp;&amp; right == null));
+  }
+
+  /**.
+   * @return boolean representing if the tree is empty
+   */
+  public boolean isEmpty() {
+<span class="nc bnc" id="L77" title="All 2 branches missed.">    return (root == null);</span>
+  }
+
+  /**.
+   * Acccessor method for root
+   * @return root node
+   */
+  public KDNode&lt;T&gt; getRoot() {
+<span class="nc" id="L85">    return root;</span>
+  }
+
+  /**.
+   * Returns a list of nearest neighbors
+   * @param k int of neighbors to get
+   * @param target target node to search from
+   * @param name boolean if we should include target
+   * @return a list of dimensional neighbors
+   */
+  public List&lt;T&gt; nearestNeighbors(int k, Dimensional target, boolean name) {
+<span class="nc" id="L96">    ArrayList&lt;T&gt; points = new ArrayList&lt;T&gt;();</span>
+<span class="nc" id="L97">    recursiveNeighbor(k, target, this.getRoot(), points, name);</span>
+
+<span class="nc" id="L99">    Collections.sort(points, new Comparator&lt;Dimensional&gt;() {</span>
+      @Override
+      public int compare(Dimensional o1, Dimensional o2) {
+<span class="nc" id="L102">        return Double.compare(o1.distanceBetween(target), o2.distanceBetween(target));</span>
+      }
+    });
+<span class="nc" id="L105">    return points;</span>
+  }
+
+  /** .
+   * Get all the neighbors within a radius
+   * @param r int radius
+   * @param target object to search from.
+   * @param name a boolean representing if we remove the target
+   * @return list of neighbors within a radius
+   */
+  public List&lt;Dimensional&gt; nearestRadius(int r, Dimensional target, boolean name) {
+<span class="nc" id="L116">    ArrayList&lt;Dimensional&gt; points = new ArrayList&lt;Dimensional&gt;();</span>
+<span class="nc" id="L117">    recursiveRadius(r, target, this.getRoot(), points, name, 0);</span>
+<span class="nc" id="L118">    Collections.sort(points, new Comparator&lt;Dimensional&gt;() {</span>
+      @Override
+      public int compare(Dimensional o1, Dimensional o2) {
+<span class="nc" id="L121">        return Double.compare(o1.distanceBetween(target), o2.distanceBetween(target));</span>
+      }
+    });
+<span class="nc" id="L124">    return points;</span>
+  }
+
+  /**.
+   * This is a recursive function that is used to find the nearest neighbors
+   * @param k   An integer representing capacity of nearest neighbors
+   * @param target  The point we are searching from
+   * @param node  The curr node in the recursion stack
+   * @param list  List we are appending to
+   * @param name boolean if name should be removed
+   */
+  private void recursiveNeighbor(int k, Dimensional target, KDNode&lt;T&gt; node,
+                                 ArrayList&lt;T&gt; list, boolean name) {
+    //base case
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    if (node == null) {</span>
+<span class="nc" id="L139">      return;</span>
+    }
+    //get the elements from the node
+<span class="nc" id="L142">    T curr = node.getElem();</span>
+<span class="nc" id="L143">    boolean isTarget = false;</span>
+<span class="nc bnc" id="L144" title="All 4 branches missed.">    if (name &amp;&amp; curr.getInfo(&quot;name&quot;).equals(target.getInfo(&quot;name&quot;))) {</span>
+<span class="nc" id="L145">      isTarget = true;</span>
+    }
+<span class="nc" id="L147">    int dimension = node.getDimension();</span>
+    //sort the list by distance
+<span class="nc" id="L149">    Collections.sort(list, new Comparator&lt;Dimensional&gt;() {</span>
+      @Override
+      public int compare(Dimensional o1, Dimensional o2) {
+<span class="nc" id="L152">        return Double.compare(o2.distanceBetween(target), o1.distanceBetween(target));</span>
+      }
+    });
+    //get the furthest away neighbor's distance
+<span class="nc" id="L156">    double biggestNeighborDist = -1;</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">    if (!list.isEmpty()) {</span>
+<span class="nc" id="L158">      biggestNeighborDist = list.get(0).distanceBetween(target);</span>
+    }
+    //get the curr node's distance
+<span class="nc" id="L161">    double currDist = curr.distanceBetween(target);</span>
+    //get the axis Distance for the curr node
+<span class="nc" id="L163">    double currAxis = curr.getAxisDistance(dimension, target);</span>
+<span class="nc" id="L164">    double currDim = curr.getCoordinate(dimension);</span>
+    //if the list isn't big enough, add the curr node
+<span class="nc bnc" id="L166" title="All 2 branches missed.">    if (list.size() &lt; k) {</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">      if (!isTarget) {</span>
+<span class="nc" id="L168">        list.add(curr);</span>
+      }
+<span class="nc" id="L170">      recursiveNeighbor(k, target, node.getLeft(), list, name);</span>
+<span class="nc" id="L171">      recursiveNeighbor(k, target, node.getRight(), list, name);</span>
+    } else {
+<span class="nc bnc" id="L173" title="All 2 branches missed.">      if (biggestNeighborDist &gt; currDist) {</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (!isTarget) {</span>
+<span class="nc" id="L175">          list.remove(0);</span>
+<span class="nc" id="L176">          list.add(curr);</span>
+        }
+<span class="nc bnc" id="L178" title="All 2 branches missed.">      } else if (biggestNeighborDist == currDist) {</span>
+<span class="nc" id="L179">        double rand = Math.random();</span>
+<span class="nc" id="L180">        int index = 0;</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">        while (index &lt; list.size() - 1</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">          &amp;&amp; list.get(index).distanceBetween(target)</span>
+          == biggestNeighborDist) {
+<span class="nc" id="L184">          index++;</span>
+        }
+<span class="nc" id="L186">        index = (int) (Math.random() * index);</span>
+<span class="nc bnc" id="L187" title="All 4 branches missed.">        if (rand &gt;= RAND &amp;&amp; !isTarget) {</span>
+<span class="nc" id="L188">          list.remove(index);</span>
+<span class="nc" id="L189">          list.add(curr);</span>
+        }
+      }
+<span class="nc bnc" id="L192" title="All 2 branches missed.">      if (biggestNeighborDist &gt; currAxis) {</span>
+<span class="nc" id="L193">        recursiveNeighbor(k, target, node.getLeft(), list, name);</span>
+<span class="nc" id="L194">        recursiveNeighbor(k, target, node.getRight(), list, name);</span>
+      } else {
+<span class="nc" id="L196">        double cord = target.getCoordinate(dimension);</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (currDim &lt; cord) {</span>
+<span class="nc" id="L198">          recursiveNeighbor(k, target, node.getRight(), list, name);</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">        } else if (currDim &gt; cord) {</span>
+<span class="nc" id="L200">          recursiveNeighbor(k, target, node.getLeft(), list, name);</span>
+        } else {
+<span class="nc" id="L202">          recursiveNeighbor(k, target, node.getRight(), list, name);</span>
+<span class="nc" id="L203">          recursiveNeighbor(k, target, node.getLeft(), list, name);</span>
+        }
+      }
+    }
+<span class="nc" id="L207">  }</span>
+
+  /**.
+   * This is a recursive function to find all neighbors within a radius
+   * @param r int r representing a radius
+   * @param target target to search for
+   * @param node node to recursive search from
+   * @param list list of dimensional of objects
+   */
+  private void recursiveRadius(int r, Dimensional target,
+                               KDNode&lt;T&gt; node, ArrayList&lt;Dimensional&gt; list, boolean name,
+                               int depth) {
+    //base case
+<span class="nc bnc" id="L220" title="All 2 branches missed.">    if (node == null) {</span>
+<span class="nc" id="L221">      return;</span>
+    }
+    //get the curr elem
+<span class="nc" id="L224">    T curr = node.getElem();</span>
+<span class="nc" id="L225">    boolean add = true;</span>
+<span class="nc bnc" id="L226" title="All 4 branches missed.">    if (name &amp;&amp; curr.getInfo(&quot;id&quot;).equals(target.getInfo(&quot;id&quot;))) {</span>
+<span class="nc" id="L227">      add = false;</span>
+    }
+<span class="nc bnc" id="L229" title="All 4 branches missed.">    if (add &amp;&amp; curr.distanceBetween(target) &lt;= r) {</span>
+<span class="nc" id="L230">      list.add(curr);</span>
+    }
+   // int dimension = node.getDimension();
+<span class="nc" id="L233">    int dimension = depth % 3;</span>
+<span class="nc" id="L234">    double currAxis = curr.getAxisDistance(dimension, target);</span>
+<span class="nc" id="L235">    double currDim = curr.getCoordinate(dimension);</span>
+<span class="nc" id="L236">    double cord = target.getCoordinate(dimension);</span>
+    //if the radius is still bigger recurse on both
+<span class="nc bnc" id="L238" title="All 4 branches missed.">    if (r &gt;= currAxis || r == 0) {</span>
+<span class="nc" id="L239">      recursiveRadius(r, target, node.getLeft(), list, name, depth + 1);</span>
+<span class="nc" id="L240">      recursiveRadius(r, target, node.getRight(), list, name, depth + 1);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">    } else if (currDim &lt; cord) {</span>
+<span class="nc" id="L242">      recursiveRadius(r, target, node.getRight(), list, name, depth + 1);</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">    } else if (currDim &gt; cord) {</span>
+<span class="nc" id="L244">      recursiveRadius(r, target, node.getLeft(), list, name, depth + 1);</span>
+    } else {
+<span class="nc" id="L246">      recursiveRadius(r, target, node.getRight(), list, name, depth + 1);</span>
+<span class="nc" id="L247">      recursiveRadius(r, target, node.getLeft(), list, name, depth + 1);</span>
+    }
+<span class="nc" id="L249">  }</span>
+
+
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

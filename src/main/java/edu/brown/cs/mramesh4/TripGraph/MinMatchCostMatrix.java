@@ -4,56 +4,74 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * This is a class to take a double matrix of costs and make assignments
+ * between the rows and cols.
+ * The class draws heavy inspiration from two sources.
+ *   1) https://www.youtube.com/watch?v=SAPG2T4Jbok: This is not a code
+ *   base but rather a video that explains steps of the hungarian algorithm.
+ *   Online implementations of the Hungarian algorithm: including
+ *      https://www.sanfoundry.com/java-program-implement-hungarian-algorithm-bipartite-matching/
+ *      https://github.com/aalmi/HungarianAlgorithm/blob/master/HungarianAlgorithm.java
+ *
+ */
 public class MinMatchCostMatrix {
-  double[][] matrix; // initial matrix (cost matrix)
-  // markers in the matrix
-  int[] squareInRow, squareInCol, rowIsCovered, colIsCovered, staredZeroesInRow;
+  double[][] matrix; // this is a cost matrix
+  // these are the markers required for the hungarian algorithm.
+  int[] squareR, squareC, rowIsCovered, colIsCovered, staredZeroesInRow;
 
+  /**
+   * This is a constructor for the minCostMatrix, we will build the identifiers
+   * needed to run the hungarian algorithm
+   * @param matrix a cost matrix of doubles
+   */
   public MinMatchCostMatrix(double[][]matrix) {
     this.matrix = matrix;
-    squareInRow = new int[matrix.length];
-    squareInCol = new int[matrix[0].length];
+    squareR = new int[matrix.length];
+    squareC = new int[matrix[0].length];
 
     rowIsCovered = new int[matrix.length];
     colIsCovered = new int[matrix[0].length];
     staredZeroesInRow = new int[matrix.length];
     Arrays.fill(staredZeroesInRow, -1);
-    Arrays.fill(squareInRow, -1);
-    Arrays.fill(squareInCol, -1);
+    Arrays.fill(squareR, -1);
+    Arrays.fill(squareC, -1);
   }
 
   /**
-   * find an optimal assignment
+   * This fills a new matrix with optimal assignments between the two.
+   * This is the Hungarian algorithm, and mostly utilizes what was explained
+   * in the Youtube video.
    *
    * @return optimal assignment
    */
   public int[][] findOptimalAssignment() {
+
+    //these are the 1st 3 steps of the hungarian algorithm
     step1();    // reduce matrix
     step2();    // mark independent zeroes
     step3();    // cover columns which contain a marked zero
 
+    //this allows us to jump steps
     while (!allColumnsAreCovered()) {
       int[] mainZero = step4();
-      while (mainZero == null) {      // while no zero found in step4
+      while (mainZero == null) {
         step7();
         mainZero = step4();
       }
-      if (squareInRow[mainZero[0]] == -1) {
-        // there is no square mark in the mainZero line
+      if (squareR[mainZero[0]] == -1) {
         step6(mainZero);
-        step3();    // cover columns which contain a marked zero
+        step3();
       } else {
-        // there is square mark in the mainZero line
-        // step 5
         rowIsCovered[mainZero[0]] = 1;  // cover row of mainZero
-        colIsCovered[squareInRow[mainZero[0]]] = 0;  // uncover column of mainZero
+        colIsCovered[squareR[mainZero[0]]] = 0;  // uncover column of mainZero
         step7();
       }
     }
 
     int[][] optimalAssignment = new int[matrix.length][];
-    for (int i = 0; i < squareInCol.length; i++) {
-      optimalAssignment[i] = new int[]{i, squareInCol[i]};
+    for (int i = 0; i < squareC.length; i++) {
+      optimalAssignment[i] = new int[]{i, squareC[i]};
     }
     return optimalAssignment;
   }
@@ -62,7 +80,7 @@ public class MinMatchCostMatrix {
    * Check if all columns are covered. If that's the case then the
    * optimal solution is found
    *
-   * @return true or false
+   * @return boolean
    */
   private boolean allColumnsAreCovered() {
     for (int i : colIsCovered) {
@@ -74,8 +92,7 @@ public class MinMatchCostMatrix {
   }
 
   /**
-   * Step 1:
-   * Reduce the matrix so that in each row and column at least one zero exists:
+   * Step 1: This is step1 of the Hungarian algorithm it does the following:
    * 1. subtract each row minima from each element of the row
    * 2. subtract each column minima from each element of the column
    */
@@ -125,9 +142,9 @@ public class MinMatchCostMatrix {
         if (matrix[i][j] == 0 && rowHasSquare[i] == 0 && colHasSquare[j] == 0) {
           rowHasSquare[i] = 1;
           colHasSquare[j] = 1;
-          squareInRow[i] = j; // save the row-position of the zero
-          squareInCol[j] = i; // save the column-position of the zero
-          continue; // jump to next row
+          squareR[i] = j;
+          squareC[j] = i;
+          continue;
         }
       }
     }
@@ -138,8 +155,8 @@ public class MinMatchCostMatrix {
    * Cover all columns which are marked with a "square"
    */
   private void step3() {
-    for (int i = 0; i < squareInCol.length; i++) {
-      colIsCovered[i] = squareInCol[i] != -1 ? 1 : 0;
+    for (int i = 0; i < squareC.length; i++) {
+      colIsCovered[i] = squareC[i] != -1 ? 1 : 0;
     }
   }
 
@@ -217,8 +234,8 @@ public class MinMatchCostMatrix {
       // (b)
       // add Z_1 to K if
       // there is a zero Z_1 which is marked with a "square " in the column of Z_0
-      if (squareInCol[j] != -1) {
-        K.add(new int[]{squareInCol[j], j});
+      if (squareC[j] != -1) {
+        K.add(new int[]{squareC[j], j});
         found = true;
       } else {
         found = false;
@@ -231,7 +248,7 @@ public class MinMatchCostMatrix {
 
       // (c)
       // replace Z_0 with the 0* in the row of Z_1
-      i = squareInCol[j];
+      i = squareC[j];
       j = staredZeroesInRow[i];
       // add the new Z_0 to K
       if (j != -1) {
@@ -246,19 +263,17 @@ public class MinMatchCostMatrix {
     // (e)
     for (int[] zero : K) {
       // remove all "square" marks in K
-      if (squareInCol[zero[1]] == zero[0]) {
-        squareInCol[zero[1]] = -1;
-        squareInRow[zero[0]] = -1;
+      if (squareC[zero[1]] == zero[0]) {
+        squareC[zero[1]] = -1;
+        squareR[zero[0]] = -1;
       }
       // replace the 0* marks in K with "square" marks
       if (staredZeroesInRow[zero[0]] == zero[1]) {
-        squareInRow[zero[0]] = zero[1];
-        squareInCol[zero[1]] = zero[0];
+        squareR[zero[0]] = zero[1];
+        squareC[zero[1]] = zero[0];
       }
     }
 
-    // (f)
-    // remove all marks
     Arrays.fill(staredZeroesInRow, -1);
     Arrays.fill(rowIsCovered, 0);
     Arrays.fill(colIsCovered, 0);

@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CompleteTripGraph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.TripGraph</a> &gt; <span class="el_source">CompleteTripGraph.java</span></div><h1>CompleteTripGraph.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.TripGraph;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Stack;
+
+public class CompleteTripGraph&lt;N extends TripGraphNode&lt;N, E&gt;, E extends TripGraphEdge&lt;N, E&gt;&gt;{
+  private HashMap&lt;String, N&gt; graph;
+
+  /**
+   * Empty constructor for a completeGraph
+   */
+<span class="nc" id="L20">  public CompleteTripGraph(){</span>
+<span class="nc" id="L21">    graph = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L22">  }</span>
+
+  /**
+   * Constructor for a complete graph. If all the nodes don't have edges
+   * the graph will make sure that the graph is complete.
+   * @param nodes a list of nodes to fill the graph with
+   */
+<span class="fc" id="L29">  public CompleteTripGraph(List&lt;N&gt; nodes){</span>
+<span class="fc" id="L30">    graph = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">    for(int i = 0; i &lt; nodes.size(); i++){</span>
+<span class="fc" id="L32">      N node = nodes.get(i);</span>
+<span class="fc" id="L33">      String name = node.getName();</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">      if(!graph.containsKey(name)){</span>
+<span class="fc" id="L35">        graph.put(name, node);</span>
+      }
+      //System.out.println(&quot;node added&quot; + node.getName());
+    }
+
+  //to add all the edges to each other
+<span class="fc bfc" id="L41" title="All 2 branches covered.">    for(int j = 0; j &lt; nodes.size(); j++){</span>
+<span class="fc" id="L42">      N node2 = nodes.get(j);</span>
+     // System.out.println(&quot;node curr&quot; + node2.getName());
+<span class="fc bfc" id="L44" title="All 2 branches covered.">      for(N node: graph.values()){</span>
+<span class="fc" id="L45">        String name = node.getName();</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if(!node2.equals(node)) {</span>
+          //System.out.println(&quot;inserted edge between nodes&quot; + node2.getName() + node.getName());
+<span class="fc" id="L48">          node2.insertEdges(node);</span>
+        }
+<span class="fc" id="L50">        graph.put(name, node);</span>
+<span class="fc" id="L51">      }</span>
+<span class="fc" id="L52">      graph.put(node2.getName(), node2);</span>
+    }
+    //System.out.println(&quot;graph&quot; + graph.size());
+<span class="fc" id="L55">  }</span>
+  //TODO: use OOP to get rid of this and make this class more sensible
+  /**
+   * This takes in a graph that may not be complete and
+   * returns a complete version
+   * @param g graph that may or may not be complete
+   */
+<span class="fc" id="L62">  public CompleteTripGraph(TripGraph&lt;N, E&gt; g){</span>
+<span class="fc" id="L63">    graph = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">    for(N node: g.getGraph().values()){</span>
+<span class="fc" id="L65">      String name = node.getName();</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">      if(!graph.containsKey(name)){</span>
+<span class="fc" id="L67">        graph.put(name, node);</span>
+      }
+<span class="fc" id="L69">    }</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">    for(N node: this.graph.values()){</span>
+<span class="fc" id="L71">      String name = node.getName();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">      for(N node2: this.graph.values()){</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if(!node.equals(node2)){</span>
+<span class="fc" id="L74">          node.insertEdges(node2);</span>
+        }
+<span class="fc" id="L76">      }</span>
+<span class="fc" id="L77">      graph.put(name, node);</span>
+<span class="fc" id="L78">    }</span>
+<span class="fc" id="L79">  }</span>
+
+  /**
+   * This is a method to run aStar on a graph.
+   * @param start the name of the start city
+   * @param end the name of the end city.
+   * @return a list of nodes to visit
+   */
+  public List&lt;N&gt; aStar(String start, String end){
+<span class="fc" id="L88">    List&lt;N&gt; ret = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L89" title="2 of 4 branches missed.">    if(!graph.containsKey(start) || !graph.containsKey(end)){</span>
+<span class="nc" id="L90">      return null;</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">    } else if(start.equals(end)){</span>
+<span class="nc" id="L92">      ret.add(graph.get(start));</span>
+<span class="nc" id="L93">      return ret;</span>
+    } else{
+<span class="fc" id="L95">      ret = aStarHelper(graph.get(start), graph.get(end));</span>
+<span class="fc" id="L96">      return ret;</span>
+    }
+  }
+
+  /**
+   * This is a helper to run aStar within the graph that we are writing
+   * @param start the start node to search from
+   * @param end the end node to start from
+   * @return a list of nodes
+   */
+  public List&lt;N&gt; aStarHelper(N start, N end){
+<span class="fc" id="L107">    ArrayList&lt;N&gt; ret = new ArrayList&lt;&gt;();</span>
+    //create a comparator that sorts them by a weight aStar assigns them
+<span class="fc" id="L109">    PriorityQueue&lt;N&gt; pq = new PriorityQueue&lt;N&gt;(new TripGraphNodeComparator&lt;N, E&gt;());</span>
+    //set the distance travelled to 0
+<span class="fc" id="L111">    start.setDistance(0);</span>
+<span class="fc" id="L112">    start.setWeight(0);</span>
+    //keep track of a visited
+<span class="fc" id="L114">    HashMap&lt;String, N&gt; visited = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L115">    HashMap&lt;N, List&lt;E&gt;&gt; deletedEdges = new HashMap&lt;&gt;();</span>
+    //put them in the visited
+<span class="fc" id="L117">    visited.put(start.getName(), start);</span>
+<span class="fc" id="L118">    List&lt;N&gt; nodes = new ArrayList&lt;&gt;();</span>
+    //nodes.add(start);
+<span class="fc" id="L120">    pq.add(start);</span>
+<span class="fc" id="L121">    return aStarHelp(end, pq, nodes, visited);</span>
+  }
+
+  /**
+   * Helper method to conduct the AStar search recursively and use backtracking
+   * to save the route, since this method could not be used previously.
+   * @param end the end node to search for
+   * @param pq priorityqueue to use
+   * @param nodes nodes of curr path
+   * @param visited map of visited
+   * @return a list of Nodes.
+   */
+  public List&lt;N&gt; aStarHelp(N end, PriorityQueue&lt;N&gt; pq, List&lt;N&gt; nodes, HashMap&lt;String, N&gt; visited){
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">    if(!pq.isEmpty()){</span>
+<span class="fc" id="L135">      N curr = pq.poll();</span>
+<span class="fc" id="L136">      nodes.add(curr);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">      if (curr.equals(end)) {</span>
+        //return a copy in order to prevent alteration
+<span class="fc" id="L139">        return new ArrayList&lt;&gt;(nodes);</span>
+      }
+<span class="fc" id="L141">      List&lt;N&gt; neighbors = curr.getNeighbors();</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">      for(N next: neighbors){</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">        if(next.equals(curr)) {</span>
+<span class="nc" id="L144">          continue;</span>
+        } else{
+<span class="fc" id="L146">          String name = next.getName();</span>
+<span class="fc" id="L147">          Double dist = curr.getDistance() + curr.getConnectingEdges().get(name).getWeight();</span>
+<span class="fc" id="L148">          Double totalWeight = dist + next.toGoal(end);</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">          if (!visited.containsKey(next.getName())) {</span>
+<span class="fc" id="L150">            next.setDistance(dist);</span>
+<span class="fc" id="L151">            next.setWeight(totalWeight);</span>
+<span class="fc" id="L152">            visited.put(next.getName(), next);</span>
+<span class="fc" id="L153">            pq.add(next);</span>
+          } else {
+<span class="nc" id="L155">            N prev = visited.get(next.getName());</span>
+            //checking if we want to update the weight and distance
+<span class="nc bnc" id="L157" title="All 2 branches missed.">            if (prev.getWeight() &gt; totalWeight) {</span>
+<span class="nc" id="L158">              next.setDistance(dist);</span>
+<span class="nc" id="L159">              next.setWeight(totalWeight);</span>
+<span class="nc" id="L160">              visited.put(next.getName(), next);</span>
+<span class="nc" id="L161">              pq.add(next);</span>
+            }
+          }
+        }
+<span class="fc" id="L165">      }</span>
+      //backtracking
+<span class="fc" id="L167">      List&lt;N&gt; ret = aStarHelp(end, pq, nodes, visited);</span>
+<span class="fc" id="L168">      nodes.remove(curr);</span>
+<span class="fc" id="L169">      return ret;</span>
+    } else{
+<span class="nc bnc" id="L171" title="All 2 branches missed.">      if(visited.containsKey(end)){</span>
+<span class="nc" id="L172">        return nodes;</span>
+      } else{
+<span class="nc" id="L174">        return null;</span>
+      }
+    }
+  }
+
+  /**
+   * This is used to insert a node into the graph.
+   * @param node the node to insert into the graph
+   */
+  public void insertNode(N node){
+<span class="fc" id="L184">    String nodeName = node.getName();</span>
+<span class="pc bpc" id="L185" title="5 of 6 branches missed.">    if(!graph.containsKey(nodeName) || (graph.containsKey(nodeName) &amp;&amp; !graph.get(nodeName).equals(node))) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">      for(N node2: this.graph.values()){</span>
+<span class="fc" id="L187">        node.insertEdges(node2);</span>
+<span class="fc" id="L188">      }</span>
+<span class="fc" id="L189">      graph.put(nodeName, node);</span>
+    }
+<span class="fc" id="L191">  }</span>
+
+  /**
+   * Deletes a node from the graph
+   * @param node the node to delete
+   */
+  public void deleteNode(N node){
+    //This will take a node, loop through the graph and delete all edges between it
+<span class="fc" id="L199">    String nodeName = node.getName();</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">    if(graph.containsKey(nodeName)){</span>
+<span class="fc" id="L201">      graph.remove(nodeName);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">      for(N node2: this.graph.values()){</span>
+<span class="fc" id="L203">        node2.deleteEdge(node);</span>
+<span class="fc" id="L204">      }</span>
+    }
+<span class="fc" id="L206">  }</span>
+
+  /**
+   * Accesor method for graph.
+   * @return a graph.
+   */
+  public HashMap&lt;String, N&gt; getGraph(){
+<span class="fc" id="L213">    return graph;</span>
+  }
+
+
+  /**
+   * This is a 2Opt-Algorithm (At worse the cost
+   * of solving this is 2*optimal cost) for the Traveling Salesman
+   * Problem. This algorithm approximates the Tsp
+   * @param start The node to start from
+   * @return a list that represents a hamlitonian cycle or null with bad inputs
+   */
+  public List&lt;N&gt; TwoOptTSP(N start){
+<span class="pc bpc" id="L225" title="2 of 4 branches missed.">    if(start == null || !graph.containsKey(start.getName())){</span>
+<span class="nc" id="L226">      return null;</span>
+    }
+<span class="fc" id="L228">    TripGraph&lt;N, E&gt; mst = this.Kruskals();</span>
+<span class="fc" id="L229">    List&lt;N&gt; mstDFS = this.dfsTree(mst, start);</span>
+<span class="fc" id="L230">    return mstDFS;</span>
+  }
+
+  public List&lt;N&gt; christTSP(N start){
+<span class="pc bpc" id="L234" title="2 of 4 branches missed.">    if(start == null || !graph.containsKey(start.getName())){</span>
+<span class="nc" id="L235">      return null;</span>
+    }
+    //generate a min cost tree
+    //Step 2
+<span class="fc" id="L239">    TripGraph&lt;N, E&gt; mst = this.Kruskals();</span>
+    //find the edges of the min-cost perfect match and add it to the mst
+    //Step 3
+<span class="fc" id="L242">    mst = this.minCostMatch(mst);</span>
+    //do a eulerian tour and then find the best path using shortcuts
+
+
+
+<span class="fc" id="L247">    return null;</span>
+  }
+
+
+
+
+  /**
+   * Takes in the kruskal's tree and runs a DFS algorithm on it
+   * in order to reduce the amount of nodes running.
+   * @param mst a dfs-searched tree.
+   * @return
+   */
+  public List&lt;N&gt; dfsTree(TripGraph&lt;N,E&gt; mst, N start){
+<span class="fc" id="L260">    List&lt;N&gt; ret = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L261">    HashMap&lt;String, Integer&gt; visited = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L262">    Stack&lt;N&gt; stack = new Stack&lt;&gt;();</span>
+<span class="fc" id="L263">    String name = start.getName();</span>
+<span class="fc" id="L264">    N node = mst.getGraph().get(name);</span>
+<span class="fc" id="L265">    ret.add(node);</span>
+<span class="fc" id="L266">    stack.push(node);</span>
+<span class="fc" id="L267">    visited.put(name, 1);</span>
+<span class="fc" id="L268">    HashMap&lt;String, Integer&gt; visted = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">    while(!stack.isEmpty()){</span>
+<span class="fc" id="L270">        N pop = stack.pop();</span>
+<span class="fc" id="L271">        String currName = pop.getName();</span>
+<span class="fc" id="L272">        ret.add(pop);</span>
+<span class="fc" id="L273">        System.out.println(&quot;visited&quot; + currName +&quot;now&quot;);</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        for(E edge: pop.getOutgoingEdges()){</span>
+<span class="fc" id="L275">          N next = edge.getNodes().get(1);</span>
+<span class="fc" id="L276">          String nextName = next.getName();</span>
+<span class="fc" id="L277">          System.out.println(&quot;neighbor of&quot; + currName +&quot;is&quot; + &quot; &quot; + nextName);</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">          if(!visited.containsKey(nextName)) {</span>
+<span class="fc" id="L279">            System.out.println(&quot;Added&quot; + nextName);</span>
+<span class="fc" id="L280">            stack.push(edge.getNodes().get(1));</span>
+<span class="fc" id="L281">            visited.put(nextName, 1);</span>
+          }
+<span class="fc" id="L283">        }</span>
+<span class="fc" id="L284">    }</span>
+<span class="fc" id="L285">    ret.add(node);</span>
+<span class="fc" id="L286">    return ret;</span>
+    //return this.deleteDuplicates(ret, start);
+  }
+
+//  /**
+//   * This deletes duplicates within the list.
+//   * @param input the list to sort through
+//   * @param start start node
+//   * @return a non-duplicated list
+//   */
+//  public List&lt;N&gt; deleteDuplicates(List&lt;N&gt; input, N start){
+//    HashSet&lt;String&gt; visited = new HashSet&lt;&gt;();
+//    List&lt;N&gt; ret = new ArrayList&lt;&gt;();
+//    ret.add(input.get(0));
+//    visited.add(input.get(0).getName());
+//    for(int i = 1; i &lt; input.size() - 1; i++){
+//      if(!visited.contains(input.get(i).getName())){
+//        visited.add(input.get(i).getName());
+//        ret.add(input.get(i));
+//      }
+//    }
+//    ret.add(input.get(input.size()-1));
+//    return ret;
+//  }
+
+
+
+  /**
+   * This is Kruskal's algorithm, which we use to generate a MST
+   * within the graph. Using the MST, we will do a DFS on the MST.
+   * @return an MST of the graph
+   */
+  public TripGraph&lt;N, E&gt; Kruskals(){
+<span class="fc" id="L319">    TripGraph&lt;N, E&gt; mst = new TripGraph&lt;&gt;();</span>
+    //get the edgeList.
+<span class="fc" id="L321">    HashMap&lt;String, E&gt; edgeList = new HashMap&lt;&gt;();</span>
+    //get all the edges within the graph and add them to the edgeList.
+    //we make sure not to readd edges twice.
+<span class="fc bfc" id="L324" title="All 2 branches covered.">    for(N node: this.getGraph().values()){</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">      for(N node2: this.getGraph().values()){</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">        if(!node2.equals(node)){</span>
+<span class="fc" id="L327">          E edge = node.getConnectingEdges().get(node2.getName());</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">          if(edge!=null) {</span>
+<span class="fc" id="L329">            String edgeName = edge.getName();</span>
+<span class="fc" id="L330">            String[] edgeSplit = edgeName.split(&quot;-&gt;&quot;);</span>
+<span class="fc" id="L331">            String reverseEdge = edgeSplit[1] + &quot;-&gt;&quot; + edgeSplit[0];</span>
+            //we only add unique edges so we don't add it to the graph multiple times
+<span class="pc bpc" id="L333" title="1 of 4 branches missed.">            if (!edgeList.containsKey(edgeName) &amp;&amp; !edgeList.containsKey(reverseEdge)) {</span>
+<span class="fc" id="L334">              edgeList.put(edgeName, edge);</span>
+            }
+          }
+        }
+<span class="fc" id="L338">      }</span>
+<span class="fc" id="L339">    }</span>
+
+    //FIRST TEST: to see if all the edges are within the graph.
+    //System.out.println(&quot;This is the size of the edgeList&quot; + edgeList.values().size());
+//    for(String s: edgeList.keySet()){
+//      System.out.println(&quot;Edge for&quot; + s + &quot;in set&quot;);
+//    }
+
+    //take the priorityQueue
+<span class="fc" id="L348">    PriorityQueue&lt;E&gt; pq = new PriorityQueue&lt;E&gt;(new TripGraphEdgeComparator&lt;N, E&gt;());</span>
+    //add the list of sorted edges to the priorityqueue
+<span class="fc bfc" id="L350" title="All 2 branches covered.">    for(E edge: edgeList.values()){</span>
+      //make sure to clear the graph nodes.
+<span class="fc bfc" id="L352" title="All 2 branches covered.">      for(N node: edge.getNodes()){</span>
+<span class="fc" id="L353">        node.clearGraphEdges();</span>
+<span class="fc" id="L354">      }</span>
+<span class="fc" id="L355">      pq.add(edge);</span>
+<span class="fc" id="L356">    }</span>
+<span class="fc" id="L357">    HashMap&lt;String, E&gt; addedEdges = new HashMap&lt;&gt;();</span>
+    //checks to see the elements in the pq.
+<span class="fc bfc" id="L359" title="All 2 branches covered.">    while(!pq.isEmpty()){</span>
+<span class="fc" id="L360">      E curr = pq.poll();</span>
+      //see the edge we are on.
+      //System.out.println(&quot;curr edge&quot; + curr.getName());
+
+      //if we have n-1 edges, we have a complete MST.
+<span class="fc bfc" id="L365" title="All 2 branches covered.">      if(mst.getNumEdges() == this.getGraph().values().size() - 1){</span>
+<span class="fc" id="L366">        return mst;</span>
+      }
+      //add the edge to the graph otherwise
+<span class="fc" id="L369">      mst.insertEdge(curr);</span>
+
+      //if there is a cycle because of this, we shouldn't add the node to the graph
+
+      //TODO: fix this cycle detection algorithm
+      //if(isCyclic(mst)){
+<span class="fc bfc" id="L375" title="All 2 branches covered.">      if(UnionFind(mst) == 1){</span>
+        //System.out.println(&quot;deleted&quot; + curr.getName());
+<span class="fc" id="L377">        mst.deleteEdge(curr.getNodes().get(0), curr.getNodes().get(1));</span>
+      }
+      //System.out.println(&quot;curr edge size&quot; + mst.getNumEdges());
+<span class="fc" id="L380">    }</span>
+      //if there was no minimum spanning tree: we return null, which indicates an issue.
+<span class="pc bpc" id="L382" title="1 of 2 branches missed.">    if(mst.getNumEdges() == this.getGraph().values().size() - 1){</span>
+      //System.out.println(&quot;Broke out of the pq loop&quot;);
+<span class="fc" id="L384">      return mst;</span>
+    } else{
+       // System.out.println(&quot;There was an issue&quot;);
+<span class="nc" id="L387">      return null;</span>
+    }
+  }
+
+  /**
+   * This is a helper method to test if a graph is cyclic using BFs
+   * @param mst: the graph to search:
+   * @param node the node we are at currently
+   * @param visited the visited edge.
+   * @return
+   */
+  public boolean isCyclicHelper(TripGraph&lt;N,E&gt; mst, N node, HashMap&lt;String, Boolean&gt; visited){
+    //we have a deque for a max elements with 50: for larger graph algorithms, we may want
+    //to use a different datastructure
+<span class="nc" id="L401">    Deque&lt;N&gt; deque = new ArrayDeque&lt;&gt;(50);</span>
+    //the parent map
+<span class="nc" id="L403">    HashMap&lt;N, N&gt; parent = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L404" title="All 2 branches missed.">    for(N next: mst.getGraph().values()){</span>
+<span class="nc" id="L405">      parent.put(next, next);</span>
+<span class="nc" id="L406">    }</span>
+
+    //this is a list of visited nodes
+<span class="nc" id="L409">    visited.put(node.getName(), true);</span>
+    //System.out.println(&quot;Curr node added to visited&quot; + node.getName());
+<span class="nc" id="L411">    deque.offerLast(node);</span>
+    //we go through the deque
+<span class="nc bnc" id="L413" title="All 2 branches missed.">    while(!deque.isEmpty()){</span>
+      //find the neighbors
+<span class="nc" id="L415">      N curr = deque.getLast();</span>
+      //System.out.println(&quot;Curr node&quot; + curr.getName());
+<span class="nc bnc" id="L417" title="All 2 branches missed.">      for(N neighbor: curr.getNeighbors()){</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">        if(!visited.containsKey(neighbor.getName())) {</span>
+          //System.out.println(&quot;Neighbor node, queued&quot; + neighbor.getName());
+<span class="nc bnc" id="L420" title="All 2 branches missed.">        } else if(visited.get(neighbor.getName()) == false) {</span>
+          //System.out.println(&quot;Neighbor node, unvisited&quot; + neighbor.getName());
+<span class="nc" id="L422">          visited.put(neighbor.getName(), true);</span>
+<span class="nc" id="L423">          deque.offerLast(neighbor);</span>
+<span class="nc" id="L424">          parent.put(neighbor, curr);</span>
+<span class="nc bnc" id="L425" title="All 4 branches missed.">        } else if(parent.containsKey(neighbor) &amp;&amp; parent.get(neighbor).equals(curr) == false){</span>
+          //System.out.println(&quot;Neighbor node, visited&quot; + neighbor.getName() +
+           // &quot;parent of neighbor&quot; + parent.get(neighbor).getName());
+<span class="nc" id="L428">          return false;</span>
+        } else{
+          //System.out.println(&quot; the parent is the curr node&quot; + curr + parent.get(neighbor).getName());
+        }
+<span class="nc" id="L432">      }</span>
+<span class="nc" id="L433">    }</span>
+<span class="nc" id="L434">    return true;</span>
+  }
+
+  /**
+   * This method uses bfs to tell us if there is a cycle in the graph.
+   * @param mst: A minimum spanning tree graph
+   * @return a boolean if the mst is cyclic or not.
+   */
+  public boolean isCyclic(TripGraph&lt;N,E&gt; mst){
+<span class="nc" id="L443">    HashMap&lt;String, Boolean&gt; visited = new HashMap&lt;&gt;();</span>
+    //set every node visited to false: this means we haven't visited yet
+<span class="nc bnc" id="L445" title="All 2 branches missed.">    for(N node: mst.getGraph().values()){</span>
+      //System.out.println(&quot;Nodes in the graph include&quot; + node.getName());
+<span class="nc" id="L447">      visited.put(node.getName(), false);</span>
+<span class="nc" id="L448">    }</span>
+    //if we detect a cycle in the portion of the graph, we know there is a cycle
+    //in the graph
+<span class="nc bnc" id="L451" title="All 2 branches missed.">    for(N node: mst.getGraph().values()){</span>
+        //System.out.println(&quot;Running helper method on&quot; + node.getName());
+<span class="nc bnc" id="L453" title="All 4 branches missed.">        if(!visited.get(node.getName()) &amp;&amp; isCyclicHelper(mst, node, visited)){</span>
+<span class="nc" id="L454">          return true;</span>
+        }
+<span class="nc" id="L456">    }</span>
+<span class="nc" id="L457">    return false;</span>
+  }
+
+
+  public int UnionFind(TripGraph&lt;N,E&gt; mst){
+<span class="fc" id="L462">    Collection&lt;N&gt; nodes = mst.getGraph().values();</span>
+<span class="fc" id="L463">    int[] parent = new int[nodes.size()];</span>
+<span class="fc" id="L464">    HashMap&lt;N, Integer&gt; nodesMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L465">    int i = 0;</span>
+<span class="fc bfc" id="L466" title="All 2 branches covered.">    for(N node: nodes){</span>
+<span class="fc" id="L467">      parent[i] = -1;</span>
+<span class="fc" id="L468">      nodesMap.put(node, i);</span>
+<span class="fc" id="L469">      i++;</span>
+<span class="fc" id="L470">    }</span>
+<span class="fc" id="L471">    HashSet&lt;String&gt; visited = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">    for(N node: nodes){</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">      for(E edge: node.getOutgoingEdges()){</span>
+        //visited.add(edge.getName());
+<span class="fc" id="L475">        String edgeName = edge.getName();</span>
+<span class="fc" id="L476">        String[] edgeSplit = edgeName.split(&quot;-&gt;&quot;);</span>
+<span class="fc" id="L477">        String reverseEdge = edgeSplit[1] + &quot;-&gt;&quot; + edgeSplit[0];</span>
+        //visited.add(reverseEdge);
+<span class="pc bpc" id="L479" title="1 of 4 branches missed.">        if(!visited.contains(edgeName) &amp;&amp; !visited.contains(reverseEdge)){</span>
+<span class="fc" id="L480">          visited.add(reverseEdge);</span>
+<span class="fc" id="L481">          visited.add(edge.getName());</span>
+<span class="fc" id="L482">          int x = this.find(parent, nodesMap.get(node));</span>
+<span class="fc" id="L483">          int y = this.find(parent, nodesMap.get(edge.getNodes().get(1)));</span>
+<span class="fc bfc" id="L484" title="All 2 branches covered.">          if (x == y)</span>
+<span class="fc" id="L485">            return 1;</span>
+<span class="fc" id="L486">          this.Union(parent, x, y);</span>
+        }
+
+<span class="fc" id="L489">      }</span>
+<span class="fc" id="L490">    }</span>
+<span class="fc" id="L491">    return 0;</span>
+  }
+
+  public int find(int[] parent, int i){
+<span class="fc bfc" id="L495" title="All 2 branches covered.">    if (parent[i] == -1)</span>
+<span class="fc" id="L496">      return i;</span>
+<span class="fc" id="L497">    return find(parent, parent[i]);</span>
+  }
+
+  public void Union(int parent[], int x, int y) {
+<span class="fc" id="L501">    parent[x] = y;</span>
+<span class="fc" id="L502">  }</span>
+
+  public TripGraph&lt;N, E&gt; eulerTour(TripGraph&lt;N,E&gt; mst, int[][] add, HashMap&lt;String,List&lt;N&gt;&gt; nodes){
+<span class="fc bfc" id="L505" title="All 2 branches covered.">    for(int i = 0; i &lt; add.length; i++){</span>
+<span class="fc bfc" id="L506" title="All 2 branches covered.">      for(int k = 0; k &lt; add[i].length; k++){</span>
+<span class="fc bfc" id="L507" title="All 2 branches covered.">        if(add[i][k] != 0){</span>
+<span class="fc" id="L508">          String get = Integer.toString(i).concat(Integer.toString(k));</span>
+<span class="pc bpc" id="L509" title="1 of 2 branches missed.">          if(nodes.containsKey(get)){</span>
+<span class="nc" id="L510">            List&lt;N&gt; edgeAdd = nodes.get(get);</span>
+<span class="nc" id="L511">            mst.insertEdge(edgeAdd.get(0), edgeAdd.get(1));</span>
+<span class="nc" id="L512">          } else{</span>
+<span class="fc" id="L513">            System.out.println(&quot;Issue&quot;);</span>
+          }
+        }
+      }
+    }
+<span class="fc" id="L518">    return mst;</span>
+  }
+
+
+  public TripGraph&lt;N,E&gt; minCostMatch(TripGraph&lt;N,E&gt; mst){
+<span class="fc" id="L523">    List&lt;N&gt; nodes = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L524" title="All 2 branches covered.">    for(N node: mst.getGraph().values()){</span>
+<span class="fc bfc" id="L525" title="All 2 branches covered.">      if(node.getNeighbors().size() % 2 != 0){</span>
+<span class="fc" id="L526">        nodes.add(node);</span>
+      }
+<span class="fc" id="L528">    }</span>
+
+<span class="fc" id="L530">    HashMap&lt;String, List&lt;N&gt;&gt; costMatricesPos = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L531">    double[][] costMatrix = new double[nodes.size()][nodes.size()];</span>
+<span class="fc" id="L532">    int start = 0;</span>
+<span class="fc bfc" id="L533" title="All 2 branches covered.">    for(N node: nodes){</span>
+<span class="fc" id="L534">      String str = Integer.toString(start);</span>
+<span class="fc" id="L535">      int pos = 0;</span>
+<span class="fc bfc" id="L536" title="All 2 branches covered.">      for(N connector: nodes){</span>
+<span class="fc bfc" id="L537" title="All 2 branches covered.">        if(!(connector.equals(node))){</span>
+<span class="fc" id="L538">          str.concat(Integer.toString(pos));</span>
+<span class="fc" id="L539">          List&lt;N&gt; matrix = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L540">          matrix.add(node);</span>
+<span class="fc" id="L541">          matrix.add(connector);</span>
+<span class="fc" id="L542">          costMatricesPos.put(str, matrix);</span>
+<span class="fc" id="L543">          costMatrix[start][pos] = node.distanceBetween(connector);</span>
+<span class="fc" id="L544">        } else{</span>
+<span class="fc" id="L545">          costMatrix[start][pos] = Double.MAX_VALUE;</span>
+        }
+<span class="fc" id="L547">        pos++;</span>
+<span class="fc" id="L548">      }</span>
+<span class="fc" id="L549">      start++;</span>
+<span class="fc" id="L550">    }</span>
+
+<span class="fc" id="L552">    MinMatchCostMatrix match = new MinMatchCostMatrix(costMatrix);</span>
+<span class="fc" id="L553">    int[][] assignment = match.findOptimalAssignment();</span>
+<span class="fc" id="L554">    return eulerTour(mst,assignment, costMatricesPos);</span>
+  }
+
+  /**
+   * Finds a eulerian tour within a graph in faster time.
+   * @param mst the minimum spanning tree to use
+   * @param start a start node
+   * @return a List of Nodes that comprise a Eulerian Tour
+   */
+  public List&lt;N&gt; eulerTourPath(TripGraph&lt;N,E&gt; mst, N start){
+<span class="nc" id="L564">    Stack&lt;N&gt; s = new Stack&lt;&gt;();</span>
+<span class="nc" id="L565">    List&lt;N&gt; c = new ArrayList&lt;&gt;();</span>
+
+//    N v = start;
+//
+////    start.getConnectingEdges();
+//    Map&lt;String, E&gt; edgesOfGraph = new HashMap&lt;&gt;();
+//
+//
+//    while(!s.empty()){
+////      CityNode v = s.pop();
+//      if(v){
+//        c.add(0, v);
+//        v = s.pop();
+//      } else {
+//
+//      }
+//    }
+
+<span class="nc" id="L583">    return c;</span>
+  }
+
+
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

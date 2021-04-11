@@ -238,9 +238,14 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     }
     TripGraph<N, E> mst = this.Kruskals();
     List<N> mstDFS = this.dfsTree(mst, start);
-    return mstDFS;
+    return this.deleteRepeats(mstDFS);
   }
 
+  /**
+   * This is a method for the christofedes algorithm
+   * @param start the start node to return to
+   * @return the Hamiltonian cycle.
+   */
   public List<N> christTSP(N start) {
     if (start == null || !graph.containsKey(start.getName())) {
       return null;
@@ -250,13 +255,24 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     TripGraph<N, E> mst = this.Kruskals();
     //find the edges of the min-cost perfect match and add it to the mst
     //Step 3
+
+    for(N node: mst.getGraph().values()){
+      for(N edge: node.getNeighbors()){
+        System.out.println("Graph has edge before" + node.getName() + "->" + edge.getName());
+      }
+    }
+
+
+
+
     mst = this.minCostMatch(mst);
 
     for(N node: mst.getGraph().values()){
-      for(N neighbor: node.getNeighbors()) {
-        System.out.println("There is an edge between" + node.getName() + neighbor.getName());
+      for(N edge: node.getNeighbors()){
+        System.out.println("Graph has edge after" + node.getName() + "->" + edge.getName());
       }
     }
+
 
 
     //do a eulerian tour and then find the best path using shortcuts
@@ -285,13 +301,13 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       N pop = stack.pop();
       String currName = pop.getName();
       ret.add(pop);
-      System.out.println("visited" + currName + "now");
+      //System.out.println("visited" + currName + "now");
       for (E edge : pop.getOutgoingEdges()) {
         N next = edge.getNodes().get(1);
         String nextName = next.getName();
-        System.out.println("neighbor of" + currName + "is" + " " + nextName);
+        //System.out.println("neighbor of" + currName + "is" + " " + nextName);
         if (!visited.containsKey(nextName)) {
-          System.out.println("Added" + nextName);
+          //System.out.println("Added" + nextName);
           stack.push(edge.getNodes().get(1));
           visited.put(nextName, 1);
         }
@@ -301,27 +317,6 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     return ret;
     //return this.deleteDuplicates(ret, start);
   }
-
-//  /**
-//   * This deletes duplicates within the list.
-//   * @param input the list to sort through
-//   * @param start start node
-//   * @return a non-duplicated list
-//   */
-//  public List<N> deleteDuplicates(List<N> input, N start){
-//    HashSet<String> visited = new HashSet<>();
-//    List<N> ret = new ArrayList<>();
-//    ret.add(input.get(0));
-//    visited.add(input.get(0).getName());
-//    for(int i = 1; i < input.size() - 1; i++){
-//      if(!visited.contains(input.get(i).getName())){
-//        visited.add(input.get(i).getName());
-//        ret.add(input.get(i));
-//      }
-//    }
-//    ret.add(input.get(input.size()-1));
-//    return ret;
-//  }
 
 
   /**
@@ -403,78 +398,6 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     }
   }
 
-  /**
-   * This is a helper method to test if a graph is cyclic using BFs
-   *
-   * @param mst:    the graph to search:
-   * @param node    the node we are at currently
-   * @param visited the visited edge.
-   * @return
-   */
-  public boolean isCyclicHelper(TripGraph<N, E> mst, N node, HashMap<String, Boolean> visited) {
-    //we have a deque for a max elements with 50: for larger graph algorithms, we may want
-    //to use a different datastructure
-    Deque<N> deque = new ArrayDeque<>(50);
-    //the parent map
-    HashMap<N, N> parent = new HashMap<>();
-    for (N next : mst.getGraph().values()) {
-      parent.put(next, next);
-    }
-
-    //this is a list of visited nodes
-    visited.put(node.getName(), true);
-    //System.out.println("Curr node added to visited" + node.getName());
-    deque.offerLast(node);
-    //we go through the deque
-    while (!deque.isEmpty()) {
-      //find the neighbors
-      N curr = deque.getLast();
-      //System.out.println("Curr node" + curr.getName());
-      for (N neighbor : curr.getNeighbors()) {
-        if (!visited.containsKey(neighbor.getName())) {
-          //System.out.println("Neighbor node, queued" + neighbor.getName());
-        } else if (visited.get(neighbor.getName()) == false) {
-          //System.out.println("Neighbor node, unvisited" + neighbor.getName());
-          visited.put(neighbor.getName(), true);
-          deque.offerLast(neighbor);
-          parent.put(neighbor, curr);
-        } else if (parent.containsKey(neighbor) && parent.get(neighbor).equals(curr) == false) {
-          //System.out.println("Neighbor node, visited" + neighbor.getName() +
-          // "parent of neighbor" + parent.get(neighbor).getName());
-          return false;
-        } else {
-          //System.out.println(" the parent is the curr node" + curr + parent.get(neighbor).getName());
-        }
-      }
-    }
-    return true;
-  }
-
-  /**
-   * This method uses bfs to tell us if there is a cycle in the graph.
-   *
-   * @param mst: A minimum spanning tree graph
-   * @return a boolean if the mst is cyclic or not.
-   */
-  public boolean isCyclic(TripGraph<N, E> mst) {
-    HashMap<String, Boolean> visited = new HashMap<>();
-    //set every node visited to false: this means we haven't visited yet
-    for (N node : mst.getGraph().values()) {
-      //System.out.println("Nodes in the graph include" + node.getName());
-      visited.put(node.getName(), false);
-    }
-    //if we detect a cycle in the portion of the graph, we know there is a cycle
-    //in the graph
-    for (N node : mst.getGraph().values()) {
-      //System.out.println("Running helper method on" + node.getName());
-      if (!visited.get(node.getName()) && isCyclicHelper(mst, node, visited)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-
   public int UnionFind(TripGraph<N, E> mst) {
     Collection<N> nodes = mst.getGraph().values();
     int[] parent = new int[nodes.size()];
@@ -525,7 +448,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   public TripGraph<N, E> eulerTour(TripGraph<N, E> mst, int[][] add,
                                    HashMap<String, List<N>> nodes) {
     for(String k: nodes.keySet()){
-      System.out.println("value" + k);
+      //System.out.println("value" + k);
     }
 
 
@@ -640,19 +563,27 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     return this.deleteRepeats(c);
   }
 
-  //Step 5
+  /**
+   * This is a method to remove repeats in a tour
+   * @param tour a tour to edit
+   * @return a deleted duplicate tour.
+   */
   private List<N> deleteRepeats(List<N> tour){
-    Set<N> cities = new HashSet<>();
-    List<Integer> deletions = new ArrayList<>();
+    List<N> cities = new ArrayList<>();
+    Set<String> visited = new HashSet<>();
     for(int i = 0; i < tour.size() - 1; i++){ //Minus 1 bc we don't want to remove origin
-      if(!cities.add(tour.get(i))){
-        deletions.add(i);
+      String cityName = tour.get(i).getName();
+      //System.out.println("CityName" + cityName);
+      if(!visited.contains(cityName)){
+        visited.add(cityName);
+        cities.add(tour.get(i));
+      } else{
+        continue;
       }
     }
-    for(int j : deletions){
-      tour.remove(j);
-    }
-    return tour;
+    cities.add(tour.get(0));
+
+    return cities;
   }
 
   private boolean incidentOnUnusedEdges(Set<E> edges, Set<E> unvisited, N cur) {

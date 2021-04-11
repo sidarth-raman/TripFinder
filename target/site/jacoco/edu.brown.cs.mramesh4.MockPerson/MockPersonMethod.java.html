@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockPersonMethod.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TripFinder</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mramesh4.MockPerson</a> &gt; <span class="el_source">MockPersonMethod.java</span></div><h1>MockPersonMethod.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mramesh4.MockPerson;
+import edu.brown.cs.mramesh4.CSVParser.CSVParser;
+import edu.brown.cs.mramesh4.stars.ActionMethod;
+import edu.brown.cs.mramesh4.stars.IllegalArgumentException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**.
+ * This is a class for processesing MockPeople
+ */
+public class MockPersonMethod implements ActionMethod&lt;String&gt; {
+  private ArrayList&lt;MockPerson&gt; people;
+
+  /**.
+   * Declares the MockPerson Method
+   */
+<span class="nc" id="L18">  public MockPersonMethod() {</span>
+<span class="nc" id="L19">    people = new ArrayList&lt;MockPerson&gt;();</span>
+<span class="nc" id="L20">  }</span>
+
+  /**.
+   * Implements the run interface to process
+   * the command
+   * @param coms representing a string command
+   */
+  @Override
+  public void run(String[] coms) {
+<span class="nc" id="L29">    ArrayList&lt;String&gt; ret = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">    if (coms.length != 2) {</span>
+<span class="nc" id="L31">      System.err.println(&quot;ERROR: Invalid params&quot;);</span>
+    } else {
+<span class="nc bnc" id="L33" title="All 2 branches missed.">      if (coms[0].equals(&quot;mock&quot;)) {</span>
+<span class="nc" id="L34">        loadFileAndPrint(coms[1]);</span>
+      } else {
+<span class="nc" id="L36">        System.err.println(&quot;ERROR: Please enter a valid command&quot;);</span>
+      }
+    }
+<span class="nc" id="L39">  }</span>
+  /**.
+   * Takes the filename and loads into a CSV
+   * to parse and print
+   * @param com
+   *           A string representing filename
+   */
+  public void loadFileAndPrint(String com) {
+<span class="nc" id="L47">    CSVParser csv = new CSVParser();</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">    if (!csv.isValidFile(com)) {</span>
+<span class="nc" id="L49">      System.err.println(&quot;ERROR: FILE NOT FOUND&quot;);</span>
+<span class="nc" id="L50">      return;</span>
+    } else {
+<span class="nc" id="L52">      ArrayList&lt;List&lt;String&gt;&gt; parsed = csv.parseCSV(com);</span>
+<span class="nc" id="L53">      List&lt;String&gt; heading = parsed.get(0);</span>
+<span class="nc" id="L54">      parsed.remove(0);</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">      if (parsed == null) {</span>
+<span class="nc" id="L56">        return;</span>
+      }
+<span class="nc bnc" id="L58" title="All 2 branches missed.">      if (parsed.size() == 0) {</span>
+<span class="nc" id="L59">        System.err.println(&quot;ERROR: File is Invalid&quot;);</span>
+<span class="nc" id="L60">        return;</span>
+      }
+<span class="nc bnc" id="L62" title="All 2 branches missed.">      if (!(heading.get(0).equals(&quot;first_name&quot;))</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">          || !(heading.get(1).equals(&quot;last_name&quot;))</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">          || !(heading.get(2).equals(&quot;email&quot;))</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">          || !(heading.get(3).equals(&quot;date_time&quot;))</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">          || !(heading.get(4).equals(&quot;gender&quot;))</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">          || !(heading.get(5).equals(&quot;street_address&quot;))</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">          || !(heading.get(6).equals(&quot;ip_address&quot;))) {</span>
+<span class="nc" id="L69">        System.err.println(&quot;ERROR: This file has a malformed header&quot;);</span>
+<span class="nc" id="L70">        people.clear();</span>
+<span class="nc" id="L71">        return;</span>
+      }
+<span class="nc" id="L73">      people.clear();</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">      for (List&lt;String&gt; person: parsed) {</span>
+        try {
+<span class="nc" id="L76">          people.add(new MockPerson(person.get(0), person.get(1),</span>
+<span class="nc" id="L77">              person.get(2), person.get(3), person.get(4), person.get(5),</span>
+<span class="nc" id="L78">              person.get(6)));</span>
+<span class="nc" id="L79">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L80">          System.err.println(e.getMessage());</span>
+<span class="nc" id="L81">          people.clear();</span>
+<span class="nc" id="L82">          return;</span>
+<span class="nc" id="L83">        } catch (ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L84">          System.err.println(&quot;ERROR: Malformed input&quot;);</span>
+<span class="nc" id="L85">          people.clear();</span>
+<span class="nc" id="L86">          return;</span>
+<span class="nc" id="L87">        }</span>
+<span class="nc" id="L88">      }</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">      for (MockPerson person: people) {</span>
+<span class="nc" id="L90">        System.out.println(person.toString());</span>
+<span class="nc" id="L91">      }</span>
+    }
+    //people.clear();
+<span class="nc" id="L94">  }</span>
+
+  /**.
+   * Accessor for arrayList
+   * @return an arrayList of People
+   */
+  public ArrayList&lt;MockPerson&gt; getPeople() {
+<span class="nc" id="L101">    return people;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
