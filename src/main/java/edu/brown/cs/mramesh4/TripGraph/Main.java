@@ -1,4 +1,4 @@
-package edu.brown.cs.mramesh4;
+package edu.brown.cs.mramesh4.TripGraph;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,12 +14,6 @@ import edu.brown.cs.mramesh4.REPLLoop.REPL;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
 import edu.brown.cs.mramesh4.SQLDatabase.UserSQLDatabase;
-import edu.brown.cs.mramesh4.TripGraph.CityDatabaseReader;
-import edu.brown.cs.mramesh4.TripGraph.CityEdge;
-import edu.brown.cs.mramesh4.TripGraph.CityNode;
-import edu.brown.cs.mramesh4.TripGraph.CompleteTripGraph;
-import edu.brown.cs.mramesh4.TripGraph.GraphBuilder;
-import edu.brown.cs.mramesh4.TripGraph.TripGraph;
 import edu.brown.cs.mramesh4.maps.CheckinThread;
 import edu.brown.cs.mramesh4.maps.GUIHandler;
 import edu.brown.cs.mramesh4.maps.MapsLogic;
