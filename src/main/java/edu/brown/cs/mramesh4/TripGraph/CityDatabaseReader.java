@@ -13,6 +13,7 @@ public class CityDatabaseReader {
   private Connection conn;
   private String filepath;
   private List<String> cityList;
+  private List<CityNode> cityNodes;
 
 
   public CityDatabaseReader(String filepath){
@@ -62,7 +63,30 @@ public class CityDatabaseReader {
     }
   }
 
+  public void loadCity(){
+    PreparedStatement prep = null;
+
+    try {
+      prep = conn.prepareStatement("select city, state_id, lat, lng from cities;");
+      ResultSet rs = prep.executeQuery();
+      while (rs.next()) {
+        String name = rs.getString(1) + ", " + rs.getString(2);
+        double lat = rs.getDouble(3);
+        double longit = rs.getDouble(4);
+        cityNodes.add(new CityNode(name, lat, longit));
+      }
+      rs.close();
+      prep.close();
+    } catch (SQLException throwables) {
+      throwables.printStackTrace();
+    }
+  }
+
   public List<String> getCities(){
     return cityList;
+  }
+
+  public List<CityNode> getNodes(){
+    return cityNodes;
   }
 }
