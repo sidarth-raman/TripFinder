@@ -35,26 +35,21 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
       if (!graph.containsKey(name)) {
         graph.put(name, node);
       }
-      //System.out.println("node added" + node.getName());
     }
 
     //to add all the edges to each other
     for (int j = 0; j < nodes.size(); j++) {
       N node2 = nodes.get(j);
-      // System.out.println("node curr" + node2.getName());
       for (N node : graph.values()) {
         String name = node.getName();
         if (!node2.equals(node)) {
-          //System.out.println("inserted edge between nodes" + node2.getName() + node.getName());
           node2.insertEdges(node);
         }
         graph.put(name, node);
       }
       graph.put(node2.getName(), node2);
     }
-    //System.out.println("graph" + graph.size());
   }
-  //TODO: use OOP to get rid of this and make this class more sensible
 
   /**
    * This takes in a graph that may not be complete and
@@ -244,7 +239,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   /**
    * This is a method for the christofedes algorithm
    * @param start the start node to return to
-   * @return the Hamiltonian cycle.
+   * @return the Hamiltonian cycle from the start node.
    */
   public List<N> christTSP(N start) {
     if (start == null || !graph.containsKey(start.getName())) {
@@ -254,26 +249,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     //Step 2
     TripGraph<N, E> mst = this.Kruskals();
     //find the edges of the min-cost perfect match and add it to the mst
-    //Step 3
-
-    for(N node: mst.getGraph().values()){
-      for(N edge: node.getNeighbors()){
-        System.out.println("Graph has edge before" + node.getName() + "->" + edge.getName());
-      }
-    }
-
-
-
-
     mst = this.minCostMatch(mst);
-
-    for(N node: mst.getGraph().values()){
-      for(N edge: node.getNeighbors()){
-        System.out.println("Graph has edge after" + node.getName() + "->" + edge.getName());
-      }
-    }
-
-
 
     //do a eulerian tour and then find the best path using shortcuts
     List<N> ret = this.eulerTourPath(mst, start);
@@ -286,7 +262,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * in order to reduce the amount of nodes running.
    *
    * @param mst a dfs-searched tree.
-   * @return
+   * @return a list of nodes
    */
   public List<N> dfsTree(TripGraph<N, E> mst, N start) {
     List<N> ret = new ArrayList<>();
@@ -299,15 +275,11 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     visited.put(name, 1);
     while (!stack.isEmpty()) {
       N pop = stack.pop();
-      String currName = pop.getName();
       ret.add(pop);
-      //System.out.println("visited" + currName + "now");
       for (E edge : pop.getOutgoingEdges()) {
         N next = edge.getNodes().get(1);
         String nextName = next.getName();
-        //System.out.println("neighbor of" + currName + "is" + " " + nextName);
         if (!visited.containsKey(nextName)) {
-          //System.out.println("Added" + nextName);
           stack.push(edge.getNodes().get(1));
           visited.put(nextName, 1);
         }
@@ -315,7 +287,6 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     }
     ret.add(node);
     return ret;
-    //return this.deleteDuplicates(ret, start);
   }
 
 
@@ -342,17 +313,12 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
             //we only add unique edges so we don't add it to the graph multiple times
             if (!edgeList.containsKey(edgeName) && !edgeList.containsKey(reverseEdge)) {
               edgeList.put(edgeName, edge);
+              edgeList.put(reverseEdge, edge);
             }
           }
         }
       }
     }
-
-    //FIRST TEST: to see if all the edges are within the graph.
-    //System.out.println("This is the size of the edgeList" + edgeList.values().size());
-//    for(String s: edgeList.keySet()){
-//      System.out.println("Edge for" + s + "in set");
-//    }
 
     //take the priorityQueue
     PriorityQueue<E> pq = new PriorityQueue<E>(new TripGraphEdgeComparator<N, E>());
@@ -368,8 +334,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     //checks to see the elements in the pq.
     while (!pq.isEmpty()) {
       E curr = pq.poll();
-      //see the edge we are on.
-      //System.out.println("curr edge" + curr.getName());
+
 
       //if we have n-1 edges, we have a complete MST.
       if (mst.getNumEdges() == this.getGraph().values().size() - 1) {
@@ -380,45 +345,46 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
 
       //if there is a cycle because of this, we shouldn't add the node to the graph
 
-      //TODO: fix this cycle detection algorithm
-      //if(isCyclic(mst)){
       if (UnionFind(mst) == 1) {
-        //System.out.println("deleted" + curr.getName());
         mst.deleteEdge(curr.getNodes().get(0), curr.getNodes().get(1));
       }
-      //System.out.println("curr edge size" + mst.getNumEdges());
     }
     //if there was no minimum spanning tree: we return null, which indicates an issue.
     if (mst.getNumEdges() == this.getGraph().values().size() - 1) {
-      //System.out.println("Broke out of the pq loop");
       return mst;
     } else {
-      // System.out.println("There was an issue");
       return null;
     }
   }
 
+  /**
+   * This is the union-find algorithm, which is used to detect if there is a cycle within the graph.
+   * @param mst a minimum spanning tree represented as a graph
+   * @return an integer representing 1 = true, 0 = false.
+   */
   public int UnionFind(TripGraph<N, E> mst) {
     Collection<N> nodes = mst.getGraph().values();
     int[] parent = new int[nodes.size()];
     HashMap<N, Integer> nodesMap = new HashMap<>();
     int i = 0;
+    //create a parent array for each node
     for (N node : nodes) {
       parent[i] = -1;
       nodesMap.put(node, i);
       i++;
     }
     HashSet<String> visited = new HashSet<>();
+
+    //go through each edge
     for (N node : nodes) {
       for (E edge : node.getOutgoingEdges()) {
-        //visited.add(edge.getName());
         String edgeName = edge.getName();
         String[] edgeSplit = edgeName.split("->");
         String reverseEdge = edgeSplit[1] + "->" + edgeSplit[0];
-        //visited.add(reverseEdge);
         if (!visited.contains(edgeName) && !visited.contains(reverseEdge)) {
           visited.add(reverseEdge);
           visited.add(edge.getName());
+          //find the parent of each node and see if they matchup
           int x = this.find(parent, nodesMap.get(node));
           int y = this.find(parent, nodesMap.get(edge.getNodes().get(1)));
           if (x == y) {
@@ -432,6 +398,12 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     return 0;
   }
 
+  /**
+   * Used to find the parent of a given node
+   * @param parent the parent array
+   * @param i the index of the node
+   * @return the index of the parent
+   */
   public int find(int[] parent, int i) {
     if (parent[i] == -1) {
       return i;
@@ -439,24 +411,34 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     return find(parent, parent[i]);
   }
 
+  /**
+   * Used to merge the parent array with a new parent
+   * @param parent the parent array
+   * @param x original index
+   * @param y merge index
+   */
   public void Union(int parent[], int x, int y) {
     parent[x] = y;
   }
 
 
-
+  /**
+   * This is the setup for the eulertour portion of the christofedes algorithm, in which
+   * the algo takes a mincost matching and addes it to the mst
+   * @param mst the mst
+   * @param add a min cost match matrix
+   * @param nodes the edges to add based on min cost matrix
+   * @return an updated mst
+   */
   public TripGraph<N, E> eulerTour(TripGraph<N, E> mst, int[][] add,
                                    HashMap<String, List<N>> nodes) {
-    for(String k: nodes.keySet()){
-      //System.out.println("value" + k);
-    }
-
-
+    //goes through the nodes to add
     for (int i = 0; i < add.length; i++) {
       for (int k = 0; k < add[i].length; k++) {
         if (add[i][k] != 0) {
           String get = Integer.toString(i).concat(Integer.toString(k));
           String get2 = Integer.toString(k).concat(Integer.toString(i));
+          //inserts the edge from min cost match to the graph
           if (nodes.containsKey(get)) {
             List<N> edgeAdd = nodes.get(get);
             mst.insertEdge(edgeAdd.get(0), edgeAdd.get(1));
@@ -469,12 +451,18 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
         }
       }
     }
+    //returns the mst
     return mst;
   }
 
-
+  /**
+   * This is the method to generate a minCostMatch
+   * @param mst the minimum spanning tree
+   * @return a mincostMatch of the TripGrpah
+   */
   public TripGraph<N, E> minCostMatch(TripGraph<N, E> mst) {
     List<N> nodes = new ArrayList<>();
+    //gets all the odd-degree nodes
     for (N node : mst.getGraph().values()) {
       if (node.getNeighbors().size() % 2 != 0) {
         nodes.add(node);
@@ -484,6 +472,8 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     HashMap<String, List<N>> costMatricesPos = new HashMap<>();
     double[][] costMatrix = new double[nodes.size()][nodes.size()];
     int start = 0;
+
+    //create a cost matrix that maps the cost of each node pairing
     for (N node : nodes) {
       String str = Integer.toString(start);
       int pos = 0;
@@ -504,7 +494,8 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     }
 
     MinMatchCostMatrix match = new MinMatchCostMatrix(costMatrix);
-    int[][] assignment = match.findOptimalAssignment();
+    //creates the optimal assignment for mincostmatches based
+    int[][] assignment = match.runHungerAlgo();
     return eulerTour(mst, assignment, costMatricesPos);
   }
 
@@ -586,6 +577,13 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
     return cities;
   }
 
+  /**
+   * Helper method to see if an edge is incident on a vertex
+   * @param edges set of edges
+   * @param unvisited set of unvisited edges
+   * @param cur currentn ode
+   * @return a boolean
+   */
   private boolean incidentOnUnusedEdges(Set<E> edges, Set<E> unvisited, N cur) {
 
     for (E edge : edges) {

@@ -7,12 +7,15 @@ import java.util.Set;
 /**
  * This is a class to take a double matrix of costs and make assignments
  * between the rows and cols.
- * The class draws heavy inspiration from two sources.
+ *
+ *
+ * The class draws heavy inspiration from multiple sources, that primarily deal with integer
+ * examples of hungarian algorithms.
  *   1) https://www.youtube.com/watch?v=SAPG2T4Jbok: This is not a code
  *   base but rather a video that explains steps of the hungarian algorithm.
  *   Online implementations of the Hungarian algorithm: including
  *      https://www.sanfoundry.com/java-program-implement-hungarian-algorithm-bipartite-matching/
- *      https://github.com/aalmi/HungarianAlgorithm/blob/master/HungarianAlgorithm.java
+ *      https://github.com/aalmi/HungarianAlgorithm
  *
  */
 public class MinMatchCostMatrix {
@@ -45,12 +48,18 @@ public class MinMatchCostMatrix {
    *
    * @return optimal assignment
    */
-  public int[][] findOptimalAssignment() {
+  public int[][] runHungerAlgo() {
 
     //these are the 1st 3 steps of the hungarian algorithm
-    step1();    // reduce matrix
-    step2();    // mark independent zeroes
-    step3();    // cover columns which contain a marked zero
+
+    //get rid of the min
+    step1();
+
+    //mark the zeroes in the graph
+    step2();
+
+    //mark covered zeroes
+    step3();
 
     //this allows us to jump steps
     while (!allColumnsAreCovered()) {
@@ -63,8 +72,8 @@ public class MinMatchCostMatrix {
         step6(mainZero);
         step3();
       } else {
-        rowIsCovered[mainZero[0]] = 1;  // cover row of mainZero
-        colIsCovered[squareR[mainZero[0]]] = 0;  // uncover column of mainZero
+        rowIsCovered[mainZero[0]] = 1;
+        colIsCovered[squareR[mainZero[0]]] = 0;
         step7();
       }
     }
@@ -96,7 +105,7 @@ public class MinMatchCostMatrix {
    * 1. subtract each row minima from each element of the row
    * 2. subtract each column minima from each element of the column
    */
-  private void step1() {
+  public void step1() {
     // rows
     for (int i = 0; i < matrix.length; i++) {
       // find the min value of the current row
@@ -129,10 +138,10 @@ public class MinMatchCostMatrix {
   }
 
   /**
-   * Step 2:
-   * mark each 0 with a "square", if there are no other marked zeroes in the same row or column
+   * Step 2 of the Hungarian Algorithm
+   * mark each 0 with a "square"
    */
-  private void step2() {
+  public void step2() {
     int[] rowHasSquare = new int[matrix.length];
     int[] colHasSquare = new int[matrix[0].length];
 
@@ -154,7 +163,7 @@ public class MinMatchCostMatrix {
    * Step 3:
    * Cover all columns which are marked with a "square"
    */
-  private void step3() {
+  public void step3() {
     for (int i = 0; i < squareC.length; i++) {
       colIsCovered[i] = squareC[i] != -1 ? 1 : 0;
     }
@@ -166,7 +175,7 @@ public class MinMatchCostMatrix {
    * 2. Subtract it from all uncovered values
    * 3. Add it to all twice-covered values
    */
-  private void step7() {
+  public void step7() {
     // Find the smallest uncovered value in the matrix
     double minUncoveredValue = Integer.MAX_VALUE;
     for (int i = 0; i < matrix.length; i++) {
@@ -197,11 +206,11 @@ public class MinMatchCostMatrix {
 
   /**
    * Step 4:
-   * Find zero value Z_0 and mark it as "0*".
+   * Find the main zero within the matrix
    *
-   * @return position of Z_0 in the matrix
+   * @return position of mainZero.
    */
-  private int[] step4() {
+  public int[] step4() {
     for (int i = 0; i < matrix.length; i++) {
       if (rowIsCovered[i] == 0) {
         for (int j = 0; j < matrix[i].length; j++) {
@@ -217,23 +226,19 @@ public class MinMatchCostMatrix {
 
   /**
    * Step 6:
-   * Create a chain K of alternating "squares" and "0*"
+   * Create a chain of alternating "squares" and Z0.
    *
-   * @param mainZero => Z_0 of Step 4
+   * @param mainZero, what we got from step 4
    */
-  private void step6(int[] mainZero) {
+  public void step6(int[] mainZero) {
     int i = mainZero[0];
     int j = mainZero[1];
 
     Set<int[]> K = new LinkedHashSet<>();
-    //(a)
-    // add Z_0 to K
     K.add(mainZero);
     boolean found = false;
     do {
-      // (b)
-      // add Z_1 to K if
-      // there is a zero Z_1 which is marked with a "square " in the column of Z_0
+
       if (squareC[j] != -1) {
         K.add(new int[]{squareC[j], j});
         found = true;
@@ -241,16 +246,13 @@ public class MinMatchCostMatrix {
         found = false;
       }
 
-      // if no zero element Z_1 marked with "square" exists in the column of Z_0, then cancel the loop
       if (!found) {
         break;
       }
 
-      // (c)
-      // replace Z_0 with the 0* in the row of Z_1
       i = squareC[j];
       j = staredZeroesInRow[i];
-      // add the new Z_0 to K
+
       if (j != -1) {
         K.add(new int[]{i, j});
         found = true;
@@ -258,16 +260,16 @@ public class MinMatchCostMatrix {
         found = false;
       }
 
-    } while (found); // (d) as long as no new "square" marks are found
+    } while (found);
 
-    // (e)
+
     for (int[] zero : K) {
-      // remove all "square" marks in K
+
       if (squareC[zero[1]] == zero[0]) {
         squareC[zero[1]] = -1;
         squareR[zero[0]] = -1;
       }
-      // replace the 0* marks in K with "square" marks
+
       if (staredZeroesInRow[zero[0]] == zero[1]) {
         squareR[zero[0]] = zero[1];
         squareC[zero[1]] = zero[0];

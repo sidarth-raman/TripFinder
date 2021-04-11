@@ -110,12 +110,12 @@ public class CompleteGraphTest {
     node7 = new CityNode("City G", -72.0785319657452987,  -0.1815834632498404);
     node8 = new CityNode("City H", -79.2915791686897506 ,  21.4033307581457670);
     node9 = new CityNode("City I", -65.0865638413727368,   36.0624693073746769);
-    node10 = new CityNode("City K", -57.5687244704708050 , 43.2505562436354225);
-    node11 = new CityNode("City L", -50.5859026832315024, 21.5881966132975371);
-    node12 = new CityNode("City M", -36.0366489745023770, 21.6135482886620949);
-    node13 = new CityNode("City N", -29.0584693142401171 , 43.2167287683090606);
-    node14 = new CityNode("City O", -14.6577381710829471 ,  43.3895496964974043);
-    node15 = new CityNode("City P", -0.1358203773809326,  28.7292896751977480);
+    node10 = new CityNode("City J", -57.5687244704708050 , 43.2505562436354225);
+    node11 = new CityNode("City K", -50.5859026832315024, 21.5881966132975371);
+    node12 = new CityNode("City L", -36.0366489745023770, 21.6135482886620949);
+    node13 = new CityNode("City M", -29.0584693142401171 , 43.2167287683090606);
+    node14 = new CityNode("City N", -14.6577381710829471 ,  43.3895496964974043);
+    node15 = new CityNode("City O", -0.1358203773809326,  28.7292896751977480);
     List<CityNode> graphList = new ArrayList<>();
     graphList.add(node);
     graphList.add(node2);
