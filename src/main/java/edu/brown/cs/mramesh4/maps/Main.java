@@ -199,10 +199,14 @@ public final class Main {
         }
         System.out.println("path size: " + path.size());
       }
-//      Map<String, Object> variables = ImmutableMap.of("output", path);
+      List<String> res = new ArrayList<>();
+      for(CityNode n : path){
+        res.add(n.getName());
+      }
+      Map<String, Object> variables = ImmutableMap.of("output", res);
 
-return null;
-//      return GSON.toJson(variables);
+//      return null;
+      return GSON.toJson(variables);
     }
   }
 
