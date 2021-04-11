@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TripFinder.iml" filepath="$PROJECT_DIR$/TripFinder.iml" />
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/maps.iml" filepath="$PROJECT_DIR$/maps.iml" />
+=======
+>>>>>>> 88014a04337dd7d70353950a8c8201a1657a4b6c
     </modules>
   </component>
 </project>

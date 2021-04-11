@@ -1,2 +1,19 @@
+<<<<<<< HEAD
 /Users/danielsegel/Desktop/BrownCS/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/student/tripfinder/Main.java
 /Users/danielsegel/Desktop/BrownCS/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/student/tripfinder/CityDatabase.java
+=======
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/CityComparator.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/TripGraph.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/EulerTripNodeComparator.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/CityEdge.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/maps/Main.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/CityDatabaseReader.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/MinMatchCostMatrix.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/GraphBuilder.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/CityNode.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/CompleteTripGraph.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/TripGraphNodeComparator.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/TripGraphEdgeComparator.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/TripGraphNode.java
+/Users/henrysowerby/Desktop/cs0320/term-project-dsegel-hsowerby-mramesh4-sraman9/src/main/java/edu/brown/cs/mramesh4/TripGraph/TripGraphEdge.java
+>>>>>>> 88014a04337dd7d70353950a8c8201a1657a4b6c

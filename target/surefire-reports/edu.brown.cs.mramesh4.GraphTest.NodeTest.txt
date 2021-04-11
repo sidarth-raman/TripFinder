@@ -1,8 +1,12 @@
 -------------------------------------------------------------------------------
 Test set: edu.brown.cs.mramesh4.GraphTest.NodeTest
 -------------------------------------------------------------------------------
+<<<<<<< HEAD
 Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in edu.brown.cs.mramesh4.GraphTest.NodeTest
 edu.brown.cs.mramesh4.GraphTest.NodeTest.initializationError  Time elapsed: 0 s  <<< ERROR!
 java.lang.NoClassDefFoundError: Ledu/brown/cs/mramesh4/TripGraph/CityNode;
 Caused by: java.lang.ClassNotFoundException: edu.brown.cs.mramesh4.TripGraph.CityNode
 
+=======
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in edu.brown.cs.mramesh4.GraphTest.NodeTest
+>>>>>>> 88014a04337dd7d70353950a8c8201a1657a4b6c
