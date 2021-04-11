@@ -51,9 +51,9 @@ public class GraphBuilderTest {
   @Test
   public void testOriginSelector(){
     setUp();
-    citiesToVisit.add("Los Angeles");
-    citiesToVisit.add("New York");
-    GraphBuilder g = new GraphBuilder(conn, "Chicago", 1000, 5, citiesToVisit);
+    citiesToVisit.add("Los Angeles, CA");
+    citiesToVisit.add("New York, NY");
+    GraphBuilder g = new GraphBuilder(conn, "Chicago, IL", 1000, 5, citiesToVisit);
     assertEquals(g.getOrigin(), "Chicago, IL");
     tearDown();
   }
@@ -61,9 +61,9 @@ public class GraphBuilderTest {
   @Test
   public void testVisitingSelection(){
     setUp();
-    citiesToVisit.add("Sacramento");
-    citiesToVisit.add("Detroit");
-    GraphBuilder g = new GraphBuilder(conn, "Denver", 1000, 3, citiesToVisit);
+    citiesToVisit.add("Sacramento, CA");
+    citiesToVisit.add("Detroit, MI");
+    GraphBuilder g = new GraphBuilder(conn, "Denver, CO", 1000, 3, citiesToVisit);
     assertEquals(g.getCitiesOfGraph().size(), 3);
     for(CityNode n : g.getCitiesOfGraph()){
       System.out.println(n.getName());
@@ -75,9 +75,9 @@ public class GraphBuilderTest {
   @Test
   public void testNoSuggestions(){
     setUp();
-    citiesToVisit.add("San Diego");
-    citiesToVisit.add("Atlanta");
-    GraphBuilder g = new GraphBuilder(conn, "New York", 1000, 3, citiesToVisit);
+    citiesToVisit.add("San Diego, CA");
+    citiesToVisit.add("Atlanta, GA");
+    GraphBuilder g = new GraphBuilder(conn, "New York, NY", 1000, 3, citiesToVisit);
     assertEquals(g.getCitiesOfGraph().size(), 3);
     tearDown();
   }
@@ -85,11 +85,11 @@ public class GraphBuilderTest {
   @Test
   public void tooManyToVisit(){
     setUp();
-    citiesToVisit.add("Pittsburgh");
-    citiesToVisit.add("Chicago");
-    citiesToVisit.add("Des Moines");
-    citiesToVisit.add("Houston");
-    GraphBuilder g = new GraphBuilder(conn, "Boston", 1000, 3, citiesToVisit);
+    citiesToVisit.add("Pittsburgh, PA");
+    citiesToVisit.add("Chicago, IL");
+    citiesToVisit.add("Des Moines, IA");
+    citiesToVisit.add("Houston, TX");
+    GraphBuilder g = new GraphBuilder(conn, "Boston, MA", 1000, 3, citiesToVisit);
     assertEquals(g.getCitiesOfGraph().size(), 5);
     tearDown();
   }
@@ -97,9 +97,9 @@ public class GraphBuilderTest {
   @Test
   public void maxDist(){
     setUp();
-    citiesToVisit.add("Madison");
-    citiesToVisit.add("Chicago");
-    GraphBuilder g = new GraphBuilder(conn,"New York", 10, 3, citiesToVisit);
+    citiesToVisit.add("Madison, WI");
+    citiesToVisit.add("Chicago, IL");
+    GraphBuilder g = new GraphBuilder(conn,"New York, NY", 10, 3, citiesToVisit);
     for(CityNode n : g.getCitiesOfGraph()){
       System.out.println("node of graph: " + n.getName());
     }

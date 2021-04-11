@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -111,11 +112,14 @@ public class GraphBuilder {
    * @param s is the string of the origin city.
    */
   private void findOrigin(String s) {
-
+    String temp = s;
     originCity = null;
     PreparedStatement prep = null;
-    List<String> citiesToSearch = citiesToVisit;
-    citiesToSearch.add(s);
+    List<String> citiesToSearch = new ArrayList<>();
+    for(String city : citiesToVisit){
+      citiesToSearch.add(city.split(",")[0]);
+    }
+    citiesToSearch.add(s.split(",")[0]);
 
     //Building the query based on the cities to visit.
     StringBuilder sb = new StringBuilder("SELECT city, state_id, lat, lng, population, id FROM cities where city in (");
@@ -135,13 +139,12 @@ public class GraphBuilder {
       prep = conn.prepareStatement(sb.toString());
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
-        String cityName = rs.getString(1);
         String name = rs.getString(1) + ", " + rs.getString(2);
         double lat = rs.getDouble(3);
         double lon = rs.getDouble(4);
-        if (cityName.equals(s)){
+        if (name.equals(temp)){
           originCity = new CityNode(name, lat, lon);
-        } else {
+        } else if (citiesToVisit.contains(name) && !name.equals(temp)){
           CityNode toVisit = new CityNode(name, lat, lon);
           cityNodesToVisit.add(toVisit);
           citiesInGraph.add(toVisit);

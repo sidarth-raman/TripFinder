@@ -162,9 +162,8 @@ public final class Main {
     public Object handle(Request request, Response response) throws Exception {
 
       JSONObject data = new JSONObject(request.body());
-      System.out.println("handler called");
-      //Retrieving preferences
-      String origin = data.getString("origin").split(",")[0];
+
+      String origin = data.getString("origin");
       System.out.println("checkpt 1");
       double maxDist = Double.parseDouble(data.getString("maxDist").split(" ")[0]);
       System.out.println("checkpt 2");
@@ -175,14 +174,14 @@ public final class Main {
       String[] cities = data.getString("city").split(",");
       System.out.println("checkpt 4");
 
-      List<String> citiesToVisit = new ArrayList<>();
-      citiesToVisit.add(cities[0]);
+      List<String> citiesToVisit;
+      citiesToVisit = Arrays.asList(cities);
       System.out.println("checkpt 5");
 
-      System.out.println("O1: " + origin);
-      System.out.println("O2: " + maxDist);
-      System.out.println("O3: " + maxNumCities);
-      System.out.println("O4: " + citiesToVisit.toString());
+      System.out.println("Origin received: " + origin);
+      System.out.println("MaxDist received: " + maxDist);
+      System.out.println("MaxNumCities received: " + maxNumCities);
+      System.out.println("CitiesToVisit received: " + citiesToVisit.toString());
       List<CityNode> path = null;
       if(origin.length() > 1) {
         GraphBuilder
@@ -199,13 +198,17 @@ public final class Main {
         }
         System.out.println("path size: " + path.size());
       }
-      List<String> res = new ArrayList<>();
-      for(CityNode n : path){
-        res.add(n.getName());
-      }
-      Map<String, Object> variables = ImmutableMap.of("output", res);
+      List<String> cityNames = new ArrayList<>();
+      double[][] latLong = new double[path.size()][2];
 
-//      return null;
+      for(int i = 0; i < path.size(); i ++){
+        CityNode n = path.get(i);
+        cityNames.add(n.getName());
+        latLong[i][0] = n.getLat();
+        latLong[i][1] = n.getLong();
+      }
+      Map<String, Object> variables = ImmutableMap.of("output", cityNames, "latLong", latLong);
+
       return GSON.toJson(variables);
     }
   }
