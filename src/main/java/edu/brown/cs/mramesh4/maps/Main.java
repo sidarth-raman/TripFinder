@@ -33,10 +33,8 @@ import freemarker.template.Configuration;
 import com.google.gson.Gson;
 
 
-
 /**
  * The Main class of our project. This is where execution begins.
- *
  */
 public final class Main {
 
@@ -46,8 +44,7 @@ public final class Main {
   /**
    * The initial method called when execution begins.
    *
-   * @param args
-   *          An array of command line arguments
+   * @param args An array of command line arguments
    */
   public static void main(String[] args) {
     new Main(args).run();
@@ -69,7 +66,7 @@ public final class Main {
   private void run() {
     database = new CityDatabaseReader("data.sqlite");
     database.readDB();
-    for(String s : database.getCities()){
+    for (String s : database.getCities()) {
       System.out.println(s);
     }
 
@@ -77,7 +74,7 @@ public final class Main {
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
     parser.accepts("port").withRequiredArg().ofType(Integer.class)
-    .defaultsTo(DEFAULT_PORT);
+        .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
@@ -120,7 +117,6 @@ public final class Main {
     Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
 
 
-
     Spark.exception(Exception.class, new ExceptionPrinter());
 //    UserSQLDatabase database = new UserSQLDatabase("data/maps/smallMaps.sqlite3");
     FreeMarkerEngine freeMarker = createEngine();
@@ -143,7 +139,7 @@ public final class Main {
 
       double maxDist = Double.parseDouble(data.getString("maxDist").split(" ")[0]);
 
-      int maxNumCities =  data.getInt("numberOfCities");
+      int maxNumCities = data.getInt("numberOfCities");
 
 //      String[] cities = data.getString("city").split(",");
       String cities = data.getString("city");
@@ -157,7 +153,7 @@ public final class Main {
       System.out.println("MaxNumCities received: " + maxNumCities);
       System.out.println("CitiesToVisit received: " + citiesToVisit.toString());
       List<CityNode> path = null;
-      if(origin.length() > 1) {
+      if (origin.length() > 1) {
         GraphBuilder
             graph =
             new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
@@ -173,7 +169,7 @@ public final class Main {
       List<String> cityNames = new ArrayList<>();
       double[][] latLong = new double[path.size()][2];
 
-      for(int i = 0; i < path.size(); i ++){
+      for (int i = 0; i < path.size(); i++) {
         CityNode n = path.get(i);
         cityNames.add(n.getName());
         latLong[i][0] = n.getLat();
@@ -197,7 +193,6 @@ public final class Main {
 
   /**
    * Display an error page when an exception occurs in the server.
-   *
    */
   private static class ExceptionPrinter implements ExceptionHandler {
     @Override
