@@ -11,7 +11,7 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Stack;
 
-public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N, E>> {
+public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N, E>> extends TripGraph<N,E> {
   private HashMap<String, N> graph;
 
   /**

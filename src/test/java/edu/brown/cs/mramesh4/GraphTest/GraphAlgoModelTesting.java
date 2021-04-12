@@ -22,8 +22,7 @@ public class GraphAlgoModelTesting {
   public void tearDown(){
     cities = null;
   }
-
-  @Test
+  
   public void testEffiencyofGraph(){
     setUp();
     double mstWins = 0;
@@ -71,7 +70,7 @@ public class GraphAlgoModelTesting {
     tearDown();
   }
 
-  @Test
+
   public void testGraphAlgosonDifferentSizes(){
 
     setUp();
