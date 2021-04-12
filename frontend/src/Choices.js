@@ -1,15 +1,26 @@
 import './choices.css';
+import './App.css';
+import './Navbar'
 
 import { render } from 'react-dom';
 import axios from 'axios';
 import React, {Component, useState, useEffect, useRef} from 'react';
 
 function Choices() {
-    const [cityList, setCityList] = useState(["Select City", "Los Angeles", "San Francisco", "Chicago"]);
-    const [distList, setDistList] = useState(["Select Max Distance", "< 250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "4000+ Miles"]);
-    const [numList, setNumList] = useState(["Select Number", "1", "2", "3", "4", "5+"]);
+    const [cityList, setCityList] = useState(["Select City"]);
+    const [distList, setDistList] = useState(["Select Max Distance", "250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "4000 Miles"]);
+    const [numList, setNumList] = useState(["Select Number", "1", "2", "3", "4", "5"]);
+
+    const CANVAS_HEIGHT = 280;
+    const CANVAS_WIDTH = 493;
+    const TOP_LEFT_LAT = 49;
+    const TOP_LEFT_LON = -125;
+    const BOT_RIGHT_LAT = 25;
+    const BOT_RIGHT_LON = 64.882;
 
     const [output, setOutput] = useState([]);
+    const [coordinates, setCoordinates] = useState([]);
+
 
     const [value, setValue] = useState("");
     const [valueFinal, setValueFinal] = useState("");
@@ -23,6 +34,66 @@ function Choices() {
     const [city, setCity] = useState("");
     const [cityFinal, setCityFinal] = useState("");
 
+    const canvasRef = useRef(null)
+
+    useEffect(() => {
+        const canvas = canvasRef.current
+        const ctx = canvas.getContext('2d')
+        ctx.canvas.width = CANVAS_WIDTH
+        ctx.canvas.height = CANVAS_HEIGHT
+        ctx.beginPath();
+        ctx.rect(0, 0, 1024, CANVAS_HEIGHT);
+        ctx.fillStyle = "white";
+        ctx.fill();
+        ctx.moveTo(0,0);
+        ctx.lineTo(0, CANVAS_HEIGHT);
+        ctx.moveTo(0,CANVAS_HEIGHT);
+        ctx.lineTo(CANVAS_WIDTH,CANVAS_HEIGHT);
+        ctx.moveTo(CANVAS_WIDTH,CANVAS_HEIGHT);
+        ctx.lineTo(CANVAS_WIDTH,0);
+        ctx.moveTo(CANVAS_WIDTH,0);
+        ctx.lineTo(0,0);
+        ctx.stroke();
+        var imageObj1 = new Image();
+        imageObj1.src = 'https://png.pngitem.com/pimgs/s/470-4707541_united-states-map-in-1864-hd-png-download.png'
+        imageObj1.onload = function() {
+            ctx.drawImage(imageObj1, 0, 0);
+        }
+    }, [])
+
+    useEffect(() =>  {
+        const canvas = canvasRef.current
+        const ctx = canvas.getContext('2d')
+
+        ctx.beginPath();
+        ctx.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ctx.stroke();
+        ctx.closePath();
+
+
+        ctx.stroke();
+        var imageObj1 = new Image();
+        imageObj1.src = 'https://png.pngitem.com/pimgs/s/470-4707541_united-states-map-in-1864-hd-png-download.png'
+        ctx.drawImage(imageObj1, 0, 0);
+
+        ctx.beginPath();
+
+
+        for (const list of coordinates.entries()) {
+            ctx.beginPath();
+            ctx.arc((CANVAS_WIDTH*(TOP_LEFT_LON - list[1][1]))/(TOP_LEFT_LON + BOT_RIGHT_LON),
+                CANVAS_HEIGHT*(TOP_LEFT_LAT - list[1][0])/(TOP_LEFT_LAT - BOT_RIGHT_LAT),
+                5, 0, 2 * Math.PI);
+
+            console.log(633*(49 - list[1][0])/(49 - 25));
+
+            ctx.stroke()
+            ctx.closePath();
+        }
+
+
+
+    }, [coordinates])
 
     const handleInputChangeOrigin = (event) => {
         event.persist();
@@ -69,7 +140,7 @@ function Choices() {
             toSend,
             config
         )
-        setCityList(response.data["cityList"]);
+        setCityList([cityList,...response.data["cityList"]]);
     }
 
     useEffect(() => {
@@ -81,6 +152,7 @@ function Choices() {
         console.log(distFinal)
         console.log(numFinal)
         console.log(cityFinal)
+
         const toSend = {
             origin : valueFinal,
             maxDist : distFinal,
@@ -98,7 +170,10 @@ function Choices() {
             toSend,
             config
         )
+        console.log(response.data["latLong"])
         setOutput(response.data["output"]);
+        setCoordinates(response.data["latLong"]);
+
     }
 
     return (
@@ -148,6 +223,9 @@ function Choices() {
                 Max Dist: {distFinal}    <br />
                 Output: {output}
 
+            </div>
+            <div style = {{paddingLeft: 200}}>
+                <canvas ref={canvasRef} />
             </div>
         </>
     );

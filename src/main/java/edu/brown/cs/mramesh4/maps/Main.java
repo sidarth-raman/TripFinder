@@ -183,7 +183,9 @@ public final class Main {
 
         return GSON.toJson(variables);
       } else {
-        return GSON.toJson("Error: invalid input");
+        String[][] blankArray = new String[0][0];
+        double[][] latLong = new double[0][0];
+        return GSON.toJson( ImmutableMap.of("output", blankArray, "latLong", latLong));
       }
     }
   }
