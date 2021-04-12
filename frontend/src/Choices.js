@@ -11,6 +11,8 @@ function Choices() {
     const [distList, setDistList] = useState(["Select Max Distance", "< 250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "4000+ Miles"]);
     const [numList, setNumList] = useState(["Select Number", "1", "2", "3", "4", "5+"]);
 
+    const CANVAS_HEIGHT = 280;
+    const CANVAS_WIDTH = 493;
     const [output, setOutput] = useState([]);
     const [coordinates, setCoordinates] = useState([]);
 
@@ -32,23 +34,23 @@ function Choices() {
     useEffect(() => {
         const canvas = canvasRef.current
         const ctx = canvas.getContext('2d')
-        ctx.canvas.width = 1024
-        ctx.canvas.height = 633
+        ctx.canvas.width = CANVAS_WIDTH
+        ctx.canvas.height = CANVAS_HEIGHT
         ctx.beginPath();
-        ctx.rect(0, 0, 1024, 633);
+        ctx.rect(0, 0, 1024, CANVAS_HEIGHT);
         ctx.fillStyle = "white";
         ctx.fill();
         ctx.moveTo(0,0);
-        ctx.lineTo(0, 633);
-        ctx.moveTo(0,633);
-        ctx.lineTo(1024,633);
-        ctx.moveTo(1024,633);
-        ctx.lineTo(1024,0);
-        ctx.moveTo(1024,0);
+        ctx.lineTo(0, CANVAS_HEIGHT);
+        ctx.moveTo(0,CANVAS_HEIGHT);
+        ctx.lineTo(CANVAS_WIDTH,CANVAS_HEIGHT);
+        ctx.moveTo(CANVAS_WIDTH,CANVAS_HEIGHT);
+        ctx.lineTo(CANVAS_WIDTH,0);
+        ctx.moveTo(CANVAS_WIDTH,0);
         ctx.lineTo(0,0);
         ctx.stroke();
         var imageObj1 = new Image();
-        imageObj1.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Blank_US_Map_%28states_only%29.svg/1024px-Blank_US_Map_%28states_only%29.svg.png'
+        imageObj1.src = 'https://png.pngitem.com/pimgs/s/470-4707541_united-states-map-in-1864-hd-png-download.png'
         imageObj1.onload = function() {
             ctx.drawImage(imageObj1, 0, 0);
         }
@@ -59,14 +61,14 @@ function Choices() {
         const ctx = canvas.getContext('2d')
 
         ctx.beginPath();
-        ctx.rect(0, 0, 1024, 633);
+        ctx.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         ctx.stroke();
         ctx.closePath();
 
 
         ctx.stroke();
         var imageObj1 = new Image();
-        imageObj1.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Blank_US_Map_%28states_only%29.svg/1024px-Blank_US_Map_%28states_only%29.svg.png'
+        imageObj1.src = 'https://png.pngitem.com/pimgs/s/470-4707541_united-states-map-in-1864-hd-png-download.png'
         ctx.drawImage(imageObj1, 0, 0);
 
         ctx.beginPath();
@@ -74,7 +76,7 @@ function Choices() {
 
         for (const list of coordinates.entries()) {
             ctx.beginPath();
-            ctx.arc((1024*(-125 - list[1][1]))/(-125 + 64.822), 633*(49 - list[1][0])/(49 - 25), 10, 0, 2 * Math.PI);
+            ctx.arc((CANVAS_WIDTH*(-125 - list[1][1]))/(-125 + 64.822), CANVAS_HEIGHT*(49 - list[1][0])/(49 - 25), 10, 0, 2 * Math.PI);
 
             console.log(633*(49 - list[1][0])/(49 - 25));
 
