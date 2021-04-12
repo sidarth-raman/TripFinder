@@ -83,7 +83,7 @@ function Choices() {
             ctx.beginPath();
             ctx.arc((CANVAS_WIDTH*(TOP_LEFT_LON - list[1][1]))/(TOP_LEFT_LON + BOT_RIGHT_LON),
                 CANVAS_HEIGHT*(TOP_LEFT_LAT - list[1][0])/(TOP_LEFT_LAT - BOT_RIGHT_LAT),
-                10, 0, 2 * Math.PI);
+                5, 0, 2 * Math.PI);
 
             console.log(633*(49 - list[1][0])/(49 - 25));
 
