@@ -13,6 +13,11 @@ function Choices() {
 
     const CANVAS_HEIGHT = 280;
     const CANVAS_WIDTH = 493;
+    const TOP_LEFT_LAT = 49;
+    const TOP_LEFT_LON = -125;
+    const BOT_RIGHT_LAT = 25;
+    const BOT_RIGHT_LON = 64.882;
+
     const [output, setOutput] = useState([]);
     const [coordinates, setCoordinates] = useState([]);
 
@@ -76,7 +81,9 @@ function Choices() {
 
         for (const list of coordinates.entries()) {
             ctx.beginPath();
-            ctx.arc((CANVAS_WIDTH*(-125 - list[1][1]))/(-125 + 64.822), CANVAS_HEIGHT*(49 - list[1][0])/(49 - 25), 10, 0, 2 * Math.PI);
+            ctx.arc((CANVAS_WIDTH*(TOP_LEFT_LON - list[1][1]))/(TOP_LEFT_LON + BOT_RIGHT_LON),
+                CANVAS_HEIGHT*(TOP_LEFT_LAT - list[1][0])/(TOP_LEFT_LAT - BOT_RIGHT_LAT),
+                10, 0, 2 * Math.PI);
 
             console.log(633*(49 - list[1][0])/(49 - 25));
 
