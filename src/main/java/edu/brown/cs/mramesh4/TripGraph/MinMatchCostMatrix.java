@@ -14,8 +14,7 @@ import java.util.Set;
  *   1) https://www.youtube.com/watch?v=SAPG2T4Jbok: This is not a code
  *   base but rather a video that explains steps of the hungarian algorithm.
  *   Online implementations of the Hungarian algorithm: including
- *      https://www.sanfoundry.com/java-program-implement-hungarian-algorithm-bipartite-matching/
- *      https://github.com/aalmi/HungarianAlgorithm
+ *      https://www.sanfoundry.com/java-program-implement-hungarian-algorithm-bipartite-matching/https://github.com/aalmi/HungarianAlgorithm
  *
  */
 public class MinMatchCostMatrix {

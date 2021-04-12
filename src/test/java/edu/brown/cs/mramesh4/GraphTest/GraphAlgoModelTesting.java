@@ -22,7 +22,7 @@ public class GraphAlgoModelTesting {
   public void tearDown(){
     cities = null;
   }
-  
+
   public void testEffiencyofGraph(){
     setUp();
     double mstWins = 0;
