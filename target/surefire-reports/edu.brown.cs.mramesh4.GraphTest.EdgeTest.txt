@@ -1,8 +1,0 @@
--------------------------------------------------------------------------------
-Test set: edu.brown.cs.mramesh4.GraphTest.EdgeTest
--------------------------------------------------------------------------------
-<<<<<<< HEAD
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s - in edu.brown.cs.mramesh4.GraphTest.EdgeTest
-=======
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s - in edu.brown.cs.mramesh4.GraphTest.EdgeTest
->>>>>>> cf64604ac76ed9d14ce3d57609b2456e68b578a9

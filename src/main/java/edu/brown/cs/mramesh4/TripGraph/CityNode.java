@@ -14,12 +14,12 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   private String name;
   private double lat;
   private double longit;
-  private HashMap<String, CityNode> connectingNodes;
-  private HashMap<String, CityEdge> connectingEdges;
-  private double weight;
-  private double distance;
+  private transient HashMap<String, CityNode> connectingNodes;
+  private transient HashMap<String, CityEdge> connectingEdges;
+  private transient double weight;
+  private transient double distance;
   private int pop;
-  private static final double EARTH_RADIUS_IN_KM = 6371;
+  private transient static final double EARTH_RADIUS_IN_KM = 6371;
 
   /**
    * This is a constructor for a cityNode. A cityNode right now takes in
@@ -84,6 +84,10 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     return distance;
   }
 
+  /**
+   * Returns population
+   * @return
+   */
   public int getPop(){
     return pop;
   }
