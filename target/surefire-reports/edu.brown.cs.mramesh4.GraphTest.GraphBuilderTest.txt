@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest
 -------------------------------------------------------------------------------
+<<<<<<< HEAD
 Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.721 s - in edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest
+=======
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.254 s - in edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest
+>>>>>>> cf64604ac76ed9d14ce3d57609b2456e68b578a9
