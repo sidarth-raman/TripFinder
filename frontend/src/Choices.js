@@ -171,6 +171,8 @@ function Choices() {
             config
         )
         console.log(response.data["latLong"])
+        console.log(response.data["output"])
+
         setOutput(response.data["output"]);
         setCoordinates(response.data["latLong"]);
 
