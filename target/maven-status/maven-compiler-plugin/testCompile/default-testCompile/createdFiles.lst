@@ -3,3 +3,4 @@ edu/brown/cs/mramesh4/GraphTest/GraphBuilderTest.class
 edu/brown/cs/mramesh4/GraphTest/GraphTest.class
 edu/brown/cs/mramesh4/GraphTest/CompleteGraphTest.class
 edu/brown/cs/mramesh4/GraphTest/EdgeTest.class
+edu/brown/cs/mramesh4/GraphTest/GraphAlgoModelTesting.class
