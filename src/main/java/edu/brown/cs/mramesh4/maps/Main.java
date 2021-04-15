@@ -66,8 +66,13 @@ public final class Main {
   private void run() {
     database = new CityDatabaseReader("data.sqlite");
     database.readDB();
-
-
+//    List<String> sts = new ArrayList<>();
+//    sts.add("Chicago, IL");
+////    sts.add("New York, NY");
+//    GraphBuilder g = new GraphBuilder(database.connect(), "Minneapolis, MN", 2000, 3, sts);
+//    for (CityNode n : g.getPath()){
+//      System.out.println(n.getName());
+//    }
     // Parse command line arguments
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
@@ -124,6 +129,7 @@ public final class Main {
   }
 
   private static class RouteHandler implements Route {
+    private final double earthRadius = 3958.8; //miles
     @Override
     public Object handle(Request request, Response response) throws Exception {
 
@@ -139,7 +145,7 @@ public final class Main {
         maxDist = Double.parseDouble(data.getString("maxDist").split(" ")[0]);
         maxNumCities = data.getInt("numberOfCities");
         cities = data.getString("city");
-      } catch(Exception e){
+      } catch (Exception e) {
         System.out.println("ERROR: parsing data sent from frontend");
         error = true;
       }
@@ -147,7 +153,8 @@ public final class Main {
       //TODO: Coordinate with Sid to handle passing in multiple cities to visit
 //      String[] cities = data.getString("city").split(",");
 
-      if(!error) {
+      if (!error) {
+        System.out.println("nonError");
         List<String> citiesToVisit = new ArrayList<>();
 //      citiesToVisit = Arrays.asList(cities);
         citiesToVisit.add(cities);
@@ -161,10 +168,12 @@ public final class Main {
           GraphBuilder
               graph =
               new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
+          System.out.println("Graph builder ran");
           for (CityNode n : graph.getCitiesOfGraph()) {
             System.out.println("graphbuilder contains: " + n.getName());
           }
           path = graph.getPath();
+          System.out.println("path gotten");
           for (CityNode n : path) {
             System.out.println("city in path returned: " + n.getName());
           }
@@ -179,14 +188,40 @@ public final class Main {
           latLong[i][0] = n.getLat();
           latLong[i][1] = n.getLong();
         }
-        Map<String, Object> variables = ImmutableMap.of("output", cityNames, "latLong", latLong);
+        double routeDist = this.calcRouteDistance(path);
+        Map<String, Object> variables = ImmutableMap.of("output", cityNames, "latLong", latLong, "routeDist", routeDist, "error", "");
 
         return GSON.toJson(variables);
       } else {
         String[][] blankArray = new String[0][0];
         double[][] latLong = new double[0][0];
-        return GSON.toJson( ImmutableMap.of("output", blankArray, "latLong", latLong));
+        return GSON.toJson(ImmutableMap.of("output", blankArray, "latLong", latLong, "routeDist", 0, "error", "Error: check for proper input"));
       }
+    }
+
+    private double calcRouteDistance(List<CityNode> path) {
+      double sum = 0;
+      for (int i = 0; i < path.size() - 1; i++) {
+        sum += this.haversineDist(path.get(i), path.get(i+1));
+      }
+      return sum;
+    }
+
+    private double haversineDist(CityNode a, CityNode b) {
+      // Find distance in radians between latitudes and longitudes
+
+      double distLat = Math.toRadians(a.getLat() - b.getLat());
+      double distLong = Math.toRadians(a.getLong() - b.getLong());
+
+      // Convert latitudes to radians
+      double startLat = Math.toRadians(b.getLat());
+      double endLat = Math.toRadians(a.getLat());
+
+      double calc = Math.pow(Math.sin(distLat / 2), 2)
+          + Math.pow(Math.sin(distLong / 2), 2) * Math.cos(startLat) * Math.cos(endLat);
+      double calc2 = 2 * Math.asin(Math.sqrt(calc));
+      return earthRadius * calc2;
+
     }
   }
 

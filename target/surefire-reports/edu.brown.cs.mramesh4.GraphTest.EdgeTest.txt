@@ -1,4 +1,54 @@
 -------------------------------------------------------------------------------
 Test set: edu.brown.cs.mramesh4.GraphTest.EdgeTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s - in edu.brown.cs.mramesh4.GraphTest.EdgeTest
+Tests run: 12, Failures: 0, Errors: 12, Skipped: 0, Time elapsed: 0.002 s <<< FAILURE! - in edu.brown.cs.mramesh4.GraphTest.EdgeTest
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testKruskalSimple  Time elapsed: 0.001 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
+
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testAStarAlgo  Time elapsed: 0 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
+
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testDFS  Time elapsed: 0 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
+
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp4  Time elapsed: 0.001 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
+
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testComplete  Time elapsed: 0.001 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
+
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testKruskalsSame  Time elapsed: 0 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
+
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testChrist  Time elapsed: 0.001 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
+
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testDelete  Time elapsed: 0 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
+
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testInsert  Time elapsed: 0.001 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
+
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testConstructor  Time elapsed: 0.001 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
+
+edu.brown.cs.mramesh4.GraphTest.EdgeTest.testAccessors  Time elapsed: 0 s  <<< ERROR!
+java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
+	at edu.brown.cs.mramesh4.GraphTest.EdgeTest.setUp(EdgeTest.java:21)
+
+edu.brown.cs.mramesh4.GraphTest.EdgeTest.testEquals  Time elapsed: 0 s  <<< ERROR!
+java.lang.InternalError: java.io.IOException: Too many open files in system
+	at edu.brown.cs.mramesh4.GraphTest.EdgeTest.setUp(EdgeTest.java:21)
+Caused by: java.io.IOException: Too many open files in system
+	at edu.brown.cs.mramesh4.GraphTest.EdgeTest.setUp(EdgeTest.java:21)
+

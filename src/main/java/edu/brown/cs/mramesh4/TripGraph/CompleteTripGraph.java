@@ -265,6 +265,9 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * @return a list of nodes
    */
   public List<N> dfsTree(TripGraph<N, E> mst, N start) {
+    if(mst.getGraph().size() == 0 || start == null){
+      return null;
+    }
     List<N> ret = new ArrayList<>();
     HashMap<String, Integer> visited = new HashMap<>();
     Stack<N> stack = new Stack<>();
@@ -297,6 +300,9 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * @return an MST of the graph
    */
   public TripGraph<N, E> Kruskals() {
+    if(this.graph.isEmpty()){
+      return null;
+    }
     TripGraph<N, E> mst = new TripGraph<>();
     //get the edgeList.
     HashMap<String, E> edgeList = new HashMap<>();
@@ -363,6 +369,9 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * @return an integer representing 1 = true, 0 = false.
    */
   public int UnionFind(TripGraph<N, E> mst) {
+    if(mst.getGraph().isEmpty()){
+      return 0;
+    }
     Collection<N> nodes = mst.getGraph().values();
     int[] parent = new int[nodes.size()];
     HashMap<N, Integer> nodesMap = new HashMap<>();

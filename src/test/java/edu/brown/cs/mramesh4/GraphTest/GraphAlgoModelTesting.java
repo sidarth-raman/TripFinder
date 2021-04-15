@@ -22,13 +22,12 @@ public class GraphAlgoModelTesting {
   public void tearDown(){
     cities = null;
   }
-
   @Test
   public void testEffiencyofGraph(){
     setUp();
     double mstWins = 0;
     double christWins = 0;
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < 40; i++){
       List<CityNode> currGraph = new ArrayList<>();
       int random_size = (int)Math.floor(Math.random()*(20-3)+2);
       for(int j = 0; j < random_size; j++){

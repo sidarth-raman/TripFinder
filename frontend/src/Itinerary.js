@@ -7,8 +7,8 @@ function Itinerary() {
     const [city, setCity] = useState("");
     //const [lat, setLat] = useState("");
     //const [lon, setLon] = useState("");
-    let lat = 41.82
-    let lon = 71.41
+    let lat = -22.983611
+    let lon = -43.204444
 
     const handleSubmit = (e) => {
         setCity(city);
@@ -40,44 +40,27 @@ function Itinerary() {
         setCityList([cityList,...response.data["cityList"]]);
     }
 
-    const getActivities = async () => {
-        //note: you might have to make sure getLat and getLong in this string turn to lat-longitude
-        console.log(lat)
-        console.log(lon)
+    const getActivities = async () =>{
+        let xhr = new XMLHttpRequest()
+        xhr.overrideMimeType("application/json");
+        xhr.responseType = 'json';
+        let resp = null
+            // get a callback when the server responds
+        xhr.addEventListener('load', () => {
+            // update the state of the component with the result here
+            resp = xhr.response;
+            //this is the list of points of interests  --> do something here
+            console.log(resp.results[0].pois);
+            //this is the list of ids that correspond to info
+            console.log(resp.results[0].poi_division);
+
+        })
         let url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude="
             + lat + "&longitude=" + lon + "&fields=poi:id,name,coordinates,snippet&account=TAM6URYM&token=t1vzuahx7qoy0p45f1qidne3acik8e56"
-        //if the above doesn't work try this, but I will leave it commented out for now
-        // let params = {
-        //     latitude: getLat,
-        //     longitude: getLong,
-        //     fields: "poi:id,name,coordinates,snippet",
-        // }
-        let config = {
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
-                "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-                //"Content-Type": "application/json",
-                //'Access-Control-Allow-Origin': '*',
-                //  "X-Triposo-Account":  "TAM6URYM",
-                //  "X-Triposo-Token": "t1vzuahx7qoy0p45f1qidne3acik8e56",
-            }
-        }
-        axios.post(
-            url,
-            //params,
-            config)
-                .then(response => {
-                    //try to console log the response, not sure what it will be called but you want a field called poi, where it
-                    //gives actual examples of places.
-                    console.log(response);
-
-                })
-                .catch(function(error){
-                    console.log(error);
-                }
-        )
+        // open the request with the verb and the url
+        xhr.open('GET', url);
+        // send the request
+        xhr.send();
     }
 
     useEffect(() => {

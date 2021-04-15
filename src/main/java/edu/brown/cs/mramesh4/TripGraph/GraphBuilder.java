@@ -47,7 +47,7 @@ public class GraphBuilder {
 
     this.findOrigin(origin);
     this.pullCities();
-
+    System.out.println("cities pulled");
     graph = new CompleteTripGraph<>(citiesInGraph);
 
   }
@@ -96,7 +96,7 @@ public class GraphBuilder {
       throwables.printStackTrace();
     }
 
-    Collections.sort(bestCities, new CityComparator(originCity, cityNodesToVisit));
+    Collections.sort(bestCities, new CityComparator(originCity, cityNodesToVisit, maxDist));
 
     int temp = citiesInGraph.size();
     if (maxNumCities > temp) {
@@ -186,7 +186,8 @@ public class GraphBuilder {
    * @return list of route for user.
    */
   public List<CityNode> getPath() {
-    return graph.TwoOptTSP(originCity);
+    return graph.christTSP(originCity);
+    //return graph.TwoOptTSP(originCity);
   }
 
   /**

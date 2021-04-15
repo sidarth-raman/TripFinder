@@ -146,6 +146,9 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param nodes list of nodes to connect it to.
    */
   public void insertNode(N node, List<N> nodes){
+    if(node == null || nodes.isEmpty()){
+      return;
+    }
     String nodeName = node.getName();
 
     if(!graph.containsKey(nodeName) || (graph.containsKey(nodeName) && !graph.get(nodeName).equals(node))) {
@@ -171,6 +174,9 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param node node to delete in the graph
    */
   public void deleteNode(N node){
+    if(node == null){
+      return;
+    }
     //delete from the list of graph
     String name = node.getName();
     graph.remove(name);
@@ -215,6 +221,9 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param end end node to delete from
    */
   public void deleteEdge(N start, N end){
+    if(start == null || end == null){
+      return;
+    }
     //delete edges from both sides
     if(graph.containsKey(start.getName()) && graph.containsKey(end.getName())) {
       N getStart = graph.get(start.getName());
@@ -232,6 +241,9 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param end end node to add an edge from
    */
   public void insertEdge(N start, N end){
+    if(start == null || end == null){
+      return;
+    }
     //call insertEdge
     start.insertEdges(end);
   }
@@ -241,6 +253,9 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param edge edge to insert
    */
   public void insertEdge(E edge){
+    if(edge == null){
+      return;
+    }
     List<N> node = edge.getNodes();
     N start = node.get(0);
     N end = node.get(1);
