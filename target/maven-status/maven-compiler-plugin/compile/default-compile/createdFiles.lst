@@ -4,7 +4,6 @@ edu/brown/cs/mramesh4/TripGraph/TripGraph.class
 edu/brown/cs/mramesh4/TripGraph/CityEdge.class
 edu/brown/cs/mramesh4/TripGraph/CompleteTripGraph.class
 edu/brown/cs/mramesh4/TripGraph/TripGraphNodeComparator.class
-edu/brown/cs/mramesh4/TripGraph/CityComparator.class
 edu/brown/cs/mramesh4/TripGraph/EulerTripNodeComparator.class
 edu/brown/cs/mramesh4/TripGraph/GraphBuilder.class
 edu/brown/cs/mramesh4/TripGraph/MinMatchCostMatrix.class
