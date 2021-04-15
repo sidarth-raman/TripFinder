@@ -1,9 +1,14 @@
 package edu.brown.cs.mramesh4.TripGraph;
 
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import com.google.gson.Gson;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * This is a class to model our CityNodes: CityNodes are nodes that represent
@@ -19,7 +24,9 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   private transient double weight;
   private transient double distance;
   private int pop;
-  private transient static final double EARTH_RADIUS_IN_KM = 6371;
+  private transient static final double EARTH_RADIUS_IN_KM = 3956;
+  private transient HTTPRequest conn;
+  private CityInformationObject obj;
 
   /**
    * This is a constructor for a cityNode. A cityNode right now takes in
@@ -37,6 +44,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     connectingEdges = new HashMap<>();
     this.weight = Double.MAX_VALUE;
     this.distance = Double.MAX_VALUE;
+    conn = new HTTPRequest();
   }
   /**
    * Returns the name of the cityNode.
@@ -175,10 +183,13 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    */
   @Override
   public double distanceBetween(CityNode a) {
+    /*
     double aX = a.getLong();
     double aY = a.getLat();
     return Math.sqrt(Math.pow(Math.abs((aX - this.longit)), 2)
       + Math.pow(Math.abs((aY - this.lat)), 2));
+     */
+    return this.toGoal(a);
   }
 
   /**
@@ -234,5 +245,29 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     return (finalanswer * EARTH_RADIUS_IN_KM);
   }
 
-
+  /**
+   * This is a way to set all the methods;
+   * @return activities for a city;
+   */
+  public void getActivities(){
+    try{
+    String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet";
+    List<List<String>> headers = new ArrayList<List<String>>();
+    headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "TAM6URYM")));
+    headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token", "t1vzuahx7qoy0p45f1qidne3acik8e56")));
+    conn.setUrlAndHeaders(url, headers);
+    HttpResponse<String> resp = conn.getResponse();
+    if(resp!=null){
+      String body = resp.body();
+      Gson gson = new Gson();
+      String json = gson.toJson(body);
+      System.out.println(json);
+    } else{
+      System.out.println("resp is null");
+    }
+    } catch(Exception e) {
+      System.out.println(e);
+      System.out.println("Issue with code");
+    }
+  }
 }

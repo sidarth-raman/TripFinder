@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +22,8 @@ public class HTTPRequest<T> {
    * Blank HTTP Request client, this is if the user doesn't know what URL to use yet.
    */
   public HTTPRequest(){
+    this.url = "";
+    this.headers = new ArrayList<List<String>>();
     this.client = HttpClient.newHttpClient();
   }
 
@@ -53,6 +56,7 @@ public class HTTPRequest<T> {
       requestBuild.header(header.get(0), header.get(1));
     }
     this.request = requestBuild.build();
+    System.out.println("request");
   }
 
   /**
@@ -71,12 +75,13 @@ public class HTTPRequest<T> {
    * @throws Exception if the user hasn't loaded a URL or headers
    */
   public HttpResponse<String> getResponse() throws Exception{
-    if(url == null || headers == null){
+    if(this.url.equals("") && this.headers.isEmpty()){
       throw new Exception("Error: No url supplied");
     }
     buildRequest();
     try {
       HttpResponse<String> resp = client.send(request, HttpResponse.BodyHandlers.ofString());
+      System.out.println("got a response");
       return resp;
     } catch(IOException | InterruptedException e){
       System.out.println("Error" + e);

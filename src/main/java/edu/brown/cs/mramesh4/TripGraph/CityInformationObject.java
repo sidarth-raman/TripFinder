@@ -7,4 +7,6 @@ public class CityInformationObject {
   public CityInformationObject(){
 
   }
+
+
 }

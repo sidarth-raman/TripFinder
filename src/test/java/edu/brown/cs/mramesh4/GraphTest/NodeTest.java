@@ -26,6 +26,7 @@ public class NodeTest{
     node2 = null;
   }
 
+
   @Test
   public void testDistanceBetween(){
     setUp();
@@ -108,7 +109,9 @@ public class NodeTest{
 
   @Test
   public void testActivities(){
-    //TODO: Insert activities tests
+    setUp();
+    node.getActivities();
+    tearDown();
   }
 
 }
