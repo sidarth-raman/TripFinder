@@ -68,7 +68,7 @@ public class CityDatabaseReader {
     PreparedStatement prep = null;
 
     try {
-      prep = conn.prepareStatement("select city, state_id, lat, lng from cities;");
+      prep = conn.prepareStatement("select city, state_id, lat, lng, population from cities;");
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
         String name = rs.getString(1) + ", " + rs.getString(2);
