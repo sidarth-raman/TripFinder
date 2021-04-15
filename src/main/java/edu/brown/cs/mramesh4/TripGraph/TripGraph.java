@@ -13,8 +13,8 @@ import java.util.PriorityQueue;
  * @param <N> Type of Node used [Will be CityNode]
  * @param <E> Type of Node used [Will be CityEdge]
  */
-public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N, E>>{
-    private HashMap<String, N> graph;
+public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N, E>> {
+  private HashMap<String, N> graph;
 
   /**
    * Empty constructor for a graph with no nodes.
@@ -24,19 +24,19 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
   }
 
   /**
-   * This is a constructor for a graph with a list of nodes
+   * This is a constructor for a graph with a list of nodes.
    * If duplicates add the node
    * @param nodes list of nodes
    */
-  public TripGraph(List<N> nodes){
+  public TripGraph(List<N> nodes) {
     //fill our list of nodes
     graph = new HashMap<>();
-      for(N node: nodes){
-        String name = node.getName();
-        if(!graph.containsKey(name)){
-          graph.put(name, node);
-        }
+    for (N node: nodes) {
+      String name = node.getName();
+      if (!graph.containsKey(name)) {
+        graph.put(name, node);
       }
+    }
   }
 
   /**
@@ -45,14 +45,14 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param end the name of the end city.
    * @return a list of nodes to visit
    */
-  public List<N> aStar(String start, String end){
+  public List<N> aStar(String start, String end) {
     List<N> ret = new ArrayList<>();
-    if(!graph.containsKey(start) || !graph.containsKey(end)){
+    if (!graph.containsKey(start) || !graph.containsKey(end)) {
       return null;
-    } else if(start.equals(end)){
+    } else if (start.equals(end)) {
       ret.add(graph.get(start));
       return ret;
-    } else{
+    } else {
       ret = aStarHelper(graph.get(start), graph.get(end));
       return ret;
     }
@@ -61,12 +61,12 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
 
 
   /**
-   * This is a helper to run aStar within the graph that we are writing
+   * This is a helper to run aStar within the graph that we are writing.
    * @param start the start node to search from
    * @param end the end node to start from
    * @return a list of nodes
    */
-  public List<N> aStarHelper(N start, N end){
+  public List<N> aStarHelper(N start, N end) {
     ArrayList<N> ret = new ArrayList<>();
     //create a comparator that sorts them by a weight aStar assigns them
     PriorityQueue<N> pq = new PriorityQueue<N>(new TripGraphNodeComparator<N, E>());
@@ -93,8 +93,8 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param visited map of visited
    * @return a list of Nodes.
    */
-  public List<N> aStarHelp(N end, PriorityQueue<N> pq, List<N> nodes, HashMap<String, N> visited){
-    if(!pq.isEmpty()){
+  public List<N> aStarHelp(N end, PriorityQueue<N> pq, List<N> nodes, HashMap<String, N> visited) {
+    if (!pq.isEmpty()) {
       N curr = pq.poll();
       nodes.add(curr);
       if (curr.equals(end)) {
@@ -102,10 +102,10 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
         return new ArrayList<>(nodes);
       }
       List<N> neighbors = curr.getNeighbors();
-      for(N next: neighbors){
-        if(next.equals(curr)) {
+      for (N next: neighbors) {
+        if (next.equals(curr)) {
           continue;
-        } else{
+        } else {
           String name = next.getName();
           Double dist = curr.getDistance() + curr.getConnectingEdges().get(name).getWeight();
           Double totalWeight = dist + next.toGoal(end);
@@ -130,12 +130,12 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
       List<N> ret = aStarHelp(end, pq, nodes, visited);
       nodes.remove(curr);
       return ret;
-    } else{
-       if(visited.containsKey(end)){
-         return nodes;
-       } else{
-         return null;
-       }
+    } else {
+      if (visited.containsKey(end)) {
+        return nodes;
+      } else {
+        return null;
+      }
     }
   }
 
@@ -145,13 +145,14 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param node node to add to graph
    * @param nodes list of nodes to connect it to.
    */
-  public void insertNode(N node, List<N> nodes){
-    if(node == null || nodes.isEmpty()){
+  public void insertNode(N node, List<N> nodes) {
+    if (node == null || nodes.isEmpty()) {
       return;
     }
     String nodeName = node.getName();
 
-    if(!graph.containsKey(nodeName) || (graph.containsKey(nodeName) && !graph.get(nodeName).equals(node))) {
+    if (!graph.containsKey(nodeName) || (graph.containsKey(nodeName)
+        && !graph.get(nodeName).equals(node))) {
       //for all the nodes within the list of nodes to add to
       //make sure they are in the graph
       for (N neighbor : nodes) {
@@ -173,15 +174,15 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * This is how to delete a node from the graph.
    * @param node node to delete in the graph
    */
-  public void deleteNode(N node){
-    if(node == null){
+  public void deleteNode(N node) {
+    if (node == null) {
       return;
     }
     //delete from the list of graph
     String name = node.getName();
     graph.remove(name);
     //delete from each nodes
-    for(N graph : graph.values()){
+    for (N graph : graph.values()) {
       graph.getConnectingEdges().remove(name);
       graph.getConnectingNodes().remove(name);
     }
@@ -191,41 +192,43 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * This clears all the edges in the graph, you will still have access
    * to the nodes.
    */
-  public void clearGraphEdges(){
-    for(N node: graph.values()){
+  public void clearGraphEdges() {
+    for (N node: graph.values()) {
       node.clearGraphEdges();
     }
   }
 
   /**
-   * Gets the number of edges in graph
+   * Gets the number of edges in graph.
    * @return number of edges
    */
-  public int getNumEdges(){
+  public int getNumEdges() {
     int k = 0;
-    for(N node: graph.values()){
-      for(N node2: graph.values()){
-        if(!node2.equals(node) && node.getConnectingNodes().containsKey(node2.getName())){
+    for (N node: graph.values()) {
+      for (N node2: graph.values()) {
+        if (!node2.equals(node)
+            && node.getConnectingNodes().containsKey(node2.getName())) {
           k++;
         }
       }
     }
-    return k/2;
+    return k / 2;
   }
 
 
 
   /**
-   * This method deletes an edge between two nodes
+   * This method deletes an edge between two nodes.
    * @param start one node to delete from
    * @param end end node to delete from
    */
-  public void deleteEdge(N start, N end){
-    if(start == null || end == null){
+  public void deleteEdge(N start, N end) {
+    if (start == null || end == null) {
       return;
     }
     //delete edges from both sides
-    if(graph.containsKey(start.getName()) && graph.containsKey(end.getName())) {
+    if (graph.containsKey(start.getName())
+        && graph.containsKey(end.getName())) {
       N getStart = graph.get(start.getName());
       getStart.deleteEdge(end);
       N getEnd = graph.get(end.getName());
@@ -240,8 +243,8 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * @param start one node to an add an edge from
    * @param end end node to add an edge from
    */
-  public void insertEdge(N start, N end){
-    if(start == null || end == null){
+  public void insertEdge(N start, N end) {
+    if (start == null || end == null) {
       return;
     }
     //call insertEdge
@@ -249,20 +252,20 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
   }
 
   /**
-   * Inserts an edge into the graph along with the nodes
+   * Inserts an edge into the graph along with the nodes.
    * @param edge edge to insert
    */
-  public void insertEdge(E edge){
-    if(edge == null){
+  public void insertEdge(E edge) {
+    if (edge == null) {
       return;
     }
     List<N> node = edge.getNodes();
     N start = node.get(0);
     N end = node.get(1);
-    if(!graph.containsKey(start.getName())){
+    if (!graph.containsKey(start.getName())) {
       graph.put(start.getName(), start);
     }
-    if(!graph.containsKey(end.getName())){
+    if (!graph.containsKey(end.getName())) {
       graph.put(end.getName(), end);
     }
     graph.get(start.getName()).insertEdges(end);
@@ -272,7 +275,7 @@ public class TripGraph<N extends TripGraphNode<N, E>, E extends TripGraphEdge<N,
    * Accesor method for graph.
    * @return a graph.
    */
-  public HashMap<String, N> getGraph(){
+  public HashMap<String, N> getGraph() {
     return graph;
   }
 

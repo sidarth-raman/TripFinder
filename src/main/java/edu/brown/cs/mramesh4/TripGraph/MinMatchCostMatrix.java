@@ -18,12 +18,12 @@ import java.util.Set;
  *
  */
 public class MinMatchCostMatrix {
-  double[][] matrix; // this is a cost matrix
+  private double[][] matrix; // this is a cost matrix
   // these are the markers required for the hungarian algorithm.
-  int[] squareR, squareC, rowIsCovered, colIsCovered, staredZeroesInRow;
+  private int[] squareR, squareC, rowIsCovered, colIsCovered, staredZeroesInRow;
 
   /**
-   * This is a constructor for the minCostMatrix, we will build the identifiers
+   * This is a constructor for the minCostMatrix, we will build the identifiers.
    * needed to run the hungarian algorithm
    * @param matrix a cost matrix of doubles
    */
@@ -137,7 +137,7 @@ public class MinMatchCostMatrix {
   }
 
   /**
-   * Step 2 of the Hungarian Algorithm
+   * Step 2 of the Hungarian Algorithm.
    * mark each 0 with a "square"
    */
   public void step2() {
@@ -160,7 +160,7 @@ public class MinMatchCostMatrix {
 
   /**
    * Step 3:
-   * Cover all columns which are marked with a "square"
+   * Cover all columns which are marked with a "square".
    */
   public void step3() {
     for (int i = 0; i < squareC.length; i++) {
@@ -205,7 +205,7 @@ public class MinMatchCostMatrix {
 
   /**
    * Step 4:
-   * Find the main zero within the matrix
+   * Find the main zero within the matrix.
    *
    * @return position of mainZero.
    */
@@ -227,19 +227,19 @@ public class MinMatchCostMatrix {
    * Step 6:
    * Create a chain of alternating "squares" and Z0.
    *
-   * @param mainZero, what we got from step 4
+   * @param mainZero  what we got from step 4
    */
   public void step6(int[] mainZero) {
     int i = mainZero[0];
     int j = mainZero[1];
 
-    Set<int[]> K = new LinkedHashSet<>();
-    K.add(mainZero);
+    Set<int[]> k = new LinkedHashSet<>();
+    k.add(mainZero);
     boolean found = false;
     do {
 
       if (squareC[j] != -1) {
-        K.add(new int[]{squareC[j], j});
+        k.add(new int[]{squareC[j], j});
         found = true;
       } else {
         found = false;
@@ -253,7 +253,7 @@ public class MinMatchCostMatrix {
       j = staredZeroesInRow[i];
 
       if (j != -1) {
-        K.add(new int[]{i, j});
+        k.add(new int[]{i, j});
         found = true;
       } else {
         found = false;
@@ -262,7 +262,7 @@ public class MinMatchCostMatrix {
     } while (found);
 
 
-    for (int[] zero : K) {
+    for (int[] zero : k) {
 
       if (squareC[zero[1]] == zero[0]) {
         squareC[zero[1]] = -1;

@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,6 +34,8 @@ public class GraphBuilder {
    * @param maxDist       is the maximum distance they are willing to travel.
    * @param maxNumCities  is the maximum number of cities they're willing to visit.
    * @param citiesToVisit is the cities they would like to visit in their travel.
+   * @param conn          is the connection to the database
+
    */
   public GraphBuilder(Connection conn, String origin, double maxDist, int maxNumCities,
                       List<String> citiesToVisit) {
@@ -66,8 +67,8 @@ public class GraphBuilder {
     String maxLongBound = "\"" + Math.round(originCity.getLong() + maxDistLong) + "\"";
     String minLongBound = "\"" + Math.round(originCity.getLong() - maxDistLong) + "\"";
     System.out.println(
-        "LAT BOUNDS: " + minLatBound + "-" + maxLatBound + " LONG BOUNDS: " + minLongBound + "-" +
-            maxLongBound);
+        "LAT BOUNDS: " + minLatBound + "-" + maxLatBound + " LONG BOUNDS: " + minLongBound + "-"
+          + maxLongBound);
     List<CityNode> bestCities = new ArrayList<>();
 
 

@@ -1,9 +1,7 @@
 package edu.brown.cs.mramesh4.TripGraph;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,14 +13,14 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   private HashMap<String, N> graph;
 
   /**
-   * Empty constructor for a completeGraph
+   * Empty constructor for a completeGraph.
    */
   public CompleteTripGraph() {
     graph = new HashMap<>();
   }
 
   /**
-   * Constructor for a complete graph. If all the nodes don't have edges
+   * Constructor for a complete graph. If all the nodes don't have edges.
    * the graph will make sure that the graph is complete.
    *
    * @param nodes a list of nodes to fill the graph with
@@ -53,7 +51,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
 
   /**
    * This takes in a graph that may not be complete and
-   * returns a complete version
+   * returns a complete version.
    *
    * @param g graph that may or may not be complete
    */
@@ -97,7 +95,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   }
 
   /**
-   * This is a helper to run aStar within the graph that we are writing
+   * This is a helper to run aStar within the graph that we are writing.
    *
    * @param start the start node to search from
    * @param end   the end node to start from
@@ -184,8 +182,9 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    */
   public void insertNode(N node) {
     String nodeName = node.getName();
-    if (!graph.containsKey(nodeName) ||
-        (graph.containsKey(nodeName) && !graph.get(nodeName).equals(node))) {
+    if (!graph.containsKey(nodeName)
+        || (graph.containsKey(nodeName)
+        && !graph.get(nodeName).equals(node))) {
       for (N node2 : this.graph.values()) {
         node.insertEdges(node2);
       }
@@ -194,7 +193,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   }
 
   /**
-   * Deletes a node from the graph
+   * Deletes a node from the graph.
    *
    * @param node the node to delete
    */
@@ -237,7 +236,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   }
 
   /**
-   * This is a method for the christofedes algorithm
+   * This is a method for the christofedes algorithm.
    * @param start the start node to return to
    * @return the Hamiltonian cycle from the start node.
    */
@@ -262,10 +261,11 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * in order to reduce the amount of nodes running.
    *
    * @param mst a dfs-searched tree.
+   * @param start the start node to search from
    * @return a list of nodes
    */
   public List<N> dfsTree(TripGraph<N, E> mst, N start) {
-    if(mst.getGraph().size() == 0 || start == null){
+    if (mst.getGraph().size() == 0 || start == null) {
       return null;
     }
     List<N> ret = new ArrayList<>();
@@ -300,7 +300,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * @return an MST of the graph
    */
   public TripGraph<N, E> Kruskals() {
-    if(this.graph.isEmpty()){
+    if (this.graph.isEmpty()) {
       return null;
     }
     TripGraph<N, E> mst = new TripGraph<>();
@@ -369,7 +369,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
    * @return an integer representing 1 = true, 0 = false.
    */
   public int UnionFind(TripGraph<N, E> mst) {
-    if(mst.getGraph().isEmpty()){
+    if (mst.getGraph().isEmpty()) {
       return 0;
     }
     Collection<N> nodes = mst.getGraph().values();
@@ -408,7 +408,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   }
 
   /**
-   * Used to find the parent of a given node
+   * Used to find the parent of a given node.
    * @param parent the parent array
    * @param i the index of the node
    * @return the index of the parent
@@ -421,19 +421,19 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   }
 
   /**
-   * Used to merge the parent array with a new parent
+   * Used to merge the parent array with a new parent.
    * @param parent the parent array
    * @param x original index
    * @param y merge index
    */
-  public void Union(int parent[], int x, int y) {
+  public void Union(int[] parent, int x, int y) {
     parent[x] = y;
   }
 
 
   /**
    * This is the setup for the eulertour portion of the christofedes algorithm, in which
-   * the algo takes a mincost matching and addes it to the mst
+   * the algo takes a mincost matching and addes it to the mst.
    * @param mst the mst
    * @param add a min cost match matrix
    * @param nodes the edges to add based on min cost matrix
@@ -465,7 +465,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   }
 
   /**
-   * This is the method to generate a minCostMatch
+   * This is the method to generate a minCostMatch.
    * @param mst the minimum spanning tree
    * @return a mincostMatch of the TripGrpah
    */
@@ -564,20 +564,20 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   }
 
   /**
-   * This is a method to remove repeats in a tour
+   * This is a method to remove repeats in a tour.
    * @param tour a tour to edit
    * @return a deleted duplicate tour.
    */
-  private List<N> deleteRepeats(List<N> tour){
+  private List<N> deleteRepeats(List<N> tour) {
     List<N> cities = new ArrayList<>();
     Set<String> visited = new HashSet<>();
-    for(int i = 0; i < tour.size() - 1; i++){ //Minus 1 bc we don't want to remove origin
+    for (int i = 0; i < tour.size() - 1; i++) { //Minus 1 bc we don't want to remove origin
       String cityName = tour.get(i).getName();
       //System.out.println("CityName" + cityName);
-      if(!visited.contains(cityName)){
+      if (!visited.contains(cityName)) {
         visited.add(cityName);
         cities.add(tour.get(i));
-      } else{
+      } else {
         continue;
       }
     }
@@ -587,7 +587,7 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
   }
 
   /**
-   * Helper method to see if an edge is incident on a vertex
+   * Helper method to see if an edge is incident on a vertex.
    * @param edges set of edges
    * @param unvisited set of unvisited edges
    * @param cur currentn ode
@@ -606,3 +606,4 @@ public class CompleteTripGraph<N extends TripGraphNode<N, E>, E extends TripGrap
 
 
 }
+

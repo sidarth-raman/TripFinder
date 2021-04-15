@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import com.google.gson.Gson;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * This is a class to model our CityNodes: CityNodes are nodes that represent
@@ -24,7 +22,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   private transient double weight;
   private transient double distance;
   private int pop;
-  private transient static final double EARTH_RADIUS_IN_KM = 3956;
+  private transient static final double EARTH_RADIUS_IN_MILES = 3956;
   private transient HTTPRequest conn;
   private CityInformationObject obj;
 
@@ -34,6 +32,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * @param name  Name of city that will be stored in graph
    * @param lat  Latitude of city
    * @param lon  Longitude of city
+   * @param pop population of city
    */
   public CityNode(String name, double lat, double lon, int pop) {
     this.pop = pop;
@@ -87,16 +86,20 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     distance = dist;
   }
 
+  /**
+   * gets distance.
+   * @return distance for a star
+   */
   @Override
   public double getDistance() {
     return distance;
   }
 
   /**
-   * Returns population
-   * @return
+   * Returns population.
+   * @return a population
    */
-  public int getPop(){
+  public int getPop() {
     return pop;
   }
 
@@ -167,7 +170,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   }
 
   /**
-   * This is a method that clears all the graph edges and graph nodes
+   * This is a method that clears all the graph edges and graph nodes.
    */
   @Override
   public void clearGraphEdges() {
@@ -242,30 +245,30 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
         * Math.pow(Math.sin(dlon / 2), 2);
     double finalanswer = 2 * Math.asin(Math.sqrt(havernmath));
     // Radius of earth in kilometers. Use 3956 for miles
-    return (finalanswer * EARTH_RADIUS_IN_KM);
+    return (finalanswer * EARTH_RADIUS_IN_MILES);
   }
 
   /**
-   * This is a way to set all the methods;
-   * @return activities for a city;
+   * This is a way to request API for information.
    */
-  public void getActivities(){
-    try{
-    String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet";
-    List<List<String>> headers = new ArrayList<List<String>>();
-    headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "TAM6URYM")));
-    headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token", "t1vzuahx7qoy0p45f1qidne3acik8e56")));
-    conn.setUrlAndHeaders(url, headers);
-    HttpResponse<String> resp = conn.getResponse();
-    if(resp!=null){
-      String body = resp.body();
-      Gson gson = new Gson();
-      String json = gson.toJson(body);
-      System.out.println(json);
-    } else{
-      System.out.println("resp is null");
-    }
-    } catch(Exception e) {
+  public void getActivities() {
+    try {
+      String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet";
+      List<List<String>> headers = new ArrayList<List<String>>();
+      headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "TAM6URYM")));
+      headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token",
+          "t1vzuahx7qoy0p45f1qidne3acik8e56")));
+      conn.setUrlAndHeaders(url, headers);
+      HttpResponse<String> resp = conn.getResponse();
+      if (resp != null) {
+        String body = resp.body();
+        Gson gson = new Gson();
+        String json = gson.toJson(body);
+        System.out.println(json);
+      } else {
+        System.out.println("resp is null");
+      }
+    } catch (Exception e) {
       System.out.println(e);
       System.out.println("Issue with code");
     }

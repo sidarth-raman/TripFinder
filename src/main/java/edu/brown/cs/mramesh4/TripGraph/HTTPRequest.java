@@ -10,9 +10,8 @@ import java.util.List;
 
 /**
  * This is a class for an HTTPRequest
- * @param <T>
  */
-public class HTTPRequest<T> {
+public class HTTPRequest {
   private String url;
   private List<List<String>> headers;
   private HttpRequest request;
