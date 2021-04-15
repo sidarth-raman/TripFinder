@@ -7,13 +7,14 @@ import {Route} from "react-router-dom";
 import MapDrawing from "./MapDrawing";
 
 function App() {
-  return (
-    <div>
-        <Navbar />
-        <Route exact path="/about" component={About}/>
-        <Choices />
-    </div>
-  );
+    return (
+        <div>
+            <Navbar />
+            <div className="message">This is a Road Trip Finder. Select you origin city and certain inputs to create a custom road-trip for you!</div>
+            <Route exact path="/about" component={About}/>
+            <Choices />
+        </div>
+    );
 };
 
 export default App;

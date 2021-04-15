@@ -11,15 +11,18 @@ function Choices() {
     const [distList, setDistList] = useState(["Select Max Distance", "250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "4000 Miles"]);
     const [numList, setNumList] = useState(["Select Number", "1", "2", "3", "4", "5"]);
 
-    const CANVAS_HEIGHT = 280;
-    const CANVAS_WIDTH = 493;
-    const TOP_LEFT_LAT = 49;
-    const TOP_LEFT_LON = -125;
-    const BOT_RIGHT_LAT = 25;
-    const BOT_RIGHT_LON = 64.882;
+    const CANVAS_HEIGHT = 584;
+    const CANVAS_WIDTH = 1228;
+    const TOP_LEFT_LAT = 49.9328;
+    const TOP_LEFT_LON = -129.105;
+    const BOT_RIGHT_LAT = 24.02;
+    const BOT_RIGHT_LON = -59.048;
 
     const [output, setOutput] = useState([]);
     const [coordinates, setCoordinates] = useState([]);
+    const [error, setError] = useState("Error: Please Select Origin City");
+    const [miles, setMiles] = useState();
+
 
 
     const [value, setValue] = useState("");
@@ -55,7 +58,7 @@ function Choices() {
         ctx.lineTo(0,0);
         ctx.stroke();
         var imageObj1 = new Image();
-        imageObj1.src = 'https://png.pngitem.com/pimgs/s/470-4707541_united-states-map-in-1864-hd-png-download.png'
+        imageObj1.src = 'https://i.imgur.com/fZCKrsO.png'
         imageObj1.onload = function() {
             ctx.drawImage(imageObj1, 0, 0);
         }
@@ -73,7 +76,7 @@ function Choices() {
 
         ctx.stroke();
         var imageObj1 = new Image();
-        imageObj1.src = 'https://png.pngitem.com/pimgs/s/470-4707541_united-states-map-in-1864-hd-png-download.png'
+        imageObj1.src = 'https://i.imgur.com/fZCKrsO.png'
         ctx.drawImage(imageObj1, 0, 0);
 
         ctx.beginPath();
@@ -81,6 +84,7 @@ function Choices() {
 
         for (const list of coordinates.entries()) {
             ctx.beginPath();
+            ctx.strokeStyle = 'red';
             ctx.arc((CANVAS_WIDTH*(TOP_LEFT_LON - list[1][1]))/(TOP_LEFT_LON + BOT_RIGHT_LON),
                 CANVAS_HEIGHT*(TOP_LEFT_LAT - list[1][0])/(TOP_LEFT_LAT - BOT_RIGHT_LAT),
                 5, 0, 2 * Math.PI);
@@ -116,6 +120,8 @@ function Choices() {
     }
 
     const handleSubmit = (e) => {
+        setError("");
+        setMiles("");
         setValueFinal(value);
         setDistFinal(dist);
         setNumFinal(num);
@@ -171,17 +177,43 @@ function Choices() {
             config
         )
         console.log(response.data["latLong"])
+        console.log(response.data["output"])
+
         setOutput(response.data["output"]);
         setCoordinates(response.data["latLong"]);
+        setError(response.data["error"]);
+        setMiles(response.data["routeDist"]);
+
 
     }
+
+
+    const getData = async() => {
+        for (const list of coordinates.entries()) {
+            let config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    'Access-Control-Allow-Origin': '*',
+                    "X-Triposo-Account": "TAM6URYM",
+                    "X-Triposo-Token": "t1vzuahx7qoy0p4561gidne3acik8e56",
+                }
+            }
+            let url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + list[1][0] + "&longitude=" + list[1][1] + "&fields=poi:id, name, coordinates,snippet"
+            let response = await axios.post(
+                url,
+                config
+            )
+            console.log(response.data);
+        }
+    }
+
 
     return (
         <>
             <div className="formbox">
                 <form onSubmit={handleSubmit}>
                     <label>
-                        <div className="question">Pick your origin city:</div>
+                        <div className="question">Pick your origin city</div>
                         <select className="dropdown" onChange={handleInputChangeOrigin} value={value}>                      >
                             {cityList.map((k)=>
                                 <option key={k}>{k}</option>)}
@@ -189,7 +221,7 @@ function Choices() {
 
                         <br />
 
-                        <div className="question" >Pick your maximum distance:</div>
+                        <div className="question" >Choose the maximum distance you can travel</div>
                         <select className="dropdown" onChange={handleInputChangeDist} value={dist}>
                             {distList.map((k)=>
                                 <option value={k}>{k}</option>)}
@@ -197,7 +229,7 @@ function Choices() {
 
                         <br />
 
-                        <div className="question" >Select the number of cities you wish to vist:)</div>
+                        <div className="question" >Select the number of cities you wish to vist</div>
                         <select className="dropdown" onChange={handleInputChangeNum} value={num}>
                             {numList.map((k)=>
                                 <option value={k}>{k}</option>)}
@@ -205,7 +237,7 @@ function Choices() {
 
                         <br />
 
-                        <div className="question" >Select a City you want to visit: (If you have no specific city, leave this blank)</div>
+                        <div className="question" >Mark a City you want to visit: (If you have no specific city, leave this blank)</div>
                         <select className="dropdown" onChange={handleInputChangeCity} value={city}>
                             {cityList.map((k)=>
                                 <option value={k}>{k}</option>)}
@@ -214,8 +246,10 @@ function Choices() {
                     </label>
                     <input type="submit" value="Submit" />
                 </form>
+                <div className="error">{error}</div>
             </div>
             <div className="question">
+
                 <br />
                 Origin City: {valueFinal}    <br />
                 Number of Cities: {numFinal}    <br />
@@ -224,7 +258,14 @@ function Choices() {
                 Output: {output}
 
             </div>
-            <div style = {{paddingLeft: 200}}>
+            <div className='message'>
+                Your Road Trip: <br/>
+                {output.map((k)=>
+                    <li>{k}</li>)}
+                The total length of your trip is: {miles}<br/>
+                The total time of your trip is roughly: {}<br/>
+            </div>
+            <div style = {{paddingLeft: 100} }>
                 <canvas ref={canvasRef} />
             </div>
         </>
