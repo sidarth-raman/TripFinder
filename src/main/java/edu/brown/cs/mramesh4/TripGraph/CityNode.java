@@ -55,7 +55,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     this.distance = Double.MAX_VALUE;
     conn = new HTTPRequest();
     this.activities = new ArrayList<>();
-    setActivities();
+    //setActivities();
   }
   /**
    * Returns the name of the cityNode.
@@ -295,7 +295,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
           String ret;
           ret = "Snippet:" + split2[i].substring(0, split2[i].length() - 3);
           if(ret.contains("poi_division")){
-            ret = ret.split("poi_division")[0];
+            //ret = ret.split("poi_division")[0];
           }
           returnVal.add(ret);
         }
