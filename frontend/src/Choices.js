@@ -10,6 +10,7 @@ function Choices() {
     const [cityList, setCityList] = useState(["Select City"]);
     const [distList, setDistList] = useState(["Select Max Distance", "250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "4000 Miles"]);
     const [numList, setNumList] = useState(["Select Number", "1", "2", "3", "4", "5"]);
+    const [firstRender, setFirsRender] = useState(true);
 
     const CANVAS_HEIGHT = 584;
     const CANVAS_WIDTH = 1228;
@@ -21,6 +22,7 @@ function Choices() {
     const [output, setOutput] = useState([]);
     const [coordinates, setCoordinates] = useState([]);
     const [error, setError] = useState();
+    const [milesNum, setMilesNum] = useState();
     const [miles, setMiles] = useState();
     const [hours, setHours] = useState();
 
@@ -128,17 +130,22 @@ function Choices() {
     }
 
     const handleSubmit = (e) => {
-        console.log("submit")
-        setError("");
-        setMiles("");
         setValueFinal(value);
         setDistFinal(dist);
         setNumFinal(num);
         setCityFinal(city);
-        sendData();
+
         e.preventDefault();
     }
 
+    useEffect(() => {
+        if (!firstRender){
+            sendData();
+        }else {
+            setFirsRender(false)
+        }
+
+    }, [numFinal, distFinal, cityFinal, valueFinal])
 
     const requestCity = async () => {
         const toSend = {
@@ -185,12 +192,11 @@ function Choices() {
             toSend,
             config
         )
-        console.log(response.data["latLong"])
-        console.log(response.data["output"])
 
         setOutput(response.data["output"]);
         setCoordinates(response.data["latLong"]);
         setError(response.data["error"]);
+        setMilesNum(response.data["routeDist"]);
         setMiles(response.data["routeDist"] + " Miles");
 
 
@@ -217,8 +223,15 @@ function Choices() {
     }
 
     useEffect(()=> {
-        setHours(Math.round(miles/60) + " Hours")
-    }, [miles])
+        if (!firstRender){
+            let time = Math.round(milesNum/60);
+            setHours( time.toString() + " Hours")
+        }else {
+            setFirsRender(false)
+        }
+
+
+    }, [milesNum])
 
 
     return (
