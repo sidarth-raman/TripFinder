@@ -6,22 +6,31 @@ import java.util.List;
 /**
  * This is a serialized object that stores each of the cities individual information.
  */
-public class CityInformationObject{
+public class CityInformationObject {
   List<CityData> results;
 }
 
-class CityData{
+/**
+ * Serialized citydata.
+ */
+class CityData {
   List<POI> pois;
   List<POIDivision> poi_division;
   String more;
 }
 
-class POIDivision{
+/**
+ * Serialized POIDivision.
+ */
+class POIDivision {
   String tag_name;
   String tag_label;
   List<String> poi_ids;
 }
 
+/**
+ * Serialized POI Data.
+ */
 class POI{
   String snippet;
   String name;
