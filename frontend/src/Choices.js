@@ -13,15 +13,17 @@ function Choices() {
 
     const CANVAS_HEIGHT = 584;
     const CANVAS_WIDTH = 1228;
-    const TOP_LEFT_LAT = 49.9328;
-    const TOP_LEFT_LON = -129.105;
-    const BOT_RIGHT_LAT = 24.02;
-    const BOT_RIGHT_LON = -59.048;
+    const TOP_LEFT_LAT = 52;
+    const TOP_LEFT_LON = -129.2;
+    const BOT_RIGHT_LAT = 24.4;
+    const BOT_RIGHT_LON = -59.5;
 
     const [output, setOutput] = useState([]);
     const [coordinates, setCoordinates] = useState([]);
-    const [error, setError] = useState("Error: Please Select Origin City");
+    const [error, setError] = useState();
     const [miles, setMiles] = useState();
+    const [hours, setHours] = useState();
+
 
 
 
@@ -81,20 +83,26 @@ function Choices() {
 
         ctx.beginPath();
 
-
+        let counter = 1;
         for (const list of coordinates.entries()) {
-            ctx.beginPath();
+            ctx.lineTo((CANVAS_WIDTH*(TOP_LEFT_LON - list[1][1]))/(TOP_LEFT_LON - BOT_RIGHT_LON),
+                CANVAS_HEIGHT*(TOP_LEFT_LAT - list[1][0])/(TOP_LEFT_LAT - BOT_RIGHT_LAT));
+
             ctx.strokeStyle = 'red';
-            ctx.arc((CANVAS_WIDTH*(TOP_LEFT_LON - list[1][1]))/(TOP_LEFT_LON + BOT_RIGHT_LON),
+
+            ctx.arc((CANVAS_WIDTH*(TOP_LEFT_LON - list[1][1]))/(TOP_LEFT_LON - BOT_RIGHT_LON),
                 CANVAS_HEIGHT*(TOP_LEFT_LAT - list[1][0])/(TOP_LEFT_LAT - BOT_RIGHT_LAT),
-                5, 0, 2 * Math.PI);
+                3, 0, 2 * Math.PI);
 
-            console.log(633*(49 - list[1][0])/(49 - 25));
+            ctx.stroke();
+            ctx.lineWidth = 2;
 
-            ctx.stroke()
-            ctx.closePath();
+            ctx.moveTo((CANVAS_WIDTH*(TOP_LEFT_LON - list[1][1]))/(TOP_LEFT_LON - BOT_RIGHT_LON),
+                CANVAS_HEIGHT*(TOP_LEFT_LAT - list[1][0])/(TOP_LEFT_LAT - BOT_RIGHT_LAT));
+            counter++;
+
         }
-
+        ctx.closePath();
 
 
     }, [coordinates])
@@ -120,6 +128,7 @@ function Choices() {
     }
 
     const handleSubmit = (e) => {
+        console.log("submit")
         setError("");
         setMiles("");
         setValueFinal(value);
@@ -182,7 +191,7 @@ function Choices() {
         setOutput(response.data["output"]);
         setCoordinates(response.data["latLong"]);
         setError(response.data["error"]);
-        setMiles(response.data["routeDist"]);
+        setMiles(response.data["routeDist"] + " Miles");
 
 
     }
@@ -207,13 +216,17 @@ function Choices() {
         }
     }
 
+    useEffect(()=> {
+        setHours(Math.round(miles/60) + " Hours")
+    }, [miles])
+
 
     return (
         <>
             <div className="formbox">
                 <form onSubmit={handleSubmit}>
                     <label>
-                        <div className="question">Pick your origin city</div>
+                        <div className="question">Pick your origin city (Start typing your city's name)</div>
                         <select className="dropdown" onChange={handleInputChangeOrigin} value={value}>                      >
                             {cityList.map((k)=>
                                 <option key={k}>{k}</option>)}
@@ -250,21 +263,29 @@ function Choices() {
             </div>
             <div className="question">
 
-                <br />
-                Origin City: {valueFinal}    <br />
-                Number of Cities: {numFinal}    <br />
-                Specific Cities: {cityFinal}    <br />
-                Max Dist: {distFinal}    <br />
-                Output: {output}
+                {/*<br />*/}
+                {/*Origin City: {valueFinal}    <br />*/}
+                {/*Number of Cities: {numFinal}    <br />*/}
+                {/*Specific Cities: {cityFinal}    <br />*/}
+                {/*Max Dist: {distFinal}    <br />*/}
+                {/*Output: {output} <br />*/}
+                {/*Lat: {coordinates}*/}
 
             </div>
-            <div className='message'>
-                Your Road Trip: <br/>
+                <div className="tripInfo">
+                   Trip Information
+                </div>
+                <ol className="list">
                 {output.map((k)=>
                     <li>{k}</li>)}
+                </ol>
+                    <div className="info">
                 The total length of your trip is: {miles}<br/>
-                The total time of your trip is roughly: {}<br/>
-            </div>
+                The total time of your trip is roughly: {hours}<br/>
+                    </div>
+
+            <br/>
+
             <div style = {{paddingLeft: 100} }>
                 <canvas ref={canvasRef} />
             </div>
