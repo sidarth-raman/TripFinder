@@ -25,8 +25,7 @@ function Choices() {
     const [milesNum, setMilesNum] = useState();
     const [miles, setMiles] = useState();
     const [hours, setHours] = useState();
-
-
+    let activitiesList = []
 
 
     const [value, setValue] = useState("");
@@ -170,10 +169,6 @@ function Choices() {
     }, [])
 
     const sendData = async () => {
-        console.log(valueFinal);
-        console.log(distFinal)
-        console.log(numFinal)
-        console.log(cityFinal)
 
         const toSend = {
             origin : valueFinal,
@@ -194,31 +189,62 @@ function Choices() {
         )
 
         setOutput(response.data["output"]);
+
         setCoordinates(response.data["latLong"]);
         setError(response.data["error"]);
         setMilesNum(response.data["routeDist"]);
         setMiles(response.data["routeDist"] + " Miles");
 
 
+
     }
+    useEffect(()=> {
+        getActivities();
+    }, [coordinates])
 
 
-    const getData = async() => {
-        for (const list of coordinates.entries()) {
-            let config = {
-                headers: {
-                    "Content-Type": "application/json",
-                    'Access-Control-Allow-Origin': '*',
-                    "X-Triposo-Account": "TAM6URYM",
-                    "X-Triposo-Token": "t1vzuahx7qoy0p4561gidne3acik8e56",
+    const getActivities = async () =>{
+
+        for(const list of coordinates.entries()){
+            let xhr = new XMLHttpRequest()
+            xhr.overrideMimeType("application/json");
+            xhr.responseType = 'json';
+            let resp = null
+            // get a callback when the server responds
+            xhr.addEventListener('load', () => {
+                // update the state of the component with the result here
+                resp = xhr.response;
+                //this is the list of points of interests  --> do something here
+                let counter = 0;
+
+                if (xhr.status == 429 || xhr.status ==400) {
+                    resp = null;
                 }
-            }
-            let url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + list[1][0] + "&longitude=" + list[1][1] + "&fields=poi:id, name, coordinates,snippet"
-            let response = await axios.post(
-                url,
-                config
-            )
-            console.log(response.data);
+
+                if (resp !== null) {
+                    for (const element of resp.results[0].pois.entries()) {
+                        if (counter < 3) {
+                            let activity = element[1].name + " - " + element[1].snippet;
+                            activitiesList.push(activity)
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
+                //this is the list of ids that correspond to info
+                //TODO: this is where you set ur variables and stuff and update states in order to get stuff showing
+
+            })
+
+
+            let url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude="
+                + list[1][0] + "&longitude=" + list[1][1] + "&fields=poi:id,name,coordinates,snippet&account=TAM6URYM&token=t1vzuahx7qoy0p45f1qidne3acik8e56"
+            // open the request with the verb and the url
+            xhr.open('GET', url);
+            // send the request
+
+            xhr.send();
         }
     }
 
@@ -296,7 +322,6 @@ function Choices() {
                 The total length of your trip is: {miles}<br/>
                 The total time of your trip is roughly: {hours}<br/>
                     </div>
-
             <br/>
 
             <div style = {{paddingLeft: 100} }>
