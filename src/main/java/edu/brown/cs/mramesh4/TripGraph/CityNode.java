@@ -1,12 +1,21 @@
 package edu.brown.cs.mramesh4.TripGraph;
 
+import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 
 /**
  * This is a class to model our CityNodes: CityNodes are nodes that represent
@@ -25,6 +34,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   private transient static final double EARTH_RADIUS_IN_MILES = 3956;
   private transient HTTPRequest conn;
   private CityInformationObject obj;
+  private transient List<String> activities;
 
   /**
    * This is a constructor for a cityNode. A cityNode right now takes in
@@ -44,6 +54,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     this.weight = Double.MAX_VALUE;
     this.distance = Double.MAX_VALUE;
     conn = new HTTPRequest();
+    this.activities = new ArrayList<>();
   }
   /**
    * Returns the name of the cityNode.
@@ -249,28 +260,50 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   }
 
   /**
+   * Return list of activites
+   * @return list of activities
+   */
+  public List<String> getActivities(){
+    return this.activities;
+  }
+
+  /**
    * This is a way to request API for information.
    */
-  public void getActivities() {
+  public void setActivities() {
+    HttpResponse<String> resp = null;
     try {
       String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet";
       List<List<String>> headers = new ArrayList<List<String>>();
       headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "TAM6URYM")));
       headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token",
-          "t1vzuahx7qoy0p45f1qidne3acik8e56")));
+        "t1vzuahx7qoy0p45f1qidne3acik8e56")));
       conn.setUrlAndHeaders(url, headers);
-      HttpResponse<String> resp = conn.getResponse();
+      resp = conn.getResponse();
       if (resp != null) {
         String body = resp.body();
-        Gson gson = new Gson();
-        String json = gson.toJson(body);
-        System.out.println(json);
+        //System.out.println(body.substring(body.indexOf("pois"), body.indexOf("more")));
+        String sub = body.substring(body.indexOf("pois"), body.indexOf("more"));
+        //System.out.println(sub);
+        String[] split = sub.split("pois");
+        String next = split[1];
+        //System.out.println(next);
+        String[] split2 = next.split("\"snippet\":");
+        List<String> returnVal = new ArrayList<>();
+        for(int i = 1; i < split2.length; i++){
+          String ret;
+          ret = "Snippet:" + split2[i].substring(0, split2[i].length() - 3);
+          if(ret.contains("poi_division")){
+            ret = ret.split("poi_division")[0];
+          }
+          returnVal.add(ret);
+        }
+        this.activities = returnVal;
       } else {
         System.out.println("resp is null");
       }
-    } catch (Exception e) {
-      System.out.println(e);
-      System.out.println("Issue with code");
+    } catch (Exception e){
+      System.out.println("error: " + e);
     }
   }
 }
