@@ -3,38 +3,26 @@ package edu.brown.cs.mramesh4.TripGraph;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * This is a comparator class for cityNodes.
- */
 public class CityComparator implements Comparator<CityNode> {
   private CityNode start;
   private List<CityNode> toVisit;
   private double totalDistance;
-  private double distanceWeight;
-  private static double popWeight = 0.0000001;
+  private double numerator;
+  private double denominator;
+  private double midpointX;
+  private double midpointY;
 
-  /**
-   * This is a constructor for a city comparator.
-   * @param start start node
-   * @param toVisit list of cities to visit
-   * @param totalDistance distance
-   */
-  public CityComparator(CityNode start, List<CityNode> toVisit, double totalDistance) {
+  public CityComparator(double numerator, double denominator, CityNode start,
+                        List<CityNode> toVisit, int ind, double random) {
     this.start = start;
     this.toVisit = toVisit;
-    this.totalDistance = totalDistance;
-  }
-
-  /**
-   * This is a comparator method to decide how to sort the cities.
-   * @param a node to compare
-   * @param b node to compare
-   * @return integer representing whether a < b | a == b | a > b
-   */
-  @Override
-  public int compare(CityNode a, CityNode b) {
+    this.numerator = numerator;
+    this.denominator = denominator;
+    double ratio = numerator / denominator;
+    System.out.println("ratio: " + numerator + "/" + denominator);
     double yTotals = 0;
     double xTotals = 0;
+
     //Calculating midpoint of lat/long by finding average
     for (CityNode n : toVisit) {
       yTotals += n.getLat();
@@ -42,18 +30,47 @@ public class CityComparator implements Comparator<CityNode> {
     }
     yTotals += start.getLat();
     xTotals += start.getLong();
-    double midpointY = yTotals / (toVisit.size() + 1);
-    double midpointX = xTotals / (toVisit.size() + 1);
+
+    midpointY = (yTotals / (toVisit.size() + 1));
+    midpointX = (xTotals / (toVisit.size() + 1));
+
+    double myd = Math.abs(midpointY - start.getLat());
+    double myx = Math.abs(Math.abs(midpointX) - Math.abs(start.getLong()));
+
+//    double random = 0;
+    if (ind != -5) {
+      System.out.println("running");
+      double max = 1;
+      double min = -1;
+//      random = (Math.random() * (max - min)) + min;
+    }
+    if (ind % 2 == 0) {
+      midpointX = midpointX + (ratio * myx) + (random * myx);
+      System.out.println("offX: " + random * myx);
+
+    } else {
+      midpointY = midpointY + (ratio * myd) + (random * myd);
+      System.out.println("offY" + random * myd);
+    }
+
+    System.out.println("Midpoint x: " + midpointX);
+    System.out.println("Midpoint y: " + midpointY);
+  }
+
+  @Override
+  public int compare(CityNode a, CityNode b) {
+
     //Distances to the midpoint
-    double aDist = Math.hypot(Math.abs(Math.abs(a.getLat())
-        - Math.abs(midpointY)),
-        Math.abs(Math.abs(a.getLong())
-          - Math.abs(midpointX)));
-    double bDist = Math.hypot(Math.abs(Math.abs(b.getLat())
-        - Math.abs(midpointY)),
-        Math.abs(Math.abs(b.getLong())
-          - Math.abs(midpointX)));
+    double aDist = Math.hypot(
+      Math.abs(Math.abs((a.getLat()) - Math.abs(midpointY)) * (numerator / denominator)),
+      Math.abs(Math.abs(a.getLong()) - Math.abs(midpointX)));
+    double bDist = Math.hypot(
+      Math.abs(Math.abs((b.getLat()) - Math.abs(midpointY)) * (numerator / denominator)),
+      Math.abs(Math.abs(b.getLong()) - Math.abs(midpointX)));
+
+
 //    if(Math.abs(ratio - 1) <= 0.2){
+//      System.out.println("COMPARISON: " + ratio + " " + a.getName() + " :" + a.getPop() + " " +b.getName() + " :" + b.getPop());
 ////      return Double.compare(a.getPop(), b.getPop());
 //      if(a.getPop() > b.getPop()){
 //        return -1;
@@ -63,12 +80,9 @@ public class CityComparator implements Comparator<CityNode> {
 //        return 1;
 //      }
 //    }
-//    System.out.println("non pop comparison");
-    double ratio = Math.abs((aDist / bDist) - 1);
-
-    return Double.compare(aDist - popWeight * a.getPop(),  bDist - popWeight * b.getPop());
+    double hyp = 0.0000005;
+    return Double.compare(aDist - (hyp * a.getPop()), bDist - (hyp * b.getPop()));
 //    return Double.compare(Math.pow(1/a.getPop(), aDist), Math.pow(1/b.getPop(), bDist));
-//    return Double.compare(Math.pow(aDist, -(0.05 * a.getPop())), Math.pow(bDist,
-//    -(0.05 * b.getPop())));
+//    return Double.compare(Math.pow(aDist, -(0.05 * a.getPop())), Math.pow(bDist, -(0.05 * b.getPop())));
   }
 }

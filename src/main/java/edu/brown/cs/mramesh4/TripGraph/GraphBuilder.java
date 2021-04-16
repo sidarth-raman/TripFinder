@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,8 +35,6 @@ public class GraphBuilder {
    * @param maxDist       is the maximum distance they are willing to travel.
    * @param maxNumCities  is the maximum number of cities they're willing to visit.
    * @param citiesToVisit is the cities they would like to visit in their travel.
-   * @param conn          is the connection to the database
-
    */
   public GraphBuilder(Connection conn, String origin, double maxDist, int maxNumCities,
                       List<String> citiesToVisit) {
@@ -67,43 +66,69 @@ public class GraphBuilder {
     String maxLongBound = "\"" + Math.round(originCity.getLong() + maxDistLong) + "\"";
     String minLongBound = "\"" + Math.round(originCity.getLong() - maxDistLong) + "\"";
     System.out.println(
-        "LAT BOUNDS: " + minLatBound + "-" + maxLatBound + " LONG BOUNDS: " + minLongBound + "-"
-          + maxLongBound);
+      "LAT BOUNDS: " + minLatBound + "-" + maxLatBound + " LONG BOUNDS: " + minLongBound + "-" +
+        maxLongBound);
     List<CityNode> bestCities = new ArrayList<>();
 
-
-    PreparedStatement prep = null;
-    try {
-      prep = conn.prepareStatement(
-          "SELECT city, state_id, lat, lng, population, id FROM cities where lat between ? and ? and lng between ? and ?;");
-      prep.setDouble(1, Math.round((originCity.getLat() - maxDistLat)));
-      prep.setDouble(2, Math.round((originCity.getLat() + maxDistLat)));
-      prep.setDouble(3, Math.round(originCity.getLong() - maxDistLong));
-      prep.setDouble(4, Math.round(originCity.getLong() + maxDistLong));
-
-      ResultSet rs = prep.executeQuery();
-      while (rs.next()) {
-        String name = rs.getString(1) + ", " + rs.getString(2);
-        if (!citiesToVisit.contains(name) && !originCity.getName().equals(name)) {
-          double lat = rs.getDouble(3);
-          double lon = rs.getDouble(4);
-          int pop = rs.getInt(5);
-          bestCities.add(new CityNode(name, lat, lon, pop));
-        }
-      }
-      rs.close();
-      prep.close();
-    } catch (SQLException throwables) {
-      throwables.printStackTrace();
-    }
-
-    Collections.sort(bestCities, new CityComparator(originCity, cityNodesToVisit, maxDist));
-
     int temp = citiesInGraph.size();
-    if (maxNumCities > temp) {
-      for (int i = 0; i < maxNumCities - temp; i++) {
-        if (!bestCities.isEmpty()) {
+    int numToAdd = maxNumCities - temp;
+
+    if(numToAdd !=0) {
+      PreparedStatement prep = null;
+      try {
+        prep = conn.prepareStatement(
+          "SELECT city, state_id, lat, lng, population, id FROM cities where lat between ? and ? and lng between ? and ?;");
+        prep.setDouble(1, Math.round((originCity.getLat() - maxDistLat)));
+        prep.setDouble(2, Math.round((originCity.getLat() + maxDistLat)));
+        prep.setDouble(3, Math.round(originCity.getLong() - maxDistLong));
+        prep.setDouble(4, Math.round(originCity.getLong() + maxDistLong));
+
+        ResultSet rs = prep.executeQuery();
+        while (rs.next()) {
+          String name = rs.getString(1) + ", " + rs.getString(2);
+          if (!citiesToVisit.contains(name) && !originCity.getName().equals(name)) {
+            double lat = rs.getDouble(3);
+            double lon = rs.getDouble(4);
+            int pop = rs.getInt(5);
+            bestCities.add(new CityNode(name, lat, lon, pop));
+          }
+        }
+        rs.close();
+        prep.close();
+      } catch (SQLException throwables) {
+        throwables.printStackTrace();
+      }
+
+      double max = 0.5;
+      double min = -0.5;
+      double random = (Math.random() * (max - min)) + min;
+
+
+      if (numToAdd % 2 == 1) {
+        System.out.println("Triggered: " + numToAdd);
+        if (numToAdd == 1) {
+          Collections.sort(bestCities,
+            new CityComparator(0, 1, originCity, cityNodesToVisit, -5, 0));
           citiesInGraph.add(bestCities.remove(0));
+        } else {
+          for (int i = 0 - ((numToAdd - 1) / 2), j = 0; i < ((numToAdd - 1) / 2) + 1; i++, j++) {
+            if (!bestCities.isEmpty()) {
+              Collections.sort(bestCities,
+                new CityComparator(i, numToAdd - 1, originCity, cityNodesToVisit, j, random));
+              citiesInGraph.add(bestCities.remove(0));
+            }
+          }
+        }
+      } else {
+        if (maxNumCities > temp) {
+          for (int i = -1, j = 0; i < 2; i+=2, j++) {
+            if (!bestCities.isEmpty()) {
+
+              Collections.sort(bestCities,
+                new CityComparator(i, numToAdd, originCity, cityNodesToVisit, j, random));
+              citiesInGraph.add(bestCities.remove(0));
+            }
+          }
         }
       }
     }
@@ -128,7 +153,7 @@ public class GraphBuilder {
 
     //Building the query based on the cities to visit.
     StringBuilder sb = new StringBuilder(
-        "SELECT city, state_id, lat, lng, population, id FROM cities where city in (");
+      "SELECT city, state_id, lat, lng, population, id FROM cities where city in (");
     boolean added = false;
     for (String f : citiesToSearch) {
       if (added) {
@@ -152,7 +177,6 @@ public class GraphBuilder {
         if (name.equals(temp)) {
           originCity = new CityNode(name, lat, lon, pop);
         } else if (citiesToVisit.contains(name) && !name.equals(temp)) {
-          System.out.println("Adding city to visit: " + name);
           CityNode toVisit = new CityNode(name, lat, lon, pop);
           cityNodesToVisit.add(toVisit);
           citiesInGraph.add(toVisit);
@@ -187,8 +211,7 @@ public class GraphBuilder {
    * @return list of route for user.
    */
   public List<CityNode> getPath() {
-    return graph.christTSP(originCity);
-    //return graph.TwoOptTSP(originCity);
+    return graph.TwoOptTSP(originCity);
   }
 
   /**
