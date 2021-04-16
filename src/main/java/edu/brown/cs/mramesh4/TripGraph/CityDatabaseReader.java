@@ -85,6 +85,27 @@ public class CityDatabaseReader {
     }
   }
 
+  public double[] getCoordinates(String city, String state) {
+    PreparedStatement prep = null;
+    double lat = 0;
+    double lon = 0;
+    try {
+      prep = conn.prepareStatement("select lat, lng from cities WHERE city = ? AND state_id = ?;");
+      prep.setString(1, city);
+      prep.setString(2, state);
+      ResultSet rs = prep.executeQuery();
+      if (rs.next()) {
+        lat = rs.getDouble(1);
+        lon = rs.getDouble(2);
+      }
+      rs.close();
+      prep.close();
+    } catch (SQLException throwables) {
+      throwables.printStackTrace();
+    }
+    return new double[]{lat, lon};
+  }
+
   public List<String> getCities(){
     return cityList;
   }

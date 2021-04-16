@@ -1,19 +1,23 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import './About.css';
 
 function Itinerary() {
 
     const [cityList, setCityList] = useState(["Select City"]);
     const [city, setCity] = useState("");
-    //const [lat, setLat] = useState("");
-    //const [lon, setLon] = useState("");
-    let lat = -22.983611
-    let lon = -43.204444
+    const [lat, setLat] = useState("");
+    const [lon, setLon] = useState("");
+    const [activities, setActivities] = useState("hi");
 
     const handleSubmit = (e) => {
         setCity(city);
         console.log(city);
+        getCoords();
+        console.log(lat)
+        console.log(lon)
         getActivities();
+        console.log(activities);
         e.preventDefault();
     }
 
@@ -37,20 +41,53 @@ function Itinerary() {
             toSend,
             config
         )
-        setCityList([cityList,...response.data["cityList"]]);
+        setCityList([cityList, ...response.data["cityList"]]);
     }
 
-    const getActivities = async () =>{
+    const getCoords = () => {
+        const toSend = {
+            cityName: city
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        axios.post(
+            "http://localhost:4567/coords",
+            toSend,
+            config
+        )
+            .then(response => {
+                setLat(response.data.latitude);
+                setLon(response.data.longitude);
+                //console.log(response.data.latitude);
+                //console.log(response.data.longitude);
+            })
+
+            .catch(function (error) {
+                console.log(error);
+
+            });
+    }
+    const getActivities = () => {
         let xhr = new XMLHttpRequest()
         xhr.overrideMimeType("application/json");
         xhr.responseType = 'json';
         let resp = null
-            // get a callback when the server responds
+        // get a callback when the server responds
         xhr.addEventListener('load', () => {
             // update the state of the component with the result here
             resp = xhr.response;
             //this is the list of points of interests  --> do something here
-            console.log(resp.results[0].pois);
+            console.log(resp.results[0].pois[0].name);
+            console.log(resp.results[0].pois[0].snippet);
+            let str = "";
+            for (let i = 0; i < 10; i++ ) {
+                str += resp.results[0].pois[i].name + ": " + resp.results[0].pois[i].snippet + "\n";
+            }
+            setActivities(str);
             //this is the list of ids that correspond to info
             console.log(resp.results[0].poi_division);
 
@@ -68,17 +105,20 @@ function Itinerary() {
     }, [])
 
     return (
-        <div className="formbox">
-            <form onSubmit={handleSubmit}>
-                <label>
-                    <div className="question">Select the city you wish to visit:</div>
-                    <select className="dropdown" onChange={handleInputChangeOrigin} value={city}> >
-                        {cityList.map((k) =>
-                            <option key={k}>{k}</option>)}
-                    </select>
-                </label>
-                <input type="submit" value="Find me something to do!"/>
-            </form>
+        <div>
+            <div className="formbox">
+                <form onSubmit={handleSubmit}>
+                    <label>
+                        <div className="question">Select the city you wish to visit:</div>
+                        <select className="dropdown" onChange={handleInputChangeOrigin} value={city}> >
+                            {cityList.map((k) =>
+                                <option key={k}>{k}</option>)}
+                        </select>
+                    </label>
+                    <input type="submit" value="Find me something to do!"/>
+                </form>
+            </div>
+            <p>{activities}</p>
         </div>
     );
 }

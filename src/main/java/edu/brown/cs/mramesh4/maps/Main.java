@@ -124,6 +124,7 @@ public final class Main {
     FreeMarkerEngine freeMarker = createEngine();
     Spark.post("/route", new RouteHandler());
     Spark.post("/city", new AllCityHandler());
+    Spark.post("/coords", new CoordsHandler());
 
 
   }
@@ -232,6 +233,22 @@ public final class Main {
       Collections.sort(alphabetizedCities);
       Map<String, Object> variables = ImmutableMap.of("cityList", alphabetizedCities.toArray());
       return GSON.toJson(variables);
+    }
+  }
+
+  private static class CoordsHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+      System.out.println("arrived");
+      JSONObject data = new JSONObject(request.body());
+      String fullName = data.getString("cityName");
+      System.out.println(fullName);
+      String[] arr = fullName.split(",");
+      double[] coords = database.getCoordinates(arr[0], arr[1].strip());
+      Map<String, Object> variables = ImmutableMap.of(
+            "latitude", coords[0], "longitude", coords[1]);
+      return GSON.toJson(variables);
+
     }
   }
 
