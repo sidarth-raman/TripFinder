@@ -55,6 +55,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     this.distance = Double.MAX_VALUE;
     conn = new HTTPRequest();
     this.activities = new ArrayList<>();
+    setActivities();
   }
   /**
    * Returns the name of the cityNode.
@@ -273,7 +274,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   public void setActivities() {
     HttpResponse<String> resp = null;
     try {
-      String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet";
+      String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet&max_distance=500";
       List<List<String>> headers = new ArrayList<List<String>>();
       headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "TAM6URYM")));
       headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token",
