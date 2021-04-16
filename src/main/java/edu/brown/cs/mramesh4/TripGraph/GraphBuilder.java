@@ -96,13 +96,20 @@ public class GraphBuilder {
       throwables.printStackTrace();
     }
 
-    Collections.sort(bestCities, new CityComparator(originCity, cityNodesToVisit, maxDist));
 
     int temp = citiesInGraph.size();
-    if (maxNumCities > temp) {
-      for (int i = 0; i < maxNumCities - temp; i++) {
-        if (!bestCities.isEmpty()) {
-          citiesInGraph.add(bestCities.remove(0));
+    int numToAdd = maxNumCities - temp;
+    if (numToAdd == 1) {
+      Collections.sort(bestCities, new CityComparator(0, 1, originCity, cityNodesToVisit, 0));
+      citiesInGraph.add(bestCities.remove(0));
+    } else {
+      if (maxNumCities > temp) {
+        for (int i = 0; i < numToAdd; i++) {
+          if (!bestCities.isEmpty()) {
+            Collections.sort(bestCities,
+                new CityComparator(1, numToAdd + 1, originCity, cityNodesToVisit, i));
+            citiesInGraph.add(bestCities.remove(0));
+          }
         }
       }
     }

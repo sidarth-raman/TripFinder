@@ -16,7 +16,7 @@ public class CityDatabaseReader {
   private List<CityNode> cityNodes;
 
 
-  public CityDatabaseReader(String filepath){
+  public CityDatabaseReader(String filepath) {
     cityList = new ArrayList<>();
     cityNodes = new ArrayList<>();
     this.filepath = filepath;
@@ -43,11 +43,11 @@ public class CityDatabaseReader {
     conn = c;
   }
 
-  public Connection connect(){
+  public Connection connect() {
     return conn;
   }
 
-  public void readDB(){
+  public void readDB() {
     PreparedStatement prep = null;
 
     try {
@@ -64,7 +64,7 @@ public class CityDatabaseReader {
     }
   }
 
-  public void loadCityDB(){
+  public void loadCityDB() {
     PreparedStatement prep = null;
 
     try {
@@ -85,11 +85,11 @@ public class CityDatabaseReader {
     }
   }
 
-  public List<String> getCities(){
+  public List<String> getCities() {
     return cityList;
   }
 
-  public List<CityNode> getNodes(){
+  public List<CityNode> getNodes() {
     return cityNodes;
   }
 }
