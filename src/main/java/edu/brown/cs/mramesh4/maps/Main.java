@@ -66,13 +66,13 @@ public final class Main {
   private void run() {
     database = new CityDatabaseReader("data.sqlite");
     database.readDB();
-//    List<String> sts = new ArrayList<>();
-//    sts.add("Dallas, TX");
-////    sts.add("New York, NY");
-//    GraphBuilder g = new GraphBuilder(database.connect(), "Chicago, IL", 2000, 4, sts);
-//    for (CityNode n : g.getPath()) {
-//      System.out.println(n.getName());
-//    }
+    List<String> sts = new ArrayList<>();
+    sts.add("Los Angeles, CA");
+//    sts.add("Miami, FL");
+    GraphBuilder g = new GraphBuilder(database.connect(), "Providence, RI", 2000, 4, sts);
+    for (CityNode n : g.getPath()) {
+      System.out.println(n.getName());
+    }
     // Parse command line arguments
     OptionParser parser = new OptionParser();
     parser.accepts("gui");

@@ -12,7 +12,8 @@ public class CityComparator implements Comparator<CityNode> {
   private double midpointX;
   private double midpointY;
 
-  public CityComparator(double numerator, double denominator, CityNode start, List<CityNode> toVisit, int ind) {
+  public CityComparator(double numerator, double denominator, CityNode start,
+                        List<CityNode> toVisit, int ind, double random) {
     this.start = start;
     this.toVisit = toVisit;
     this.numerator = numerator;
@@ -36,21 +37,22 @@ public class CityComparator implements Comparator<CityNode> {
     double myd = Math.abs(midpointY - start.getLat());
     double myx = Math.abs(Math.abs(midpointX) - Math.abs(start.getLong()));
 
-    if (ind % 2 == 0) {
-      midpointY = midpointY - (ratio * myd);
-      midpointX = midpointX - (ratio * myx);
-      System.out.println("a");
-//      midpointY = start.getLat() - (Math.abs(start.getLat() - midpointY) * ratio);
-//      midpointX = start.getLong() - (Math.abs(start.getLong()) - Math.abs(midpointX) * ratio);
-    } else {
-      System.out.println("b");
-      midpointX = midpointX + (ratio * myx);
-      midpointY = midpointY + (ratio * myd);
-//      midpointY = start.getLat() + (Math.abs(start.getLat() - midpointY) * ratio);
-//      midpointX = start.getLong() + (Math.abs(start.getLong()) - Math.abs(midpointX) * ratio);
+//    double random = 0;
+    if (ind != -5) {
+      System.out.println("running");
+      double max = 1;
+      double min = -1;
+//      random = (Math.random() * (max - min)) + min;
     }
-//    midpointY += midpointY * (1 - ratio);
-//    midpointX += midpointX * (1 - ratio);
+    if (ind % 2 == 0) {
+      midpointX = midpointX + (ratio * myx) + (random * myx);
+      System.out.println("offX: " + random * myx);
+
+    } else {
+      midpointY = midpointY + (ratio * myd) + (random * myd);
+      System.out.println("offY" + random * myd);
+    }
+
     System.out.println("Midpoint x: " + midpointX);
     System.out.println("Midpoint y: " + midpointY);
   }
@@ -59,9 +61,11 @@ public class CityComparator implements Comparator<CityNode> {
   public int compare(CityNode a, CityNode b) {
 
     //Distances to the midpoint
-    double aDist = Math.hypot(Math.abs(Math.abs((a.getLat()) - Math.abs(midpointY)) * (numerator/denominator)),
+    double aDist = Math.hypot(
+        Math.abs(Math.abs((a.getLat()) - Math.abs(midpointY)) * (numerator / denominator)),
         Math.abs(Math.abs(a.getLong()) - Math.abs(midpointX)));
-    double bDist = Math.hypot(Math.abs(Math.abs((b.getLat()) - Math.abs(midpointY)) * (numerator/denominator)),
+    double bDist = Math.hypot(
+        Math.abs(Math.abs((b.getLat()) - Math.abs(midpointY)) * (numerator / denominator)),
         Math.abs(Math.abs(b.getLong()) - Math.abs(midpointX)));
 
 
@@ -76,8 +80,8 @@ public class CityComparator implements Comparator<CityNode> {
 //        return 1;
 //      }
 //    }
-    double hyp = 0.0000003;
-    return Double.compare(aDist - (hyp * a.getPop()),  bDist - (hyp * b.getPop()));
+    double hyp = 0.0000005;
+    return Double.compare(aDist - (hyp * a.getPop()), bDist - (hyp * b.getPop()));
 //    return Double.compare(Math.pow(1/a.getPop(), aDist), Math.pow(1/b.getPop(), bDist));
 //    return Double.compare(Math.pow(aDist, -(0.05 * a.getPop())), Math.pow(bDist, -(0.05 * b.getPop())));
   }
