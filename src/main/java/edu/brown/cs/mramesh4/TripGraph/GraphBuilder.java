@@ -211,7 +211,7 @@ public class GraphBuilder {
    * @return list of route for user.
    */
   public List<CityNode> getPath() {
-    return graph.TwoOptTSP(originCity);
+    return graph.christTSP(originCity);
   }
 
   /**

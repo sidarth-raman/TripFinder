@@ -175,8 +175,8 @@ public final class Main {
       if(node == null){
         errorMessage.append(" error: city not found. ");
       } else {
-//        node.setActivities();
-//        activitiesList = node.getActivities();
+        node.setActivities();
+        activitiesList = node.getActivities();
       }
 
       Map<String, Object> variables = ImmutableMap.of("activities", activitiesList, "error", errorMessage.toString());
@@ -204,6 +204,10 @@ public final class Main {
         cities = data.getString("city");
       } catch (Exception e) {
         System.out.println("ERROR: parsing data sent from frontend");
+        error = true;
+      }
+
+      if(origin.contains("Select")){
         error = true;
       }
 
