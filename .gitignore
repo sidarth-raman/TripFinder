@@ -1,1 +1,4 @@
 node_modules/
+target/
+jacoco.exec
+TripFinder-1.0.jar
