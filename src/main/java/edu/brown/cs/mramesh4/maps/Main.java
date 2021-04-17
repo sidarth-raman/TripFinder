@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -124,8 +128,60 @@ public final class Main {
     FreeMarkerEngine freeMarker = createEngine();
     Spark.post("/route", new RouteHandler());
     Spark.post("/city", new AllCityHandler());
+    Spark.post("/city", new CityActivityHandler());
+  }
 
 
+  private static class CityActivityHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+      JSONObject data = new JSONObject(request.body());
+      String cityName;
+      CityNode node = null;
+      StringBuilder errorMessage = new StringBuilder();
+      try{
+        cityName = data.getString("cityName");
+        String cityToQuery = cityName.split(",")[0];
+
+        Connection conn = database.connect();
+        PreparedStatement prep = null;
+
+        try {
+          prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population, id FROM cities where city = ?;");
+          prep.setString(1, cityToQuery);
+          ResultSet rs = prep.executeQuery();
+          while (rs.next()) {
+            String name = rs.getString(1) + ", " + rs.getString(2);
+            if(name.equals(cityName)) {
+              double lat = rs.getDouble(3);
+              double lon = rs.getDouble(4);
+              int pop = rs.getInt(5);
+              node = new CityNode(name, lat, lon, pop);
+            }
+          }
+          rs.close();
+          prep.close();
+        } catch (SQLException throwables) {
+          System.out.println("ERROR: sql query gone wrong");
+          throwables.printStackTrace();
+          errorMessage.append(" error with sql query");
+        }
+
+      } catch(Exception e){
+        System.out.println("ERROR in parsing cityname for activities");
+        errorMessage.append(" error in reading city name. ");
+      }
+      List<String> activitiesList = new ArrayList<>();
+      if(node == null){
+        errorMessage.append(" error: city not found. ");
+      } else {
+//        node.setActivities();
+//        activitiesList = node.getActivities();
+      }
+
+      Map<String, Object> variables = ImmutableMap.of("activities", activitiesList, "error", errorMessage.toString());
+      return GSON.toJson(variables);
+    }
   }
 
   private static class RouteHandler implements Route {
