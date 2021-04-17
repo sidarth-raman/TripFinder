@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,7 +81,7 @@ public final class Main {
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
     parser.accepts("port").withRequiredArg().ofType(Integer.class)
-      .defaultsTo(DEFAULT_PORT);
+        .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
@@ -92,7 +96,7 @@ public final class Main {
       config.setDirectoryForTemplateLoading(templates);
     } catch (IOException ioe) {
       System.out.printf("ERROR: Unable use %s for template loading.%n",
-        templates);
+          templates);
       System.exit(1);
     }
     return new FreeMarkerEngine(config);
@@ -124,8 +128,60 @@ public final class Main {
     FreeMarkerEngine freeMarker = createEngine();
     Spark.post("/route", new RouteHandler());
     Spark.post("/city", new AllCityHandler());
+    Spark.post("/city", new CityActivityHandler());
+  }
 
 
+  private static class CityActivityHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+      JSONObject data = new JSONObject(request.body());
+      String cityName;
+      CityNode node = null;
+      StringBuilder errorMessage = new StringBuilder();
+      try{
+        cityName = data.getString("cityName");
+        String cityToQuery = cityName.split(",")[0];
+
+        Connection conn = database.connect();
+        PreparedStatement prep = null;
+
+        try {
+          prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population, id FROM cities where city = ?;");
+          prep.setString(1, cityToQuery);
+          ResultSet rs = prep.executeQuery();
+          while (rs.next()) {
+            String name = rs.getString(1) + ", " + rs.getString(2);
+            if(name.equals(cityName)) {
+              double lat = rs.getDouble(3);
+              double lon = rs.getDouble(4);
+              int pop = rs.getInt(5);
+              node = new CityNode(name, lat, lon, pop);
+            }
+          }
+          rs.close();
+          prep.close();
+        } catch (SQLException throwables) {
+          System.out.println("ERROR: sql query gone wrong");
+          throwables.printStackTrace();
+          errorMessage.append(" error with sql query");
+        }
+
+      } catch(Exception e){
+        System.out.println("ERROR in parsing cityname for activities");
+        errorMessage.append(" error in reading city name. ");
+      }
+      List<String> activitiesList = new ArrayList<>();
+      if(node == null){
+        errorMessage.append(" error: city not found. ");
+      } else {
+//        node.setActivities();
+//        activitiesList = node.getActivities();
+      }
+
+      Map<String, Object> variables = ImmutableMap.of("activities", activitiesList, "error", errorMessage.toString());
+      return GSON.toJson(variables);
+    }
   }
 
   private static class RouteHandler implements Route {
@@ -166,8 +222,8 @@ public final class Main {
         List<CityNode> path = null;
         if (origin.length() > 1) {
           GraphBuilder
-            graph =
-            new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
+              graph =
+              new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
           System.out.println("Graph builder ran");
           for (CityNode n : graph.getCitiesOfGraph()) {
             System.out.println("graphbuilder contains: " + n.getName());
@@ -190,19 +246,19 @@ public final class Main {
         double routeDist = Math.round(this.calcRouteDistance(path));
         int tripTime = (int) Math.round(routeDist / 60) + 1;
         String routeInfo =
-          "You have visited " + maxNumCities + " cities in a trip that will take " + tripTime +
-            " hours.";
+            "You have visited " + maxNumCities + " cities in a trip that will take " + tripTime +
+                " hours.";
         Map<String, Object> variables = ImmutableMap
-          .of("output", cityNames, "latLong", latLong, "routeDist", routeDist, "error", "",
-            "routeInfoMessage", routeInfo);
+            .of("output", cityNames, "latLong", latLong, "routeDist", routeDist, "error", "",
+                "routeInfoMessage", routeInfo);
 
         return GSON.toJson(variables);
       } else {
         String[][] blankArray = new String[0][0];
         double[][] latLong = new double[0][0];
         return GSON.toJson(ImmutableMap
-          .of("output", blankArray, "latLong", latLong, "routeDist", 0, "error",
-            "Please select an origin city", "routeInfoMessage", ""));
+            .of("output", blankArray, "latLong", latLong, "routeDist", 0, "error",
+                "Please select an origin city", "routeInfoMessage", ""));
       }
     }
 
@@ -225,7 +281,7 @@ public final class Main {
       double endLat = Math.toRadians(a.getLat());
 
       double calc = Math.pow(Math.sin(distLat / 2), 2)
-        + Math.pow(Math.sin(distLong / 2), 2) * Math.cos(startLat) * Math.cos(endLat);
+          + Math.pow(Math.sin(distLong / 2), 2) * Math.cos(startLat) * Math.cos(endLat);
       double calc2 = 2 * Math.asin(Math.sqrt(calc));
       return earthRadius * calc2;
 
@@ -259,3 +315,4 @@ public final class Main {
     }
   }
 }
+
