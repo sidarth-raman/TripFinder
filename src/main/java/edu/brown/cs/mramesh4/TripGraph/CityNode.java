@@ -53,7 +53,6 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     connectingEdges = new HashMap<>();
     this.weight = Double.MAX_VALUE;
     this.distance = Double.MAX_VALUE;
-    conn = new HTTPRequest();
     this.activities = new ArrayList<>();
   }
   /**
@@ -271,54 +270,58 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
    * This is a way to request API for information.
    */
   public void setActivities() {
-    HttpResponse<String> resp = null;
-    try {
-      String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet&max_distance=1000";
-      List<List<String>> headers = new ArrayList<List<String>>();
-      headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "TAM6URYM")));
-      headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token",
-        "t1vzuahx7qoy0p45f1qidne3acik8e56")));
-      conn.setUrlAndHeaders(url, headers);
-      resp = conn.getResponse();
-      if (resp != null) {
-        String body = resp.body();
-        String sub = "";
-        //System.out.println(body);
-        if(body.indexOf("pois") == -1){
-          //System.out.println("poi absent");
-          return;
-        }
-        int index = 0;
-        if( (body.indexOf("pois") < body.indexOf("more"))){
-          sub = body.substring(body.indexOf("pois"), body.indexOf("more"));
-        } else {
-          sub = body.substring(body.indexOf("pois"), body.length());
-        }
-        //System.out.println(sub);
-        String[] split = sub.split("pois");
-        String next = split[1];
-        //System.out.println(next);
-        String[] split2 = next.split("\"snippet\":");
-        List<String> returnVal = new ArrayList<>();
-        for(int i = 1; i < split2.length; i++){
-          String ret;
-          if(i == 1){
-            ret = split2[i-1] + split2[i].substring(0, split2[i].length() - 3);
-          } else {
-            ret = "Snippet:" + split2[i].substring(0, split2[i].length() - 3);
-            if (ret.contains("poi_division")) {
-              ret = ret.split("poi_division")[0];
-            }
+    if (getActivities().isEmpty()) {
+      conn = new HTTPRequest();
+      HttpResponse<String> resp = null;
+      try {
+        String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet&max_distance=1000";
+        List<List<String>> headers = new ArrayList<List<String>>();
+        headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "TAM6URYM")));
+        headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token",
+          "t1vzuahx7qoy0p45f1qidne3acik8e56")));
+        conn.setUrlAndHeaders(url, headers);
+        resp = conn.getResponse();
+        if (resp != null) {
+          String body = resp.body();
+          String sub = "";
+          //System.out.println(body);
+          if (body.indexOf("pois") == -1) {
+            //System.out.println("poi absent");
+            return;
           }
-          returnVal.add(ret);
+          int index = 0;
+          if ((body.indexOf("pois") < body.indexOf("more"))) {
+            sub = body.substring(body.indexOf("pois"), body.indexOf("more"));
+          } else {
+            sub = body.substring(body.indexOf("pois"), body.length());
+          }
+          //System.out.println(sub);
+          String[] split = sub.split("pois");
+          String next = split[1];
+          //System.out.println(next);
+          String[] split2 = next.split("\"snippet\":");
+          List<String> returnVal = new ArrayList<>();
+          for (int i = 1; i < split2.length; i++) {
+            String ret;
+            if (i == 1) {
+              ret = split2[i - 1] + split2[i].substring(0, split2[i].length() - 3);
+            } else {
+              ret = "Snippet:" + split2[i].substring(0, split2[i].length() - 3);
+              if (ret.contains("poi_division")) {
+                ret = ret.split("poi_division")[0];
+              }
+            }
+            returnVal.add(ret);
+          }
+          this.activities = returnVal;
+          conn = null;
+        } else {
+          System.out.println("resp is null");
         }
-        this.activities = returnVal;
-      } else {
-        System.out.println("resp is null");
+      } catch (Exception e) {
+        //this mean the http request didn't return
+        System.out.println("error: " + e);
       }
-    } catch (Exception e){
-      //this mean the http request didn't return
-      System.out.println("error: " + e);
     }
   }
 }
