@@ -55,7 +55,6 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     this.distance = Double.MAX_VALUE;
     conn = new HTTPRequest();
     this.activities = new ArrayList<>();
-    //setActivities();
   }
   /**
    * Returns the name of the cityNode.
@@ -283,8 +282,18 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
       resp = conn.getResponse();
       if (resp != null) {
         String body = resp.body();
-        //System.out.println(body.substring(body.indexOf("pois"), body.indexOf("more")));
-        String sub = body.substring(body.indexOf("pois"), body.indexOf("more"));
+        String sub = "";
+        //System.out.println(body);
+        if(body.indexOf("pois") == -1){
+          //System.out.println("poi absent");
+          return;
+        }
+        int index = 0;
+        if( (body.indexOf("pois") < body.indexOf("more"))){
+          sub = body.substring(body.indexOf("pois"), body.indexOf("more"));
+        } else {
+          sub = body.substring(body.indexOf("pois"), body.length());
+        }
         //System.out.println(sub);
         String[] split = sub.split("pois");
         String next = split[1];
@@ -295,7 +304,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
           String ret;
           ret = "Snippet:" + split2[i].substring(0, split2[i].length() - 3);
           if(ret.contains("poi_division")){
-            //ret = ret.split("poi_division")[0];
+            ret = ret.split("poi_division")[0];
           }
           returnVal.add(ret);
         }
@@ -304,6 +313,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
         System.out.println("resp is null");
       }
     } catch (Exception e){
+      //this mean the http request didn't return
       System.out.println("error: " + e);
     }
   }

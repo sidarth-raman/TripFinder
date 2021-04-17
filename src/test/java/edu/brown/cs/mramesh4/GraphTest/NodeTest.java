@@ -113,9 +113,11 @@ public class NodeTest{
   @Test
   public void testActivities(){
     setUp();
-    //node.setActivities();
+    node.setActivities();
     List<String> ret = node.getActivities();
-    node.getActivities();
+    for(String returned: ret){
+      System.out.println(returned);
+    }
     tearDown();
   }
 
