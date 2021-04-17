@@ -52,10 +52,12 @@ input[type=text], select {
 
 
 .list {
-    padding-top: 15px;
-    border-radius: 5px;
+    border-radius: 20px;
+    background-color: #f2f2f2;
     text-ba: #f2f2f2;
-    padding-left: 10%;
+    margin-left: 5%;
+    width: 40%;
+    float: left;
 }
 
 ol {
@@ -92,6 +94,27 @@ ol li:before {
 
 .info {
     font-size: 15px;
+    float: left;
     font-family: "Futura";
     padding-left: 10%;
 }
+
+.tripData {
+    width: 100%;
+}
+
+.activities {
+    margin-left: 50%;
+    text-align: center;
+    font-family: "Futura";
+    font-size: 15px;
+
+    width: 40%;
+    background-color: #f2f2f2;
+    border-radius: 20px;
+}
+
+
+
+
+

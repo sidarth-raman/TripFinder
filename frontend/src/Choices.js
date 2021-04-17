@@ -8,7 +8,7 @@ import React, {Component, useState, useEffect, useRef} from 'react';
 
 function Choices() {
     const [cityList, setCityList] = useState(["Select City"]);
-    const [distList, setDistList] = useState(["Select Max Distance", "250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "4000 Miles"]);
+    const [distList, setDistList] = useState(["Select Distance", "250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "8000 Miles"]);
     const [numList, setNumList] = useState(["Select Number", "1", "2", "3", "4", "5"]);
     const [firstRender, setFirsRender] = useState(true);
 
@@ -25,6 +25,9 @@ function Choices() {
     const [milesNum, setMilesNum] = useState();
     const [miles, setMiles] = useState();
     const [hours, setHours] = useState();
+    const [activityCity, setActCity] = useState();
+    const [activities, setActivities] = useState();
+
     let activitiesList = []
 
 
@@ -79,11 +82,13 @@ function Choices() {
 
         ctx.stroke();
         var imageObj1 = new Image();
+        console.log("NEW DATA");
         imageObj1.src = 'https://i.imgur.com/fZCKrsO.png'
         ctx.drawImage(imageObj1, 0, 0);
 
         ctx.beginPath();
 
+        console.log(coordinates)
         let counter = 1;
         for (const list of coordinates.entries()) {
             ctx.lineTo((CANVAS_WIDTH*(TOP_LEFT_LON - list[1][1]))/(TOP_LEFT_LON - BOT_RIGHT_LON),
@@ -129,10 +134,18 @@ function Choices() {
     }
 
     const handleSubmit = (e) => {
+        const canvas = canvasRef.current
+        const ctx = canvas.getContext('2d')
+
+        var imageObj1 = new Image();
+        imageObj1.src = 'https://i.imgur.com/fZCKrsO.png'
+        ctx.drawImage(imageObj1, 0, 0);
+
         setValueFinal(value);
         setDistFinal(dist);
         setNumFinal(num);
         setCityFinal(city);
+
 
         e.preventDefault();
     }
@@ -202,6 +215,15 @@ function Choices() {
         getActivities();
     }, [coordinates])
 
+    useEffect(() =>  {
+        if (!firstRender){
+            setActivities("Places to see near " + activityCity);
+        }else {
+            setFirsRender(false)
+        }
+
+    }, [activityCity])
+
 
     const getActivities = async () =>{
 
@@ -268,7 +290,9 @@ function Choices() {
                         <div className="question">Pick your origin city (Start typing your city's name)</div>
                         <select className="dropdown" onChange={handleInputChangeOrigin} value={value}>                      >
                             {cityList.map((k)=>
-                                <option key={k}>{k}</option>)}
+                                <option key={k}>
+                                        {k}
+                                </option>)}
                         </select>
 
                         <br />
@@ -300,28 +324,39 @@ function Choices() {
                 </form>
                 <div className="error">{error}</div>
             </div>
-            <div className="question">
 
-                {/*<br />*/}
-                {/*Origin City: {valueFinal}    <br />*/}
-                {/*Number of Cities: {numFinal}    <br />*/}
-                {/*Specific Cities: {cityFinal}    <br />*/}
-                {/*Max Dist: {distFinal}    <br />*/}
-                {/*Output: {output} <br />*/}
-                {/*Lat: {coordinates}*/}
+            <br />
 
+
+            <div className="tripInfo">
+                Trip Information
             </div>
-                <div className="tripInfo">
-                   Trip Information
-                </div>
-                <ol className="list">
-                {output.map((k)=>
-                    <li>{k}</li>)}
-                </ol>
-                    <div className="info">
+            <br/>
+            <div className="info">
                 The total length of your trip is: {miles}<br/>
                 The total time of your trip is roughly: {hours}<br/>
-                    </div>
+            </div>
+            <br />
+            <br />
+            <br />
+
+            <div className="bigBox">
+            <div className = "tripData">
+                    <ol className="list">
+                        {output.map((k)=>
+                        <li onClick={() => setActCity(k)}>
+                            {k}
+                        </li>)}
+                    </ol>
+
+
+                <div className="activities">
+                    {activities}
+                </div>
+            </div>
+            </div>
+
+
             <br/>
 
             <div style = {{paddingLeft: 100} }>
