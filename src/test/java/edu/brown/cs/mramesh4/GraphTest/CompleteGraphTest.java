@@ -265,7 +265,7 @@ public class CompleteGraphTest {
       System.out.println("testChrist: " + city.getName());
     }
   }
-  
+
   public void testActivities(){
     setUp3();
     for(CityNode node: graphList){

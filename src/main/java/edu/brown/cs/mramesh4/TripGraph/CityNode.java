@@ -273,7 +273,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   public void setActivities() {
     HttpResponse<String> resp = null;
     try {
-      String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet&max_distance=700";
+      String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet&max_distance=1000";
       List<List<String>> headers = new ArrayList<List<String>>();
       headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "TAM6URYM")));
       headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token",
