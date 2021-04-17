@@ -273,7 +273,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   public void setActivities() {
     HttpResponse<String> resp = null;
     try {
-      String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet&max_distance=500";
+      String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet&max_distance=700";
       List<List<String>> headers = new ArrayList<List<String>>();
       headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "TAM6URYM")));
       headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token",
@@ -302,9 +302,13 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
         List<String> returnVal = new ArrayList<>();
         for(int i = 1; i < split2.length; i++){
           String ret;
-          ret = "Snippet:" + split2[i].substring(0, split2[i].length() - 3);
-          if(ret.contains("poi_division")){
-            ret = ret.split("poi_division")[0];
+          if(i == 1){
+            ret = split2[i-1] + split2[i].substring(0, split2[i].length() - 3);
+          } else {
+            ret = "Snippet:" + split2[i].substring(0, split2[i].length() - 3);
+            if (ret.contains("poi_division")) {
+              ret = ret.split("poi_division")[0];
+            }
           }
           returnVal.add(ret);
         }

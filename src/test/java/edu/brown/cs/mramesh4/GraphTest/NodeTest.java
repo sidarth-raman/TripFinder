@@ -110,13 +110,15 @@ public class NodeTest{
     tearDown();
   }
 
-  @Test
   public void testActivities(){
     setUp();
     node.setActivities();
+    node2.setActivities();
     List<String> ret = node.getActivities();
-    for(String returned: ret){
-      System.out.println(returned);
+    List<String> ret2 = node2.getActivities();
+
+    for(String return2: ret){
+      System.out.println(return2);
     }
     tearDown();
   }

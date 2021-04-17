@@ -32,6 +32,7 @@ public class CompleteGraphTest {
   CityNode node13;
   CityNode node14;
   CityNode node15;
+  List<CityNode> graphList;
 
   private static final double DELTA = 0.01;
   CompleteTripGraph<CityNode, CityEdge> tripGraph;
@@ -44,7 +45,7 @@ public class CompleteGraphTest {
     node4 = new CityNode("Philadelphia", 39.57, -75.10, 100000);
     node5 = new CityNode("Pittsburgh", 40.27, -80, 100000);
     node6 = new CityNode("Harrison", 40.35, -79.6501, 100000);
-    List<CityNode> graphList = new ArrayList<>();
+    graphList = new ArrayList<>();
     graphList.add(node);
     graphList.add(node2);
     graphList.add(node3);
@@ -61,7 +62,7 @@ public class CompleteGraphTest {
     node3 = new CityNode("Trenton", 40.13, -74.46, 100000);
     node4 = new CityNode("Philadelphia", 39.57, -75.10, 100000);
     node5 = new CityNode("Pittsburgh", 40.27, -80, 100000);
-    List<CityNode> graphList = new ArrayList<>();
+     graphList = new ArrayList<>();
     graphList.add(node);
     graphList.add(node2);
     graphList.add(node3);
@@ -88,7 +89,7 @@ public class CompleteGraphTest {
     node3.insertEdges(node5);
     node4.insertEdges(node5);
     node6.insertEdges(node5);
-    List<CityNode> graphList = new ArrayList<>();
+    graphList = new ArrayList<>();
     graphList.add(node);
     graphList.add(node2);
     graphList.add(node3);
@@ -116,7 +117,7 @@ public class CompleteGraphTest {
     node13 = new CityNode("City M", -29.0584693142401171 , 43.2167287683090606, 10);
     node14 = new CityNode("City N", -14.6577381710829471 ,  43.3895496964974043, 10);
     node15 = new CityNode("City O", -0.1358203773809326,  28.7292896751977480, 10);
-    List<CityNode> graphList = new ArrayList<>();
+    graphList = new ArrayList<>();
     graphList.add(node);
     graphList.add(node2);
     graphList.add(node3);
@@ -263,5 +264,16 @@ public class CompleteGraphTest {
     for(CityNode city: ret){
       System.out.println("testChrist: " + city.getName());
     }
+  }
+  
+  public void testActivities(){
+    setUp3();
+    for(CityNode node: graphList){
+      node.setActivities();
+      for(String printLine: node.getActivities()){
+        System.out.println(printLine);
+      }
+    }
+
   }
 }
