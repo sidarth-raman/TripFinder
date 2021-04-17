@@ -207,6 +207,10 @@ public final class Main {
         error = true;
       }
 
+      if(origin.contains("Select")){
+        error = true;
+      }
+
       //TODO: Coordinate with Sid to handle passing in multiple cities to visit
 //      String[] cities = data.getString("city").split(",");
 
