@@ -1,18 +1,18 @@
 -------------------------------------------------------------------------------
 Test set: edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest
 -------------------------------------------------------------------------------
-Tests run: 15, Failures: 0, Errors: 12, Skipped: 0, Time elapsed: 0.027 s <<< FAILURE! - in edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest
-edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest.testNoSuggestions  Time elapsed: 0.104 s  <<< ERROR!
+Tests run: 15, Failures: 0, Errors: 10, Skipped: 0, Time elapsed: 0.059 s <<< FAILURE! - in edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest
+edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest.testNoSuggestions  Time elapsed: 0.136 s  <<< ERROR!
 java.lang.InternalError: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest.testNoSuggestions(GraphBuilderTest.java:80)
 Caused by: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest.testNoSuggestions(GraphBuilderTest.java:80)
 
-edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest.tooManyToVisit  Time elapsed: 0.004 s  <<< ERROR!
+edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest.tooManyToVisit  Time elapsed: 0.009 s  <<< ERROR!
 java.lang.NullPointerException
 	at edu.brown.cs.mramesh4.GraphTest.GraphBuilderTest.tooManyToVisit(GraphBuilderTest.java:92)
 
-edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testKruskalSimple  Time elapsed: 0.001 s  <<< ERROR!
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testKruskalSimple  Time elapsed: 0.002 s  <<< ERROR!
 java.lang.InternalError: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 Caused by: java.io.IOException: Too many open files in system
@@ -30,43 +30,31 @@ java.lang.InternalError: java.io.IOException: Too many open files in system
 Caused by: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 
-edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp4  Time elapsed: 0.001 s  <<< ERROR!
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp4  Time elapsed: 0 s  <<< ERROR!
 java.lang.InternalError: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 Caused by: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 
-edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testComplete  Time elapsed: 0 s  <<< ERROR!
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testComplete  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.InternalError: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 Caused by: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 
-edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testKruskalsSame  Time elapsed: 0 s  <<< ERROR!
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testKruskalsSame  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.InternalError: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 Caused by: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 
-edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testChrist  Time elapsed: 0.017 s  <<< ERROR!
+edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testChrist  Time elapsed: 0.022 s  <<< ERROR!
 java.lang.InternalError: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 Caused by: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 
 edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testDelete  Time elapsed: 0.001 s  <<< ERROR!
-java.lang.InternalError: java.io.IOException: Too many open files in system
-	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
-Caused by: java.io.IOException: Too many open files in system
-	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
-
-edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testInsert  Time elapsed: 0 s  <<< ERROR!
-java.lang.InternalError: java.io.IOException: Too many open files in system
-	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
-Caused by: java.io.IOException: Too many open files in system
-	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
-
-edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.testConstructor  Time elapsed: 0.001 s  <<< ERROR!
 java.lang.InternalError: java.io.IOException: Too many open files in system
 	at edu.brown.cs.mramesh4.GraphTest.CompleteGraphTest.setUp(CompleteGraphTest.java:41)
 Caused by: java.io.IOException: Too many open files in system

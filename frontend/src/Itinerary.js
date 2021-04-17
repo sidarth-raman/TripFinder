@@ -8,7 +8,7 @@ function Itinerary() {
     const [city, setCity] = useState("");
     const [lat, setLat] = useState("");
     const [lon, setLon] = useState("");
-    const [activities, setActivities] = useState("hi");
+    const [activities, setActivities] = useState("Loading...");
 
     const handleSubmit = (e) => {
         setCity(city);
@@ -16,8 +16,10 @@ function Itinerary() {
         getCoords();
         console.log(lat)
         console.log(lon)
-        getActivities();
-        console.log(activities);
+        if (lat !== 0) {
+            getActivities();
+            console.log(activities);
+        }
         e.preventDefault();
     }
 
@@ -84,7 +86,7 @@ function Itinerary() {
             console.log(resp.results[0].pois[0].name);
             console.log(resp.results[0].pois[0].snippet);
             let str = "";
-            for (let i = 0; i < 10; i++ ) {
+            for (let i = 0; i < 10; i++) {
                 str += resp.results[0].pois[i].name + ": " + resp.results[0].pois[i].snippet + "\n";
             }
             setActivities(str);
@@ -92,6 +94,7 @@ function Itinerary() {
             console.log(resp.results[0].poi_division);
 
         })
+        //4h6knbkgydzn9zf03sgua2dmf9c45cg5
         let url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude="
             + lat + "&longitude=" + lon + "&fields=poi:id,name,coordinates,snippet&account=TAM6URYM&token=t1vzuahx7qoy0p45f1qidne3acik8e56"
         // open the request with the verb and the url
