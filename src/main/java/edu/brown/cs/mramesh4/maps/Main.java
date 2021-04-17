@@ -175,8 +175,8 @@ public final class Main {
       if(node == null){
         errorMessage.append(" error: city not found. ");
       } else {
-//        node.setActivities();
-//        activitiesList = node.getActivities();
+        node.setActivities();
+        activitiesList = node.getActivities();
       }
 
       Map<String, Object> variables = ImmutableMap.of("activities", activitiesList, "error", errorMessage.toString());
