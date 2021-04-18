@@ -55,7 +55,6 @@ public class HTTPRequest {
       requestBuild.header(header.get(0), header.get(1));
     }
     this.request = requestBuild.build();
-    System.out.println("request");
   }
 
   /**
@@ -81,6 +80,7 @@ public class HTTPRequest {
     try {
       HttpResponse<String> resp = client.send(request, HttpResponse.BodyHandlers.ofString());
       System.out.println("got a response");
+      client = null;
       return resp;
     } catch(IOException | InterruptedException e){
       System.out.println("Error" + e);
