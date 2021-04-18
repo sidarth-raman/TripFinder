@@ -128,7 +128,7 @@ public final class Main {
     FreeMarkerEngine freeMarker = createEngine();
     Spark.post("/route", new RouteHandler());
     Spark.post("/city", new AllCityHandler());
-    Spark.post("/city", new CityActivityHandler());
+    Spark.post("/activity", new CityActivityHandler());
   }
 
   private static class CityActivityHandler implements Route {
@@ -172,6 +172,7 @@ public final class Main {
         errorMessage.append(" error in reading city name. ");
       }
       List<String> activitiesList = new ArrayList<>();
+
       if(node == null){
         errorMessage.append(" error: city not found. ");
       } else {
