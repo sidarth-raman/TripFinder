@@ -72,7 +72,7 @@ ol li {
 ol li:before {
     content: counter(item);
     display: inline-block;
-    width: 1px;
+    width: 12px;
     height: 20px;
     font-family: "Future";
     margin-right: 5px;

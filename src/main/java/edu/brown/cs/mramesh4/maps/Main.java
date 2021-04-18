@@ -71,9 +71,9 @@ public final class Main {
     database = new CityDatabaseReader("data.sqlite");
     database.readDB();
     List<String> sts = new ArrayList<>();
-    sts.add("Chicago, IL");
+    sts.add("Los Angeles, CA");
 //    sts.add("Miami, FL");
-    GraphBuilder g = new GraphBuilder(database.connect(), "Milwaukee, WI", 200, 4, sts);
+    GraphBuilder g = new GraphBuilder(database.connect(), "Providence, RI", 2000, 4, sts);
     for (CityNode n : g.getPath()) {
       System.out.println(n.getName());
     }
@@ -128,8 +128,9 @@ public final class Main {
     FreeMarkerEngine freeMarker = createEngine();
     Spark.post("/route", new RouteHandler());
     Spark.post("/city", new AllCityHandler());
-    Spark.post("/city", new CityActivityHandler());
+    Spark.post("/activity", new CityActivityHandler());
   }
+
 
   private static class CityActivityHandler implements Route {
     @Override
@@ -207,7 +208,7 @@ public final class Main {
         error = true;
       }
 
-      if (origin.contains("Select")) {
+      if(origin.contains("Select")){
         error = true;
       }
 
@@ -227,8 +228,7 @@ public final class Main {
         if (origin.length() > 1) {
           GraphBuilder
             graph =
-            new GraphBuilder(database.connect(), origin, maxDist, maxNumCities,
-              citiesToVisit);
+            new GraphBuilder(database.connect(), origin, maxDist, maxNumCities, citiesToVisit);
           System.out.println("Graph builder ran");
           for (CityNode n : graph.getCitiesOfGraph()) {
             System.out.println("graphbuilder contains: " + n.getName());
@@ -251,8 +251,7 @@ public final class Main {
         double routeDist = Math.round(this.calcRouteDistance(path));
         int tripTime = (int) Math.round(routeDist / 60) + 1;
         String routeInfo =
-          "You have visited " + maxNumCities + " cities in a trip that will take " +
-            tripTime +
+          "You have visited " + maxNumCities + " cities in a trip that will take " + tripTime +
             " hours.";
         Map<String, Object> variables = ImmutableMap
           .of("output", cityNames, "latLong", latLong, "routeDist", routeDist, "error", "",
