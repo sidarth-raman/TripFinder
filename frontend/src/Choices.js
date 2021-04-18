@@ -9,8 +9,10 @@ import React, {Component, useState, useEffect, useRef} from 'react';
 function Choices() {
     const [cityList, setCityList] = useState(["Select City"]);
     const [distList, setDistList] = useState(["Select Distance", "250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "8000 Miles"]);
-    const [numList, setNumList] = useState(["Select Number", "1", "2", "3", "4", "5"]);
+    const [numList, setNumList] = useState(["Select Number", "2", "3", "4", "5", "6"]);
     const [firstRender, setFirsRender] = useState(true);
+    var imageObj1 = new Image();
+    imageObj1.src = 'https://i.imgur.com/fZCKrsO.png'
 
     const CANVAS_HEIGHT = 584;
     const CANVAS_WIDTH = 1228;
@@ -63,8 +65,7 @@ function Choices() {
         ctx.moveTo(CANVAS_WIDTH,0);
         ctx.lineTo(0,0);
         ctx.stroke();
-        var imageObj1 = new Image();
-        imageObj1.src = 'https://i.imgur.com/fZCKrsO.png'
+
         imageObj1.onload = function() {
             ctx.drawImage(imageObj1, 0, 0);
         }
@@ -74,16 +75,6 @@ function Choices() {
         const canvas = canvasRef.current
         const ctx = canvas.getContext('2d')
 
-        ctx.beginPath();
-        ctx.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        ctx.stroke();
-        ctx.closePath();
-
-
-        ctx.stroke();
-        var imageObj1 = new Image();
-        console.log("NEW DATA");
-        imageObj1.src = 'https://i.imgur.com/fZCKrsO.png'
         ctx.drawImage(imageObj1, 0, 0);
 
         ctx.beginPath();
@@ -111,7 +102,7 @@ function Choices() {
         ctx.closePath();
 
 
-    }, [coordinates])
+    }, [coordinates, output])
 
     const handleInputChangeOrigin = (event) => {
         event.persist();
@@ -134,18 +125,12 @@ function Choices() {
     }
 
     const handleSubmit = (e) => {
-        const canvas = canvasRef.current
-        const ctx = canvas.getContext('2d')
-
-        var imageObj1 = new Image();
-        imageObj1.src = 'https://i.imgur.com/fZCKrsO.png'
-        ctx.drawImage(imageObj1, 0, 0);
 
         setValueFinal(value);
         setDistFinal(dist);
         setNumFinal(num);
         setCityFinal(city);
-
+        setActivities("");
 
         e.preventDefault();
     }
@@ -211,9 +196,6 @@ function Choices() {
 
 
     }
-    useEffect(()=> {
-        getActivities();
-    }, [coordinates])
 
     useEffect(() =>  {
         if (!firstRender){
@@ -225,50 +207,6 @@ function Choices() {
     }, [activityCity])
 
 
-    const getActivities = async () =>{
-
-        for(const list of coordinates.entries()){
-            let xhr = new XMLHttpRequest()
-            xhr.overrideMimeType("application/json");
-            xhr.responseType = 'json';
-            let resp = null
-            // get a callback when the server responds
-            xhr.addEventListener('load', () => {
-                // update the state of the component with the result here
-                resp = xhr.response;
-                //this is the list of points of interests  --> do something here
-                let counter = 0;
-
-                if (xhr.status == 429 || xhr.status ==400) {
-                    resp = null;
-                }
-
-                if (resp !== null) {
-                    for (const element of resp.results[0].pois.entries()) {
-                        if (counter < 3) {
-                            let activity = element[1].name + " - " + element[1].snippet;
-                            activitiesList.push(activity)
-                        } else {
-                            break;
-                        }
-                    }
-                }
-
-                //this is the list of ids that correspond to info
-                //TODO: this is where you set ur variables and stuff and update states in order to get stuff showing
-
-            })
-
-
-            let url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude="
-                + list[1][0] + "&longitude=" + list[1][1] + "&fields=poi:id,name,coordinates,snippet&account=TAM6URYM&token=t1vzuahx7qoy0p45f1qidne3acik8e56"
-            // open the request with the verb and the url
-            xhr.open('GET', url);
-            // send the request
-
-            xhr.send();
-        }
-    }
 
     useEffect(()=> {
         if (!firstRender){

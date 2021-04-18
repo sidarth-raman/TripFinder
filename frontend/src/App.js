@@ -10,7 +10,7 @@ function App() {
     return (
         <div>
             <Navbar />
-            <div className="message">This is a Road Trip Finder. Select you origin city and certain inputs to create a custom road-trip for you!</div>
+            <div className="message">This is a Road Trip Finder. Select your origin city and certain inputs to create a custom road-trip for you!</div>
             <Route exact path="/about" component={About}/>
             <Choices />
         </div>
