@@ -73,7 +73,7 @@ public final class Main {
     List<String> sts = new ArrayList<>();
     sts.add("Chicago, IL");
 //    sts.add("Miami, FL");
-    GraphBuilder g = new GraphBuilder(database.connect(), "Milwaukee, WI", 4000, 4, sts);
+    GraphBuilder g = new GraphBuilder(database.connect(), "Milwaukee, WI", 200, 4, sts);
     for (CityNode n : g.getPath()) {
       System.out.println(n.getName());
     }

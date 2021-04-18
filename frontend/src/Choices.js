@@ -212,7 +212,7 @@ function Choices() {
 
     }
     useEffect(()=> {
-        getActivities();
+        // getActivities();
     }, [coordinates])
 
     useEffect(() =>  {

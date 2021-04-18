@@ -74,7 +74,7 @@ public class GraphBuilder {
 
     int temp = citiesInGraph.size();
     int numToAdd = maxNumCities - temp;
-    
+
 
     if (numToAdd != 0) {
       PreparedStatement prep = null;
@@ -104,7 +104,7 @@ public class GraphBuilder {
 
       boolean activatePlanB = false;
       double notThis =
-          idealDist - Math.abs(this.haversineDist(originCity, cityNodesToVisit.get(0)));
+          idealDist - (1.5 * Math.abs(this.haversineDist(originCity, cityNodesToVisit.get(0))));
 
       double newYChange = 0;
       double newXChange = 0;
@@ -114,11 +114,11 @@ public class GraphBuilder {
         double hyp2 = 0.8;
         double sine = this.randomInRange(-1 * hyp2, hyp2);
         double cosine = this.randomInRange(-1 * hyp2, hyp2);
+
         System.out.println("sine: " + sine + " cosine: " + cosine);
-        notThis /= 2;
         newYChange =
-            (((notThis / EARTH_RADIUS) * RAD_TO_DEGREE) * sine);
-        newXChange = (((notThis / r) * RAD_TO_DEGREE) * cosine);
+            (((notThis / EARTH_RADIUS) * RAD_TO_DEGREE) * sine) / numToAdd;
+        newXChange = (((notThis / r) * RAD_TO_DEGREE) * cosine) / numToAdd;
       }
       double random = this.randomInRange(-0.5, 0.5);
 
@@ -139,8 +139,8 @@ public class GraphBuilder {
         } else {
           for (int i = 0 - ((numToAdd - 1) / 2), j = 0; i < ((numToAdd - 1) / 2) + 1; i++, j++) {
             if (!bestCities.isEmpty()) {
-              x = 0;
-              y = 0;
+//              x = 0;
+//              y = 0;
               if (activatePlanB) {
                 x = newXChange;
                 y = newYChange;
@@ -157,8 +157,8 @@ public class GraphBuilder {
         if (maxNumCities > temp) {
           for (int i = -1, j = 0; i < 2; i += 2, j++) {
             if (!bestCities.isEmpty()) {
-              x = 0;
-              y = 0;
+//              x = 0;
+//              y = 0;
               if (activatePlanB) {
                 x = newXChange;
                 y = newYChange;

@@ -55,9 +55,10 @@ public class CityComparator implements Comparator<CityNode> {
         System.out.println("offY" + random * myd);
       }
 
-      System.out.println("Midpoint x: " + midpointX);
-      System.out.println("Midpoint y: " + midpointY);
+
     }
+    System.out.println("Midpoint x: " + midpointX);
+    System.out.println("Midpoint y: " + midpointY);
   }
 
   @Override
