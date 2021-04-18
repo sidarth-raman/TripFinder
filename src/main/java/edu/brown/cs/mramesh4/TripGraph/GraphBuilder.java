@@ -74,6 +74,7 @@ public class GraphBuilder {
 
     int temp = citiesInGraph.size();
     int numToAdd = maxNumCities - temp;
+    
 
     if (numToAdd != 0) {
       PreparedStatement prep = null;
