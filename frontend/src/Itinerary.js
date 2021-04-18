@@ -1,25 +1,18 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import './About.css';
 
 function Itinerary() {
 
     const [cityList, setCityList] = useState(["Select City"]);
     const [city, setCity] = useState("");
-    //const [lat, setLat] = useState("");
-    //const [lon, setLon] = useState("");
-    const [activities, setActivities] = useState("Loading...");
+    const [activities, setActivities] = useState([]);
+    const [activity, setActivity] = useState();
+
 
     const handleSubmit = (e) => {
         setCity(city);
         console.log(city);
-        //getCoords();
-        //console.log(lat)
-        //console.log(lon)
-        //if (lat !== 0) {
         getActivities();
-        console.log(activities);
-        //}
         e.preventDefault();
     }
 
@@ -98,7 +91,12 @@ function Itinerary() {
                     <input type="submit" value="Find me something to do!"/>
                 </form>
             </div>
-            <p>{activities}</p>
+            <ol>
+                {activities.map((k)=>
+                    <li onClick={() => setActivity(k)}>
+                        {k}
+                    </li>)}
+            </ol>
         </div>
     );
 }

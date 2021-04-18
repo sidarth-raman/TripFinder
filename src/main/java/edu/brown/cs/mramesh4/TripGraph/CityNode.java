@@ -296,7 +296,6 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
           if (!body.contains("pois")) {
             return;
           }
-          int index = 0;
           if ((body.indexOf("pois") < body.indexOf("more"))) {
             sub = body.substring(body.indexOf("pois"), body.indexOf("more"));
           } else {
