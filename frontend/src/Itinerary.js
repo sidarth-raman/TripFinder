@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import './About.css';
 
 function Itinerary() {
 
@@ -7,13 +8,18 @@ function Itinerary() {
     const [city, setCity] = useState("");
     //const [lat, setLat] = useState("");
     //const [lon, setLon] = useState("");
-    let lat = -22.983611
-    let lon = -43.204444
+    const [activities, setActivities] = useState("Loading...");
 
     const handleSubmit = (e) => {
         setCity(city);
         console.log(city);
+        //getCoords();
+        //console.log(lat)
+        //console.log(lon)
+        //if (lat !== 0) {
         getActivities();
+        console.log(activities);
+        //}
         e.preventDefault();
     }
 
@@ -37,49 +43,62 @@ function Itinerary() {
             toSend,
             config
         )
-        setCityList([cityList,...response.data["cityList"]]);
+        setCityList([cityList, ...response.data["cityList"]]);
     }
 
-    const getActivities = async () =>{
-        let xhr = new XMLHttpRequest()
-        xhr.overrideMimeType("application/json");
-        xhr.responseType = 'json';
-        let resp = null
-            // get a callback when the server responds
-        xhr.addEventListener('load', () => {
-            // update the state of the component with the result here
-            resp = xhr.response;
-            //this is the list of points of interests  --> do something here
-            console.log(resp.results[0].pois);
-            //this is the list of ids that correspond to info
-            console.log(resp.results[0].poi_division);
+    const getActivities = () => {
+        const toSend = {
+            cityName: city
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        axios.post(
+            "http://localhost:4567/activity",
+            toSend,
+            config
+        )
+            .then(response => {
+                // let activityList = [];
+                // for (let i = 0; i < response.data.activities.length && i < 10; i++) {
+                //     activityList.push(response.data.activities[i]);
+                // }
+                // for (let i = 0; i < activityList.length; i++) {
+                //     console.log(i + ": " + activityList[i]);
+                // }
+                // let final = ""
+                // final = activityList[1]
+                setActivities(response.data.activities);
+            })
 
-        })
-        let url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude="
-            + lat + "&longitude=" + lon + "&fields=poi:id,name,coordinates,snippet&account=TAM6URYM&token=t1vzuahx7qoy0p45f1qidne3acik8e56"
-        // open the request with the verb and the url
-        xhr.open('GET', url);
-        // send the request
-        xhr.send();
+            .catch(function (error) {
+                console.log(error);
+
+            });
     }
-
 
     useEffect(() => {
         requestCity()
     }, [])
 
     return (
-        <div className="formbox">
-            <form onSubmit={handleSubmit}>
-                <label>
-                    <div className="question">Select the city you wish to visit:</div>
-                    <select className="dropdown" onChange={handleInputChangeOrigin} value={city}> >
-                        {cityList.map((k) =>
-                            <option key={k}>{k}</option>)}
-                    </select>
-                </label>
-                <input type="submit" value="Find me something to do!"/>
-            </form>
+        <div>
+            <div className="formbox">
+                <form onSubmit={handleSubmit}>
+                    <label>
+                        <div className="question">Select the city you wish to visit:</div>
+                        <select className="dropdown" onChange={handleInputChangeOrigin} value={city}> >
+                            {cityList.map((k) =>
+                                <option key={k}>{k}</option>)}
+                        </select>
+                    </label>
+                    <input type="submit" value="Find me something to do!"/>
+                </form>
+            </div>
+            <p>{activities}</p>
         </div>
     );
 }

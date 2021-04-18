@@ -13,7 +13,7 @@ public class CityComparator implements Comparator<CityNode> {
   private double midpointY;
 
   public CityComparator(double numerator, double denominator, CityNode start,
-                        List<CityNode> toVisit, int ind, double random) {
+                        List<CityNode> toVisit, int ind, double random, double x, double y) {
     this.start = start;
     this.toVisit = toVisit;
     this.numerator = numerator;
@@ -34,25 +34,29 @@ public class CityComparator implements Comparator<CityNode> {
     midpointY = (yTotals / (toVisit.size() + 1));
     midpointX = (xTotals / (toVisit.size() + 1));
 
-    double myd = Math.abs(midpointY - start.getLat());
-    double myx = Math.abs(Math.abs(midpointX) - Math.abs(start.getLong()));
 
-//    double random = 0;
-    if (ind != -5) {
-      System.out.println("running");
-      double max = 1;
-      double min = -1;
-//      random = (Math.random() * (max - min)) + min;
-    }
-    if (ind % 2 == 0) {
-      midpointX = midpointX + (ratio * myx) + (random * myx);
-      System.out.println("offX: " + random * myx);
+
+    if (x != 0 || y != 0) {
+      System.out.println("Hola " + x + " " + y);
+      midpointX += x;
+      midpointY += y;
 
     } else {
-      midpointY = midpointY + (ratio * myd) + (random * myd);
-      System.out.println("offY" + random * myd);
-    }
 
+      double myd = Math.abs(midpointY - start.getLat());
+      double myx = Math.abs(Math.abs(midpointX) - Math.abs(start.getLong()));
+
+      if (ind % 2 == 0) {
+        midpointX = midpointX + (ratio * myx) + (random * myx);
+        System.out.println("offX: " + random * myx);
+
+      } else {
+        midpointY = midpointY + (ratio * myd) + (random * myd);
+        System.out.println("offY" + random * myd);
+      }
+
+
+    }
     System.out.println("Midpoint x: " + midpointX);
     System.out.println("Midpoint y: " + midpointY);
   }

@@ -274,19 +274,17 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
       conn = new HTTPRequest();
       HttpResponse<String> resp = null;
       try {
-        String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet&max_distance=700";
+        String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet&max_distance=1000";
         List<List<String>> headers = new ArrayList<List<String>>();
-        headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "MTMGVHMJ")));
+        headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "6S9BO8ZG")));
         headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token",
-          "tg44rxwo1ayungzz3obh18o809l19ou0")));
+          "4h6knbkgydzn9zf03sgua2dmf9c45cg5")));
         conn.setUrlAndHeaders(url, headers);
         resp = conn.getResponse();
         if (resp != null) {
           String body = resp.body();
           String sub = "";
-          //System.out.println(body);
-          if (body.indexOf("pois") == -1) {
-            //System.out.println("poi absent");
+          if (!body.contains("pois")) {
             return;
           }
           int index = 0;
@@ -295,23 +293,41 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
           } else {
             sub = body.substring(body.indexOf("pois"), body.length());
           }
-          //System.out.println(sub);
           String[] split = sub.split("pois");
           String next = split[1];
-          //System.out.println(next);
-          String[] split2 = next.split("\"snippet\":");
-          List<String> returnVal = new ArrayList<>();
-          for (int i = 1; i < split2.length; i++) {
-            String ret;
-            if (i == 1) {
-              ret = split2[i - 1] + split2[i].substring(0, split2[i].length() - 3);
-            } else {
-              ret = "Snippet:" + split2[i].substring(0, split2[i].length() - 3);
-              if (ret.contains("poi_division")) {
-                ret = ret.split("poi_division")[0];
-              }
+          List<String> nameList = new ArrayList<>();
+          int i = 0;
+          while (i < next.length()) {
+            int nameIndex = next.indexOf("\"name\"", i);
+            if (nameIndex < 0) {
+              break;
             }
-            returnVal.add(ret);
+            i = nameIndex + 9;
+            StringBuilder name = new StringBuilder();
+            while (i < next.length() && next.charAt(i) != '\"') {
+              name.append(next.charAt(i));
+              i++;
+            }
+            nameList.add(name.toString());
+          }
+          List<String> snippetList = new ArrayList<>();
+          int j = 0;
+          while (j < next.length()) {
+            int snippetIndex = next.indexOf("\"snippet\"", j);
+            if (snippetIndex < 0) {
+              break;
+            }
+            j = snippetIndex + 12;
+            StringBuilder snippet = new StringBuilder();
+            while (j < next.length() && next.charAt(j) != '\"') {
+              snippet.append(next.charAt(j));
+              j++;
+            }
+            snippetList.add(snippet.toString());
+          }
+          List<String> returnVal = new ArrayList<>();
+          for (int k = 0; k < Math.min(nameList.size(), snippetList.size()); k++) {
+            returnVal.add(nameList.get(k) + ": " + snippetList.get(k));
           }
           this.activities = returnVal;
           conn = null;
