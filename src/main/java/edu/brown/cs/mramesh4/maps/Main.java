@@ -128,7 +128,7 @@ public final class Main {
     FreeMarkerEngine freeMarker = createEngine();
     Spark.post("/route", new RouteHandler());
     Spark.post("/city", new AllCityHandler());
-    Spark.post("/city", new CityActivityHandler());
+    Spark.post("/activity", new CityActivityHandler());
   }
 
 
@@ -157,6 +157,7 @@ public final class Main {
               double lon = rs.getDouble(4);
               int pop = rs.getInt(5);
               node = new CityNode(name, lat, lon, pop);
+              System.out.println("city node for " + name);
             }
           }
           rs.close();

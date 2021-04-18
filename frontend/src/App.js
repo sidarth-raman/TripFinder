@@ -3,16 +3,17 @@ import './Navbar'
 import Navbar from "./Navbar";
 import Choices from "./Choices";
 import About from "./About";
+import Itinerary from "./Itinerary";
 import {Route} from "react-router-dom";
-import MapDrawing from "./MapDrawing";
 
 function App() {
     return (
         <div>
             <Navbar />
             <div className="message">This is a Road Trip Finder. Select you origin city and certain inputs to create a custom road-trip for you!</div>
+            <Route exact path="/" component={Choices}/>
             <Route exact path="/about" component={About}/>
-            <Choices />
+            <Route exact path="/itinerary" component={Itinerary}/>
         </div>
     );
 };

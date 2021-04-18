@@ -1,21 +1,7 @@
 package edu.brown.cs.mramesh4.TripGraph;
 
-import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
+import java.util.*;
 
 /**
  * This is a class to model our CityNodes: CityNodes are nodes that represent
@@ -39,10 +25,11 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
   /**
    * This is a constructor for a cityNode. A cityNode right now takes in
    * a name, a latitude and a longitude.
-   * @param name  Name of city that will be stored in graph
+   *
+   * @param name Name of city that will be stored in graph
    * @param lat  Latitude of city
    * @param lon  Longitude of city
-   * @param pop population of city
+   * @param pop  population of city
    */
   public CityNode(String name, double lat, double lon, int pop) {
     this.pop = pop;
@@ -55,22 +42,28 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
     this.distance = Double.MAX_VALUE;
     this.activities = new ArrayList<>();
   }
+
   /**
    * Returns the name of the cityNode.
+   *
    * @return The name of the City
    */
   public String getName() {
     return name;
   }
+
   /**
    * Returns the latitude of the city.
+   *
    * @return The lat of the city
    */
   public double getLat() {
     return lat;
   }
+
   /**
    * Returns the longitude of the city.
+   *
    * @return The longitude of the city
    */
 
@@ -80,6 +73,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * Returns the weight of the node for algorithms.
+   *
    * @return weight
    */
   @Override
@@ -89,6 +83,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * Setter method for distance.
+   *
    * @param dist distance to set the distance to.
    */
   @Override
@@ -98,6 +93,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * gets distance.
+   *
    * @return distance for a star
    */
   @Override
@@ -107,6 +103,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * Returns population.
+   *
    * @return a population
    */
   public int getPop() {
@@ -115,6 +112,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * Setter method for weight.
+   *
    * @param weight weight to set the weight to.
    */
   public void setWeight(double weight) {
@@ -123,6 +121,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * Accessor method for the nodes map.
+   *
    * @return map of nodes
    */
   public HashMap<String, CityNode> getConnectingNodes() {
@@ -131,25 +130,29 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * Accessor method for edges between nodes (undirected).
+   *
    * @return a Map of edges
    */
   public HashMap<String, CityEdge> getConnectingEdges() {
     return connectingEdges;
   }
+
   /**
    * This is a comparator method that takes in a GraphNode and tells us if the two cities are equal.
    * If the GraphNode is not a cityNode we return false due to comparison errors.
+   *
    * @return Boolean representing if nodes are the same node
    */
   @Override
   public boolean equals(CityNode node) {
     return name.equals(node.getName()) && (lat == node.getLat())
-      && (longit ==  node.getLong());
+        && (longit == node.getLong());
   }
 
   /**
    * This is a method that insertsEdges between the node. Since
    * we have an undirected graph it will reinsert.
+   *
    * @param node node to insert edges between
    */
   @Override
@@ -168,6 +171,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * This is a method that deletes an edge between two nodes.
+   *
    * @param node edge to delete between two edges
    */
   @Override
@@ -191,6 +195,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * Returns the euclidean distance between two city nodes.
+   *
    * @param a a node to check distance from
    * @return distance between two cities
    */
@@ -207,13 +212,14 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * Returns a list of outgoing edges.
+   *
    * @return a list of outgoing edges.
    */
   @Override
   public List<CityEdge> getOutgoingEdges() {
-    Collection<CityEdge> c  = this.getConnectingEdges().values();
+    Collection<CityEdge> c = this.getConnectingEdges().values();
     List<CityEdge> ret = new ArrayList<>();
-    for (CityEdge edge: c) {
+    for (CityEdge edge : c) {
       ret.add(edge);
     }
     return ret;
@@ -221,13 +227,14 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * Returns a list of neighbors.
+   *
    * @return nodes of neighbors.
    */
   @Override
   public List<CityNode> getNeighbors() {
-    Collection<CityNode> c  = this.getConnectingNodes().values();
+    Collection<CityNode> c = this.getConnectingNodes().values();
     List<CityNode> ret = new ArrayList<>();
-    for (CityNode node: c) {
+    for (CityNode node : c) {
       ret.add(node);
     }
     return ret;
@@ -235,6 +242,7 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * This is for the aStar heuristic, using haversine distance.
+   *
    * @param goal goal to check from
    * @return a double for the A* function
    */
@@ -260,9 +268,10 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
 
   /**
    * Return list of activites
+   *
    * @return list of activities
    */
-  public List<String> getActivities(){
+  public List<String> getActivities() {
     return this.activities;
   }
 
@@ -276,17 +285,15 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
       try {
         String url = "https://www.triposo.com/api/20210317/local_highlights.json?latitude=" + Double.toString(this.lat) + "&longitude=" + Double.toString(this.longit) + "&fields=poi:id,name,coordinates,snippet&max_distance=1000";
         List<List<String>> headers = new ArrayList<List<String>>();
-        headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "TAM6URYM")));
+        headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Account", "6S9BO8ZG")));
         headers.add(new ArrayList<>(Arrays.asList("X-Triposo-Token",
-          "t1vzuahx7qoy0p45f1qidne3acik8e56")));
+            "4h6knbkgydzn9zf03sgua2dmf9c45cg5")));
         conn.setUrlAndHeaders(url, headers);
         resp = conn.getResponse();
         if (resp != null) {
           String body = resp.body();
           String sub = "";
-          //System.out.println(body);
-          if (body.indexOf("pois") == -1) {
-            //System.out.println("poi absent");
+          if (!body.contains("pois")) {
             return;
           }
           int index = 0;
@@ -295,23 +302,41 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
           } else {
             sub = body.substring(body.indexOf("pois"), body.length());
           }
-          //System.out.println(sub);
           String[] split = sub.split("pois");
           String next = split[1];
-          //System.out.println(next);
-          String[] split2 = next.split("\"snippet\":");
-          List<String> returnVal = new ArrayList<>();
-          for (int i = 1; i < split2.length; i++) {
-            String ret;
-            if (i == 1) {
-              ret = split2[i - 1] + split2[i].substring(0, split2[i].length() - 3);
-            } else {
-              ret = "Snippet:" + split2[i].substring(0, split2[i].length() - 3);
-              if (ret.contains("poi_division")) {
-                ret = ret.split("poi_division")[0];
-              }
+          List<String> nameList = new ArrayList<>();
+          int i = 0;
+          while (i < next.length()) {
+            int nameIndex = next.indexOf("\"name\"", i);
+            if (nameIndex < 0) {
+              break;
             }
-            returnVal.add(ret);
+            i = nameIndex + 9;
+            StringBuilder name = new StringBuilder();
+            while (i < next.length() && next.charAt(i) != '\"') {
+                name.append(next.charAt(i));
+                i++;
+            }
+            nameList.add(name.toString());
+          }
+          List<String> snippetList = new ArrayList<>();
+          int j = 0;
+          while (j < next.length()) {
+            int snippetIndex = next.indexOf("\"snippet\"", j);
+            if (snippetIndex < 0) {
+              break;
+            }
+            j = snippetIndex + 12;
+            StringBuilder snippet = new StringBuilder();
+            while (j < next.length() && next.charAt(j) != '\"') {
+              snippet.append(next.charAt(j));
+              j++;
+            }
+            snippetList.add(snippet.toString());
+          }
+          List<String> returnVal = new ArrayList<>();
+          for (int k = 0; k < Math.min(nameList.size(), snippetList.size()); k++) {
+            returnVal.add(nameList.get(k) + ": " + snippetList.get(k));
           }
           this.activities = returnVal;
           conn = null;
@@ -324,4 +349,5 @@ public class CityNode implements TripGraphNode<CityNode, CityEdge> {
       }
     }
   }
+
 }
