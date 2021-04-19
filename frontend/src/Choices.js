@@ -31,6 +31,7 @@ function Choices() {
     const [activityCity, setActCity] = useState();
     const [activities, setActivities] = useState([]);
     const [activityCityMessage, setActCityMess] = useState([]);
+    const [render, setRender] = useState(1);
 
 
     const [value, setValue] = useState("");
@@ -134,12 +135,11 @@ function Choices() {
         setDistFinal(dist);
         setNumFinal(num);
         setCityFinal(city);
+        let c = render + 1;
+        setRender(c);
         setActivities([]);
-        if (!firstRender){
-            sendData();
-        }else {
-            setFirsRender(false)
-        }
+        // sendData();
+
         e.preventDefault();
     }
 
@@ -151,7 +151,7 @@ function Choices() {
             setFirsRender(false)
         }
 
-    }, [numFinal, distFinal, cityFinal, valueFinal])
+    }, [numFinal, distFinal, cityFinal, valueFinal, render])
 
     //Request the City List Iniitally
     const requestCity = async () => {
@@ -252,44 +252,48 @@ function Choices() {
     return (
         <>
             <div className="formbox">
-                <form onSubmit={handleSubmit}>
-                    <label>
-                        <div className="question">Pick your origin city (Start typing your city's name)</div>
-                        <select className="dropdown" onChange={handleInputChangeOrigin} value={value}>                      >
-                            {cityList.map((k)=>
-                                <option key={k}>
-                                    {k}
-                                </option>)}
-                        </select>
+                <div className="formboxSmall">
+                    <form onSubmit={handleSubmit}>
+                        <label>
+                            <div className="question">Pick your origin city (Start typing your city's name)</div>
+                            <select className="dropdown" onChange={handleInputChangeOrigin} value={value}>                      >
+                                {cityList.map((k)=>
+                                    <option key={k}>
+                                        {k}
+                                    </option>)}
+                            </select>
 
-                        <br />
+                            <br />
 
-                        <div className="question" >Choose the ideal distance you want to travel</div>
-                        <select className="dropdown" onChange={handleInputChangeDist} value={dist}>
-                            {distList.map((k)=>
-                                <option value={k}>{k}</option>)}
-                        </select>
+                            <div className="question" >Choose the ideal distance you want to travel</div>
+                            <select className="dropdown" onChange={handleInputChangeDist} value={dist}>
+                                {distList.map((k)=>
+                                    <option value={k}>{k}</option>)}
+                            </select>
 
-                        <br />
+                            <br />
 
-                        <div className="question" >Select the number of cities you wish to vist</div>
-                        <select className="dropdown" onChange={handleInputChangeNum} value={num}>
-                            {numList.map((k)=>
-                                <option value={k}>{k}</option>)}
-                        </select>
+                            <div className="question" >Select the number of cities you wish to vist</div>
+                            <select className="dropdown" onChange={handleInputChangeNum} value={num}>
+                                {numList.map((k)=>
+                                    <option value={k}>{k}</option>)}
+                            </select>
 
-                        <br />
+                            <br />
 
-                        <div className="question" >Mark a City you want to visit: (If you have no specific city, leave this blank)</div>
-                        <select className="dropdown" onChange={handleInputChangeCity} value={city}>
-                            {cityList.map((k)=>
-                                <option value={k}>{k}</option>)}
-                        </select>
+                            <div className="question" >Mark a City you want to visit: (If you have no specific city, leave this blank)</div>
+                            <select className="dropdown" onChange={handleInputChangeCity} value={city}>
+                                {cityList.map((k)=>
+                                    <option value={k}>{k}</option>)}
+                            </select>
 
-                    </label>
-                    <input type="submit" value="Submit" />
-                </form>
+                        </label>
+                        <input type="submit" value="Submit" />
+                    </form>
+                </div>
+
                 <div className="error">{error}</div>
+
             </div>
 
             <br />

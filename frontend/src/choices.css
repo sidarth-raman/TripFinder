@@ -22,13 +22,23 @@ input[type=submit]:hover {
     background-color: #45a049;
 }
 
-.formbox{
+.formboxSmall{
     padding-left: 20%;
     padding-top: 15px;
+    font-family: "Futura";
+}
+
+.formbox {
     border-radius: 5px;
     background-color: #f2f2f2;
-    font-family: "Futura";
+}
 
+.error{
+    color: red;
+    font-style: italic;
+    font-size: 16px;
+    text-align: center;
+    padding: 12px;
 }
 
 input[type=text], select {
@@ -42,13 +52,6 @@ input[type=text], select {
 }
 
 
-.error{
-    color: red;
-    padding: 12px 20px;
-    font-style: italic;
-    font-size: 16px;
-    padding-left: 27%;
-}
 
 
 .list {
