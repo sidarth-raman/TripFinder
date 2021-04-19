@@ -29,6 +29,7 @@ import edu.brown.cs.mramesh4.TripGraph.TripGraph;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import org.checkerframework.checker.units.qual.A;
 import org.json.JSONObject;
 import spark.ExceptionHandler;
 import spark.Request;
@@ -99,7 +100,7 @@ public final class Main {
     database.readDB();
 
 
-//    this.testThisDistanceThang(500);
+//    this.testThisDistanceThang(5000);
 
 //    this.whyDoesntNoVisitWork();
 
@@ -114,7 +115,7 @@ public final class Main {
     }
   }
 
-  private void whyDoesntNoVisitWork(){
+  private void whyDoesntNoVisitWork() {
     List<String> sts = new ArrayList<>();
     String originCity = "Milwaukee, WI";
 //    sts.add("Los Angeles, CA");
@@ -129,71 +130,120 @@ public final class Main {
     }
   }
 
-  private void testThisDistanceThang(int dist1){
-    double average = 0;
-    double trials = 200;
-    int totalAvg = 0;
-    List<Double> averages = new ArrayList<>();
-    for (int j = 3; j < 7; j++) {
-      HashMap<String, Integer> map = new HashMap<>();
-      for (int i = 0; i < trials; i++) {
-        List<String> sts = new ArrayList<>();
-        String originCity = "Milwaukee, WI";
+  private void testThisDistanceThang(int dist1) {
+    List<Double> allDivs = new ArrayList<>();
+    for (int y = 100; y < 500; y += 100) {
+      dist1 = y;
+      System.out.println();
+      System.out.println("Distance: " + y);
+      System.out.println();
+
+      double average = 0;
+      double trials = 400;
+      int totalAvg = 0;
+      List<Double> averages = new ArrayList<>();
+      List<Double> spreads = new ArrayList<>();
+      List<Double> avgDiv = new ArrayList<>();
+      for (int j = 3; j < 7; j++) {
+        HashMap<String, Integer> map = new HashMap<>();
+        List<Double> maxes = new ArrayList<>();
+        for (int i = 0; i < trials; i++) {
+          List<String> sts = new ArrayList<>();
+          String originCity = "Milwaukee, WI";
 //    sts.add("Los Angeles, CA");
 
-        sts.add("Chicago, IL");
-        GraphBuilder g = new GraphBuilder(database.connect(), originCity, dist1, j, sts);
-        List<CityNode> path = g.getPath();
+          sts.add("Chicago, IL");
+          GraphBuilder g = new GraphBuilder(database.connect(), originCity, dist1, j, sts);
+          List<CityNode> path = g.getPath();
 //    for (CityNode n : path) {
 //      System.out.println(n.getName());
 //    }
-        for (CityNode n : path) {
-          if(!sts.contains(n.getName()) && !originCity.equals(n.getName())) {
-            if (!map.containsKey(n.getName())) {
-              map.put(n.getName(), 1);
-            } else {
-              int num = map.get(n.getName());
-              map.replace(n.getName(), num + 1);
+          for (CityNode n : path) {
+            if (!sts.contains(n.getName()) && !originCity.equals(n.getName())) {
+              if (!map.containsKey(n.getName())) {
+                map.put(n.getName(), 1);
+              } else {
+                int num = map.get(n.getName());
+                map.replace(n.getName(), num + 1);
+              }
             }
           }
+          double dist = Math.round(this.calcRouteDistance(path));
+          maxes.add(dist);
+//      System.out.println("Distance: " + average + " miles");
         }
-        double dist = Math.round(this.calcRouteDistance(path));
-        average += dist;
-//      System.out.println("Distance: " + dist + " miles");
-      }
-      totalAvg += (average/4);
-      Map<String, Integer> hm1 = sortByValue(map);
-      StringBuilder stt = new StringBuilder("Most frequent cities: ");
-      List<String> cc = new ArrayList<>();
-      for (Map.Entry<String, Integer> en : hm1.entrySet()) {
-        cc.add(en.getKey().split(",")[0] + ": " + en.getValue().toString() + " ");
-      }
-      System.out.println("For " + j + " cities");
+        double sum = 0;
+        for (Double d : maxes) {
+          sum += d;
+        }
+        average = sum / maxes.size();
+        totalAvg += average;
+        Map<String, Integer> hm1 = sortByValue(map);
+        StringBuilder stt = new StringBuilder("Most frequent cities: ");
+        List<String> cc = new ArrayList<>();
+        for (Map.Entry<String, Integer> en : hm1.entrySet()) {
+          cc.add(
+              en.getKey().split(",")[0] + ": " + Math.round(100 * en.getValue() / trials) + "% ");
+        }
+//        System.out.println("For " + j + " cities");
+        Collections.sort(maxes);
+        System.out.println("For " + j + ": min dist: " + maxes.get(10) + " max dist: " + maxes.get(190));
 
-      for(int z = 0; z < Math.min(5, cc.size()); z++){
-        stt.append(cc.get(z));
+        for (int z = 0; z < Math.min(5, cc.size()); z++) {
+          stt.append(cc.get(z));
+        }
+        System.out.println(stt.toString());
+        System.out.println("average trip length: " + Math.round(average) + " spread: " +
+            (maxes.get(280) - maxes.get(20)));
+        averages.add(average);
+        spreads.add(maxes.get(280) - maxes.get(20));
+        for (Double dd : maxes) {
+          avgDiv.add(Math.abs(dd - dist1));
+        }
+
       }
-      System.out.println(stt.toString());
-      System.out.println("average trip length: " + Math.round(average / (4*trials)));
-      averages.add(average / (4*trials));
+
+      totalAvg = (int) Math.round(totalAvg);
+//      System.out.println(
+//          "total average trip length: " + totalAvg / 4 + "/" + dist1);
+      System.out
+          .println(
+              "deviation: " + Math.round(Collections.max(averages) - Collections.min(averages)) +
+                  " within samples: " + Math.round(Collections.min(spreads)) + "-" +
+                  Math.round(Collections.max(spreads)))
+      ;
+      System.out.println();
+      double sum2 = 0;
+      for (Double dd : avgDiv) {
+        sum2 += dd;
+      }
+      allDivs.addAll(avgDiv);
+      double avg2 = Math.round(sum2 / avgDiv.size());
+      System.out.println("Total average divergence: " + avg2 + " within samples: " +
+          (Math.round(Collections.max(spreads)) - Math.round(Collections.min(spreads))));
+      System.out.println(
+          "total average trip length: " + totalAvg / 4 + "/" + dist1);
     }
 
-    totalAvg = (int) Math.round(totalAvg/(4*trials));
-    System.out.println("total average trip length: " + totalAvg + " off by: " +  Math.abs(totalAvg - dist1));
-    System.out.println("deviation: " + Math.round(Collections.max(averages) - Collections.min(averages)));
+    System.out.println();
+
+    double sum3 = 0;
+    for (Double dd : allDivs) {
+      sum3 += dd;
+    }
+    double avg3 = Math.round(sum3 / allDivs.size());
+    System.out.println("Complete divergence: " + avg3);
   }
 
-  public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm)
-  {
+  public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm) {
     // Create a list from elements of HashMap
-    List<Map.Entry<String, Integer> > list =
-        new LinkedList<Map.Entry<String, Integer> >(hm.entrySet());
+    List<Map.Entry<String, Integer>> list =
+        new LinkedList<Map.Entry<String, Integer>>(hm.entrySet());
 
     // Sort the list
-    Collections.sort(list, new Comparator<Map.Entry<String, Integer> >() {
+    Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
       public int compare(Map.Entry<String, Integer> o1,
-                         Map.Entry<String, Integer> o2)
-      {
+                         Map.Entry<String, Integer> o2) {
         return (o2.getValue()).compareTo(o1.getValue());
       }
     });

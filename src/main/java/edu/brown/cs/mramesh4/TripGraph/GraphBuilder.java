@@ -30,8 +30,10 @@ public class GraphBuilder {
   private final double earthRadius = 3958.8; //miles
   private final Random random = new Random();
   private double r;
-  private final double lowBound = 0.85;
-  private final double highBound = 1.05;
+  private double lowBound;
+  private double highBound;
+  private final double finalDiv = 7000;
+  private double offset;
 
 
   /**
@@ -44,12 +46,15 @@ public class GraphBuilder {
    */
   public GraphBuilder(Connection conn, String origin, double idealDist, int maxNumCities,
                       List<String> citiesToVisit) {
+    lowBound = 0.5 + (0.00009 * idealDist);
+    highBound = 0.85 + (0.00009 * idealDist);
     this.idealDist = idealDist;
     this.maxNumCities = maxNumCities;
     cityNodesToVisit = new ArrayList<>();
     citiesInGraph = new ArrayList<>();
     this.citiesToVisit = citiesToVisit;
     this.conn = conn;
+    this.setOffset(idealDist);
 
     this.findOrigin(origin);
     this.pullCities();
@@ -111,28 +116,36 @@ public class GraphBuilder {
         offFromTarget = idealDist;
       } else {
         offFromTarget =
-            (idealDist) - (Math.abs(this.haversineDist(originCity, cityNodesToVisit.get(0))));
+            (idealDist) - (1.1 * Math.abs(this.haversineDist(originCity, cityNodesToVisit.get(0))));
       }
       if (offFromTarget > 0) {
         activatePlanB = true;
-        offFromTarget /= (Math.pow(numToAdd, 2));
+
+//        offFromTarget /= (Math.pow(numToAdd, 1));
+//        if(maxNumCities == 3){
+//          offFromTarget *= 2;
+//        }
+//
+//        if(maxNumCities == 4){
+//          offFromTarget += offFromTarget/2;
+//        }
       }
 
-      double random = this.randomInRange(-0.5, 0.5);
+      double random = this.randomSignInRange(0.8, 1.2);
 
       double x = 0;
       double y = 0;
-
+//      double offset = (idealDist / 8000);
       if (numToAdd % 2 == 1) {
 //        System.out.println("Triggered: " + numToAdd);
         if (numToAdd == 1) {
           if (activatePlanB) {
 
-            x = this.newX(offFromTarget, numToAdd);
-            y = this.newY(offFromTarget, numToAdd);
+            x = this.newX(offFromTarget, numToAdd)/2;
+            y = this.newY(offFromTarget, numToAdd)/2;
           }
           Collections.sort(bestCities,
-              new CityComparator(0, 1, originCity, cityNodesToVisit, 0, x, y));
+              new CityComparator(0, 1, originCity, cityNodesToVisit, 0, x, y, maxNumCities));
           citiesInGraph.add(bestCities.remove(0));
         } else {
           for (int i = 0 - ((numToAdd - 1) / 2), j = 1; i < ((numToAdd - 1) / 2) + 1; i++, j++) {
@@ -141,12 +154,12 @@ public class GraphBuilder {
 //              x = 0;
 //              y = 0;
               if (activatePlanB) {
-                x = this.newX(offFromTarget, numToAdd);
-                y = this.newY(offFromTarget, numToAdd);
+                x = this.newX(offFromTarget, numToAdd) * offset;
+                y = this.newY(offFromTarget, numToAdd) * offset;
               }
               Collections.sort(bestCities,
                   new CityComparator(i, numToAdd - 1, originCity, cityNodesToVisit, random, x,
-                      y));
+                      y, maxNumCities));
               citiesInGraph.add(bestCities.remove(0));
 //              activatePlanB = false;
             }
@@ -157,11 +170,11 @@ public class GraphBuilder {
           for (int i = -1 * (numToAdd/2), j = 1; i < numToAdd + (numToAdd/2); i += 2, j++) {
             if (!bestCities.isEmpty()) {
               if (activatePlanB) {
-                x = this.newX(offFromTarget, numToAdd);
-                y = this.newY(offFromTarget, numToAdd);
+                x = this.newX(offFromTarget, numToAdd)* offset;
+                y = this.newY(offFromTarget, numToAdd)* offset;
               }
               Collections.sort(bestCities,
-                  new CityComparator(i, numToAdd, originCity, cityNodesToVisit, random, x, y));
+                  new CityComparator(i, numToAdd, originCity, cityNodesToVisit, random, x, y, maxNumCities));
               citiesInGraph.add(bestCities.remove(0));
 //              activatePlanB = false;
             }
@@ -296,6 +309,10 @@ public class GraphBuilder {
       return rand * -1;
     }
     return rand;
+  }
+
+  private void setOffset(double d){
+    offset = d / finalDiv;
   }
 
 }
