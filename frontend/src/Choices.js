@@ -252,6 +252,7 @@ function Choices() {
     return (
         <>
             <div className="formbox">
+                <div className="formboxSmall">
                 <form onSubmit={handleSubmit}>
                     <label>
                         <div className="question">Pick your origin city (Start typing your city's name)</div>
@@ -289,7 +290,10 @@ function Choices() {
                     </label>
                     <input type="submit" value="Submit" />
                 </form>
-                <div className="error">{error}</div>
+                    </div>
+
+                    <div className="error">{error}</div>
+
             </div>
 
             <br />
