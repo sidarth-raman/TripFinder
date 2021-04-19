@@ -8,8 +8,8 @@ function Navbar() {
     return (
         <div className="topnav">
             <div><Link to="/">Home</Link></div>
-            <div><Link to="/about">About</Link></div>
             <div><Link to="/itinerary">Itinerary Builder</Link></div>
+            <div><Link to="/about">About</Link></div>
         </div>
 
     );

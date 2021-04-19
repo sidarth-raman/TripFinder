@@ -11,7 +11,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,16 +70,39 @@ public final class Main {
     this.args = args;
   }
 
+  private double calcRouteDistance(List<CityNode> path) {
+    double sum = 0;
+    for (int i = 0; i < path.size() - 1; i++) {
+      sum += this.haversineDist(path.get(i), path.get(i + 1));
+    }
+    return sum;
+  }
+
+  private double haversineDist(CityNode a, CityNode b) {
+    // Find distance in radians between latitudes and longitudes
+
+    double distLat = Math.toRadians(a.getLat() - b.getLat());
+    double distLong = Math.toRadians(a.getLong() - b.getLong());
+
+    // Convert latitudes to radians
+    double startLat = Math.toRadians(b.getLat());
+    double endLat = Math.toRadians(a.getLat());
+
+    double calc = Math.pow(Math.sin(distLat / 2), 2)
+      + Math.pow(Math.sin(distLong / 2), 2) * Math.cos(startLat) * Math.cos(endLat);
+    double calc2 = 2 * Math.asin(Math.sqrt(calc));
+    return 3959 * calc2;
+  }
+
   private void run() {
     database = new CityDatabaseReader("data.sqlite");
     database.readDB();
-    List<String> sts = new ArrayList<>();
-    sts.add("Los Angeles, CA");
-//    sts.add("Miami, FL");
-    GraphBuilder g = new GraphBuilder(database.connect(), "Providence, RI", 2000, 4, sts);
-    for (CityNode n : g.getPath()) {
-      System.out.println(n.getName());
-    }
+
+
+//    this.testThisDistanceThang(500);
+
+//    this.whyDoesntNoVisitWork();
+
     // Parse command line arguments
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
@@ -86,7 +112,98 @@ public final class Main {
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
     }
+  }
 
+  private void whyDoesntNoVisitWork(){
+    List<String> sts = new ArrayList<>();
+    String originCity = "Milwaukee, WI";
+//    sts.add("Los Angeles, CA");
+    sts.add("Chicago, IL");
+    GraphBuilder g = new GraphBuilder(database.connect(), originCity, 5000, 5, sts);
+    List<CityNode> path = g.getPath();
+    for (CityNode n : g.getCitiesOfGraph()) {
+      System.out.println("graphbuilder contains: " + n.getName());
+    }
+    for (CityNode n : path) {
+      System.out.println(n.getName());
+    }
+  }
+
+  private void testThisDistanceThang(int dist1){
+    double average = 0;
+    double trials = 200;
+    int totalAvg = 0;
+    List<Double> averages = new ArrayList<>();
+    for (int j = 3; j < 7; j++) {
+      HashMap<String, Integer> map = new HashMap<>();
+      for (int i = 0; i < trials; i++) {
+        List<String> sts = new ArrayList<>();
+        String originCity = "Milwaukee, WI";
+//    sts.add("Los Angeles, CA");
+
+        sts.add("Chicago, IL");
+        GraphBuilder g = new GraphBuilder(database.connect(), originCity, dist1, j, sts);
+        List<CityNode> path = g.getPath();
+//    for (CityNode n : path) {
+//      System.out.println(n.getName());
+//    }
+        for (CityNode n : path) {
+          if(!sts.contains(n.getName()) && !originCity.equals(n.getName())) {
+            if (!map.containsKey(n.getName())) {
+              map.put(n.getName(), 1);
+            } else {
+              int num = map.get(n.getName());
+              map.replace(n.getName(), num + 1);
+            }
+          }
+        }
+        double dist = Math.round(this.calcRouteDistance(path));
+        average += dist;
+//      System.out.println("Distance: " + dist + " miles");
+      }
+      totalAvg += (average/4);
+      Map<String, Integer> hm1 = sortByValue(map);
+      StringBuilder stt = new StringBuilder("Most frequent cities: ");
+      List<String> cc = new ArrayList<>();
+      for (Map.Entry<String, Integer> en : hm1.entrySet()) {
+        cc.add(en.getKey().split(",")[0] + ": " + en.getValue().toString() + " ");
+      }
+      System.out.println("For " + j + " cities");
+
+      for(int z = 0; z < Math.min(5, cc.size()); z++){
+        stt.append(cc.get(z));
+      }
+      System.out.println(stt.toString());
+      System.out.println("average trip length: " + Math.round(average / (4*trials)));
+      averages.add(average / (4*trials));
+    }
+
+    totalAvg = (int) Math.round(totalAvg/(4*trials));
+    System.out.println("total average trip length: " + totalAvg + " off by: " +  Math.abs(totalAvg - dist1));
+    System.out.println("deviation: " + Math.round(Collections.max(averages) - Collections.min(averages)));
+  }
+
+  public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm)
+  {
+    // Create a list from elements of HashMap
+    List<Map.Entry<String, Integer> > list =
+      new LinkedList<Map.Entry<String, Integer> >(hm.entrySet());
+
+    // Sort the list
+    Collections.sort(list, new Comparator<Map.Entry<String, Integer> >() {
+      public int compare(Map.Entry<String, Integer> o1,
+                         Map.Entry<String, Integer> o2)
+      {
+        return (o2.getValue()).compareTo(o1.getValue());
+      }
+    });
+
+    // put data from sorted list to hashmap
+    HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>();
+    for (Map.Entry<String, Integer> aa : list) {
+      temp.put(aa.getKey(), aa.getValue());
+    }
+    return temp;
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -139,7 +256,7 @@ public final class Main {
       String cityName;
       CityNode node = null;
       StringBuilder errorMessage = new StringBuilder();
-      try{
+      try {
         cityName = data.getString("cityName");
         String cityToQuery = cityName.split(",")[0];
 
@@ -147,12 +264,13 @@ public final class Main {
         PreparedStatement prep = null;
 
         try {
-          prep = conn.prepareStatement("SELECT city, state_id, lat, lng, population, id FROM cities where city = ?;");
+          prep = conn.prepareStatement(
+            "SELECT city, state_id, lat, lng, population, id FROM cities where city = ?;");
           prep.setString(1, cityToQuery);
           ResultSet rs = prep.executeQuery();
           while (rs.next()) {
             String name = rs.getString(1) + ", " + rs.getString(2);
-            if(name.equals(cityName)) {
+            if (name.equals(cityName)) {
               double lat = rs.getDouble(3);
               double lon = rs.getDouble(4);
               int pop = rs.getInt(5);
@@ -163,24 +281,23 @@ public final class Main {
           rs.close();
           prep.close();
         } catch (SQLException throwables) {
-          System.out.println("ERROR: sql query gone wrong");
           throwables.printStackTrace();
           errorMessage.append(" error with sql query");
         }
 
-      } catch(Exception e){
-        System.out.println("ERROR in parsing cityname for activities");
+      } catch (Exception e) {
         errorMessage.append(" error in reading city name. ");
       }
       List<String> activitiesList = new ArrayList<>();
-      if(node == null){
+      if (node == null) {
         errorMessage.append(" error: city not found. ");
       } else {
         node.setActivities();
         activitiesList = node.getActivities();
       }
-
-      Map<String, Object> variables = ImmutableMap.of("activities", activitiesList, "error", errorMessage.toString());
+      System.out.println(errorMessage.toString());
+      Map<String, Object> variables =
+        ImmutableMap.of("activities", activitiesList, "error", errorMessage.toString());
       return GSON.toJson(variables);
     }
   }
@@ -197,22 +314,39 @@ public final class Main {
       double maxDist = 0;
       int maxNumCities = 0;
       String cities = null;
+      String errorMessage = "";
+      boolean numCityError = false;
+      boolean distError = false;
+      boolean originCityError = false;
+      boolean sameCityError = false;
 
       try {
         origin = data.getString("origin");
-        maxDist = Double.parseDouble(data.getString("maxDist").split(" ")[0]);
         maxNumCities = data.getInt("numberOfCities");
         cities = data.getString("city");
       } catch (Exception e) {
         System.out.println("ERROR: parsing data sent from frontend");
         error = true;
+        numCityError = true;
       }
 
-      if(origin.contains("Select")){
+      try {
+        maxDist = Double.parseDouble(data.getString("maxDist").split(" ")[0]);
+      } catch (Exception e) {
+        System.out.println("ERROR: parsing data sent from frontend");
         error = true;
+        distError = true;
       }
 
-      //TODO: Coordinate with Sid to handle passing in multiple cities to visit
+
+      if (origin.contains("Select")) {
+        error = true;
+        originCityError = true;
+      } else if (origin.equals(cities)) {
+        error = true;
+        sameCityError = true;
+      }
+
 //      String[] cities = data.getString("city").split(",");
 
       if (!error) {
@@ -238,9 +372,20 @@ public final class Main {
             System.out.println("city in path returned: " + n.getName());
           }
           System.out.println("path size: " + path.size());
+
+          if (path.size() == 2 && maxNumCities == 2) {
+            if (path.get(0).equals(path.get(1))) {
+              for (CityNode n : graph.getCitiesOfGraph()) {
+                if (!n.getName().equals(path.get(0).getName())) {
+                  path.add(1, n);
+                }
+              }
+            }
+          }
         }
         List<String> cityNames = new ArrayList<>();
         double[][] latLong = new double[path.size()][2];
+
 
         for (int i = 0; i < path.size(); i++) {
           CityNode n = path.get(i);
@@ -261,9 +406,28 @@ public final class Main {
       } else {
         String[][] blankArray = new String[0][0];
         double[][] latLong = new double[0][0];
+        if (originCityError && numCityError && distError) {
+          errorMessage =
+            "Please be sure to select an origin city, number of cities, and a distance!";
+        } else if (originCityError && numCityError) {
+          errorMessage = "Please be select an origin city and a number of cities!";
+        } else if (originCityError && distError) {
+          errorMessage = "Please select an origin city and a distance!";
+        } else if (numCityError && distError) {
+          errorMessage = "Please select a number of cities and a distance!";
+        } else if (numCityError) {
+          errorMessage = "Please select a number of cities!";
+        } else if (distError) {
+          errorMessage = "Please select a distance!";
+        }
+
+        if (sameCityError) {
+          errorMessage +=
+            " Origin city and city to visit need to be different! It's a circular tour :)";
+        }
         return GSON.toJson(ImmutableMap
           .of("output", blankArray, "latLong", latLong, "routeDist", 0, "error",
-            "Please select an origin city", "routeInfoMessage", ""));
+            errorMessage, "routeInfoMessage", ""));
       }
     }
 
@@ -289,7 +453,6 @@ public final class Main {
         + Math.pow(Math.sin(distLong / 2), 2) * Math.cos(startLat) * Math.cos(endLat);
       double calc2 = 2 * Math.asin(Math.sqrt(calc));
       return earthRadius * calc2;
-
     }
   }
 

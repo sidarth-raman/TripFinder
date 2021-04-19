@@ -5,10 +5,11 @@ import './Navbar'
 import { render } from 'react-dom';
 import axios from 'axios';
 import React, {Component, useState, useEffect, useRef} from 'react';
+import {act} from "@testing-library/react";
 
 function Choices() {
     const [cityList, setCityList] = useState(["Select City"]);
-    const [distList, setDistList] = useState(["Select Distance", "250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "8000 Miles"]);
+    const [distList, setDistList] = useState(["Select Distance", "500 Miles", "1000 Miles", "2000 Miles", "4000 Miles", "8000 Miles"]);
     const [numList, setNumList] = useState(["Select Number", "2", "3", "4", "5", "6"]);
     const [firstRender, setFirsRender] = useState(true);
     var imageObj1 = new Image();
@@ -28,9 +29,8 @@ function Choices() {
     const [miles, setMiles] = useState();
     const [hours, setHours] = useState();
     const [activityCity, setActCity] = useState();
-    const [activities, setActivities] = useState();
-
-    let activitiesList = []
+    const [activities, setActivities] = useState([]);
+    const [activityCityMessage, setActCityMess] = useState([]);
 
 
     const [value, setValue] = useState("");
@@ -47,6 +47,7 @@ function Choices() {
 
     const canvasRef = useRef(null)
 
+    //Draws the Canvas Initially
     useEffect(() => {
         const canvas = canvasRef.current
         const ctx = canvas.getContext('2d')
@@ -71,7 +72,10 @@ function Choices() {
         }
     }, [])
 
+    //Draws Canvas route
     useEffect(() =>  {
+
+
         const canvas = canvasRef.current
         const ctx = canvas.getContext('2d')
 
@@ -125,16 +129,21 @@ function Choices() {
     }
 
     const handleSubmit = (e) => {
-
+        setActCityMess("");
         setValueFinal(value);
         setDistFinal(dist);
         setNumFinal(num);
         setCityFinal(city);
-        setActivities("");
-
+        setActivities([]);
+        if (!firstRender){
+            sendData();
+        }else {
+            setFirsRender(false)
+        }
         e.preventDefault();
     }
 
+    //Requests the route
     useEffect(() => {
         if (!firstRender){
             sendData();
@@ -144,6 +153,7 @@ function Choices() {
 
     }, [numFinal, distFinal, cityFinal, valueFinal])
 
+    //Request the City List Iniitally
     const requestCity = async () => {
         const toSend = {
             //Nothing To send
@@ -187,25 +197,12 @@ function Choices() {
         )
 
         setOutput(response.data["output"]);
-
         setCoordinates(response.data["latLong"]);
         setError(response.data["error"]);
         setMilesNum(response.data["routeDist"]);
         setMiles(response.data["routeDist"] + " Miles");
 
-
-
     }
-
-    useEffect(() =>  {
-        if (!firstRender){
-            setActivities("Places to see near " + activityCity);
-        }else {
-            setFirsRender(false)
-        }
-
-    }, [activityCity])
-
 
 
     useEffect(()=> {
@@ -218,6 +215,38 @@ function Choices() {
 
 
     }, [milesNum])
+
+    const getActivities = async () => {
+        const toSend = {
+            cityName: activityCity
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        let response = await axios.post(
+            "http://localhost:4567/activity",
+            toSend,
+            config
+        )
+        console.log("RAN")
+        console.log(response.data["activities"])
+        setActCityMess("Places to see in " + activityCity)
+        setActivities(response.data["activities"]);
+    }
+
+    useEffect(() =>  {
+        console.log("RUNNING")
+        if (!firstRender){
+            getActivities()
+        }else {
+            setFirsRender(false)
+        }
+
+    }, [activityCity])
+
 
 
     return (
@@ -235,7 +264,7 @@ function Choices() {
 
                         <br />
 
-                        <div className="question" >Choose the maximum distance you can travel</div>
+                        <div className="question" >Choose the ideal distance you want to travel</div>
                         <select className="dropdown" onChange={handleInputChangeDist} value={dist}>
                             {distList.map((k)=>
                                 <option value={k}>{k}</option>)}
@@ -273,7 +302,13 @@ function Choices() {
             <div className="info">
                 The total length of your trip is: {miles}<br/>
                 The total time of your trip is roughly: {hours}<br/>
+                <br />
+                <span>Click on the cities to find activities in each city! </span>
             </div>
+            <br />
+
+            <br />
+
             <br />
             <br />
             <br />
@@ -289,14 +324,23 @@ function Choices() {
 
 
                     <div className="activities">
-                        {activities}
+                        <span>{activityCityMessage}</span>
+
+                        <ol>
+                            {activities.map((k)=>
+                                <li>
+                                    {k}
+                                </li>)}
+                        </ol>
+
                     </div>
                 </div>
             </div>
 
 
             <br/>
-
+            <hr className="line"></hr>
+            <br />
             <div style = {{paddingLeft: 100} }>
                 <canvas ref={canvasRef} />
             </div>

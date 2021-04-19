@@ -20,6 +20,7 @@ public class CityDatabaseReader {
 
   /**
    * This is a constructor for a citydatabase reader.
+   *
    * @param filepath the file to input
    */
   public CityDatabaseReader(String filepath) {
@@ -61,7 +62,9 @@ public class CityDatabaseReader {
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
         String name = rs.getString(1) + ", " + rs.getString(2);
-        cityList.add(name);
+        if (!name.contains("'")) {
+          cityList.add(name);
+        }
       }
       rs.close();
       prep.close();

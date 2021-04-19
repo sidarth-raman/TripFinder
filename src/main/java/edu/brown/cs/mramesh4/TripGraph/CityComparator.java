@@ -2,6 +2,7 @@ package edu.brown.cs.mramesh4.TripGraph;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 public class CityComparator implements Comparator<CityNode> {
   private CityNode start;
@@ -11,15 +12,16 @@ public class CityComparator implements Comparator<CityNode> {
   private double denominator;
   private double midpointX;
   private double midpointY;
+  private final Random random1 = new Random();
 
   public CityComparator(double numerator, double denominator, CityNode start,
-                        List<CityNode> toVisit, int ind, double random, double x, double y) {
+                        List<CityNode> toVisit, double random, double x, double y) {
     this.start = start;
     this.toVisit = toVisit;
     this.numerator = numerator;
     this.denominator = denominator;
     double ratio = numerator / denominator;
-    System.out.println("ratio: " + numerator + "/" + denominator);
+//    System.out.println("ratio: " + numerator + "/" + denominator);
     double yTotals = 0;
     double xTotals = 0;
 
@@ -34,31 +36,32 @@ public class CityComparator implements Comparator<CityNode> {
     midpointY = (yTotals / (toVisit.size() + 1));
     midpointX = (xTotals / (toVisit.size() + 1));
 
-
-
     if (x != 0 || y != 0) {
-      System.out.println("Hola " + x + " " + y);
+//      System.out.println("Hola " + x + " " + y);
       midpointX += x;
       midpointY += y;
 
     } else {
+//      System.out.println("nonz");
 
       double myd = Math.abs(midpointY - start.getLat());
       double myx = Math.abs(Math.abs(midpointX) - Math.abs(start.getLong()));
 
-      if (ind % 2 == 0) {
+      if (random1.nextBoolean()) {
         midpointX = midpointX + (ratio * myx) + (random * myx);
-        System.out.println("offX: " + random * myx);
+//        System.out.println("c");
 
+//        System.out.println("offX: " + random * myx);
       } else {
+//        System.out.println("d");
         midpointY = midpointY + (ratio * myd) + (random * myd);
-        System.out.println("offY" + random * myd);
+//        System.out.println("offY" + random * myd);
       }
 
 
     }
-    System.out.println("Midpoint x: " + midpointX);
-    System.out.println("Midpoint y: " + midpointY);
+//    System.out.println("Midpoint x: " + midpointX);
+//    System.out.println("Midpoint y: " + midpointY);
   }
 
   @Override
