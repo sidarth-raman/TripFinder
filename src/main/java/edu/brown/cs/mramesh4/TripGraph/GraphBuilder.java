@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Class that builds the Graph from a User's input and preferences, calls the TS algorithm,
@@ -23,11 +24,14 @@ public class GraphBuilder {
   private List<String> citiesToVisit;
   private List<CityNode> citiesInGraph;
   private CompleteTripGraph<CityNode, CityEdge> graph;
-  private String filepath = "data.sqlite";
   private final double EARTH_RADIUS = 3960; //In miles
   private final double RAD_TO_DEGREE = (180 / Math.PI);
   private final double DEGREE_TO_RAD = (Math.PI / 180);
   private final double earthRadius = 3958.8; //miles
+  private final Random random = new Random();
+  private double r;
+  private final double lowBound = 0.85;
+  private final double highBound = 1.05;
 
 
   /**
@@ -49,7 +53,6 @@ public class GraphBuilder {
 
     this.findOrigin(origin);
     this.pullCities();
-    System.out.println("cities pulled");
     graph = new CompleteTripGraph<>(citiesInGraph);
 
   }
@@ -61,15 +64,15 @@ public class GraphBuilder {
    */
   private void pullCities() {
     double maxDistLat = (idealDist / EARTH_RADIUS) * RAD_TO_DEGREE;
-    double r = EARTH_RADIUS * Math.cos(originCity.getLat() * DEGREE_TO_RAD);
+    r = EARTH_RADIUS * Math.cos(originCity.getLat() * DEGREE_TO_RAD);
     double maxDistLong = (idealDist / r) * RAD_TO_DEGREE;
     String maxLatBound = "\"" + Math.round((originCity.getLat() + maxDistLat)) + "\"";
     String minLatBound = "\"" + Math.round((originCity.getLat() - maxDistLat)) + "\"";
     String maxLongBound = "\"" + Math.round(originCity.getLong() + maxDistLong) + "\"";
     String minLongBound = "\"" + Math.round(originCity.getLong() - maxDistLong) + "\"";
-    System.out.println(
-      "LAT BOUNDS: " + minLatBound + "-" + maxLatBound + " LONG BOUNDS: " + minLongBound + "-" +
-        maxLongBound);
+//    System.out.println(
+//      "LAT BOUNDS: " + minLatBound + "-" + maxLatBound + " LONG BOUNDS: " + minLongBound + "-" +
+//        maxLongBound);
     List<CityNode> bestCities = new ArrayList<>();
 
     int temp = citiesInGraph.size();
@@ -80,7 +83,7 @@ public class GraphBuilder {
       PreparedStatement prep = null;
       try {
         prep = conn.prepareStatement(
-          "SELECT city, state_id, lat, lng, population, id FROM cities where lat between ? and ? and lng between ? and ?;");
+            "SELECT city, state_id, lat, lng, population, id FROM cities where lat between ? and ? and lng between ? and ?;");
         prep.setDouble(1, Math.round((originCity.getLat() - maxDistLat)));
         prep.setDouble(2, Math.round((originCity.getLat() + maxDistLat)));
         prep.setDouble(3, Math.round(originCity.getLong() - maxDistLong));
@@ -103,70 +106,64 @@ public class GraphBuilder {
       }
 
       boolean activatePlanB = false;
-      double notThis =
-        idealDist - (1.5 * Math.abs(this.haversineDist(originCity, cityNodesToVisit.get(0))));
-
-      double newYChange = 0;
-      double newXChange = 0;
-
-      if (notThis > 0) {
-        activatePlanB = true;
-        double hyp2 = 0.8;
-        double sine = this.randomInRange(-1 * hyp2, hyp2);
-        double cosine = this.randomInRange(-1 * hyp2, hyp2);
-
-        System.out.println("sine: " + sine + " cosine: " + cosine);
-        newYChange =
-          (((notThis / EARTH_RADIUS) * RAD_TO_DEGREE) * sine) / numToAdd;
-        newXChange = (((notThis / r) * RAD_TO_DEGREE) * cosine) / numToAdd;
+      double offFromTarget = 0;
+      if (cityNodesToVisit.size() == 0) {
+        offFromTarget = idealDist;
+      } else {
+        offFromTarget =
+            (idealDist) - (Math.abs(this.haversineDist(originCity, cityNodesToVisit.get(0))));
       }
+      if (offFromTarget > 0) {
+        activatePlanB = true;
+        offFromTarget /= (Math.pow(numToAdd, 2));
+      }
+
       double random = this.randomInRange(-0.5, 0.5);
 
       double x = 0;
       double y = 0;
 
       if (numToAdd % 2 == 1) {
-        System.out.println("Triggered: " + numToAdd);
+//        System.out.println("Triggered: " + numToAdd);
         if (numToAdd == 1) {
-          double v = 0;
           if (activatePlanB) {
-            x = newXChange;
-            y = newYChange;
+
+            x = this.newX(offFromTarget, numToAdd);
+            y = this.newY(offFromTarget, numToAdd);
           }
           Collections.sort(bestCities,
-            new CityComparator(0, 1, originCity, cityNodesToVisit, -5, 0, x, y));
+              new CityComparator(0, 1, originCity, cityNodesToVisit, 0, x, y));
           citiesInGraph.add(bestCities.remove(0));
         } else {
-          for (int i = 0 - ((numToAdd - 1) / 2), j = 0; i < ((numToAdd - 1) / 2) + 1; i++, j++) {
+          for (int i = 0 - ((numToAdd - 1) / 2), j = 1; i < ((numToAdd - 1) / 2) + 1; i++, j++) {
             if (!bestCities.isEmpty()) {
+
 //              x = 0;
 //              y = 0;
               if (activatePlanB) {
-                x = newXChange;
-                y = newYChange;
+                x = this.newX(offFromTarget, numToAdd);
+                y = this.newY(offFromTarget, numToAdd);
               }
               Collections.sort(bestCities,
-                new CityComparator(i, numToAdd - 1, originCity, cityNodesToVisit, j, random, x,
-                  y));
+                  new CityComparator(i, numToAdd - 1, originCity, cityNodesToVisit, random, x,
+                      y));
               citiesInGraph.add(bestCities.remove(0));
-              activatePlanB = false;
+//              activatePlanB = false;
             }
           }
         }
       } else {
         if (maxNumCities > temp) {
-          for (int i = -1, j = 0; i < 2; i += 2, j++) {
+          for (int i = -1 * (numToAdd/2), j = 1; i < numToAdd + (numToAdd/2); i += 2, j++) {
             if (!bestCities.isEmpty()) {
-//              x = 0;
-//              y = 0;
               if (activatePlanB) {
-                x = newXChange;
-                y = newYChange;
+                x = this.newX(offFromTarget, numToAdd);
+                y = this.newY(offFromTarget, numToAdd);
               }
               Collections.sort(bestCities,
-                new CityComparator(i, numToAdd, originCity, cityNodesToVisit, j, random, x, y));
+                  new CityComparator(i, numToAdd, originCity, cityNodesToVisit, random, x, y));
               citiesInGraph.add(bestCities.remove(0));
-              activatePlanB = false;
+//              activatePlanB = false;
             }
           }
         }
@@ -193,7 +190,7 @@ public class GraphBuilder {
 
     //Building the query based on the cities to visit.
     StringBuilder sb = new StringBuilder(
-      "SELECT city, state_id, lat, lng, population, id FROM cities where city in (");
+        "SELECT city, state_id, lat, lng, population, id FROM cities where city in (");
     boolean added = false;
     for (String f : citiesToSearch) {
       if (added) {
@@ -274,14 +271,31 @@ public class GraphBuilder {
     double endLat = Math.toRadians(a.getLat());
 
     double calc = Math.pow(Math.sin(distLat / 2), 2)
-      + Math.pow(Math.sin(distLong / 2), 2) * Math.cos(startLat) * Math.cos(endLat);
+        + Math.pow(Math.sin(distLong / 2), 2) * Math.cos(startLat) * Math.cos(endLat);
     double calc2 = 2 * Math.asin(Math.sqrt(calc));
     return earthRadius * calc2;
+  }
 
+  private double newX(double offFromTarget, double numToAdd) {
+    return (((offFromTarget / r) * RAD_TO_DEGREE) * this.randomSignInRange(lowBound, highBound)) /
+        numToAdd;
+  }
+
+  private double newY(double offFromTarget, double numToAdd) {
+    return (((offFromTarget / EARTH_RADIUS) * RAD_TO_DEGREE) *
+        this.randomSignInRange(lowBound, highBound)) / numToAdd;
   }
 
   private double randomInRange(double min, double max) {
     return (Math.random() * (max - min)) + min;
+  }
+
+  private double randomSignInRange(double min, double max) {
+    double rand = (Math.random() * (max - min)) + min;
+    if (random.nextBoolean()) {
+      return rand * -1;
+    }
+    return rand;
   }
 
 }
