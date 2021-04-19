@@ -9,7 +9,7 @@ import {act} from "@testing-library/react";
 
 function Choices() {
     const [cityList, setCityList] = useState(["Select City"]);
-    const [distList, setDistList] = useState(["Select Distance", "250 Miles", "500 Miles", "1000 Miles", "2000 Miles", "8000 Miles"]);
+    const [distList, setDistList] = useState(["Select Distance", "500 Miles", "1000 Miles", "2000 Miles", "4000 Miles", "8000 Miles"]);
     const [numList, setNumList] = useState(["Select Number", "2", "3", "4", "5", "6"]);
     const [firstRender, setFirsRender] = useState(true);
     var imageObj1 = new Image();
@@ -260,7 +260,7 @@ function Choices() {
 
                         <br />
 
-                        <div className="question" >Choose the maximum distance you can travel</div>
+                        <div className="question" >Choose the ideal distance you want to travel</div>
                         <select className="dropdown" onChange={handleInputChangeDist} value={dist}>
                             {distList.map((k)=>
                                 <option value={k}>{k}</option>)}
