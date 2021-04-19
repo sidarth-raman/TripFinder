@@ -31,6 +31,7 @@ function Choices() {
     const [activityCity, setActCity] = useState();
     const [activities, setActivities] = useState([]);
     const [activityCityMessage, setActCityMess] = useState([]);
+    const [render, setRender] = useState(1);
 
 
     const [value, setValue] = useState("");
@@ -134,12 +135,11 @@ function Choices() {
         setDistFinal(dist);
         setNumFinal(num);
         setCityFinal(city);
+        let c = render + 1;
+        setRender(c);
         setActivities([]);
-        if (!firstRender){
-            sendData();
-        }else {
-            setFirsRender(false)
-        }
+        // sendData();
+
         e.preventDefault();
     }
 
@@ -151,7 +151,7 @@ function Choices() {
             setFirsRender(false)
         }
 
-    }, [numFinal, distFinal, cityFinal, valueFinal])
+    }, [numFinal, distFinal, cityFinal, valueFinal, render])
 
     //Request the City List Iniitally
     const requestCity = async () => {
