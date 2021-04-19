@@ -1,5 +1,4 @@
-import './App.css';
-import './Navbar'
+import './choices.css';
 import Navbar from "./Navbar";
 import Choices from "./Choices";
 

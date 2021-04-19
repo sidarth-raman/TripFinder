@@ -137,3 +137,7 @@ ol li:before {
     width: 86%;
     padding-left: 1%;
 }
+
+.city:hover {
+    cursor: pointer;
+}

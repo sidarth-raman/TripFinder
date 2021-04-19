@@ -1,3 +1,7 @@
+import './choices.css';
+import './App.css';
+import './Navbar'
+
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 
@@ -80,6 +84,9 @@ function Itinerary() {
     return (
         <div>
             <div className="formbox">
+
+                <div className="formboxSmall">
+
                 <form onSubmit={handleSubmit}>
                     <label>
                         <div className="question">Select the city you wish to visit:</div>
@@ -91,6 +98,8 @@ function Itinerary() {
                     <input type="submit" value="Find me something to do!"/>
                 </form>
             </div>
+            </div>
+
             <ol>
                 {activities.map((k)=>
                     <li onClick={() => setActivity(k)}>

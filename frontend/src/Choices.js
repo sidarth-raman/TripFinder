@@ -9,7 +9,7 @@ import {act} from "@testing-library/react";
 
 function Choices() {
     const [cityList, setCityList] = useState(["Select City"]);
-    const [distList, setDistList] = useState(["Select Distance", "500 Miles", "1000 Miles", "2000 Miles", "4000 Miles", "8000 Miles"]);
+    const [distList, setDistList] = useState(["Select Distance", "500 Miles", "1000 Miles", "2000 Miles", "4000 Miles", "6000 Miles"]);
     const [numList, setNumList] = useState(["Select Number", "2", "3", "4", "5", "6"]);
     const [firstRender, setFirsRender] = useState(true);
     var imageObj1 = new Image();
@@ -321,7 +321,7 @@ function Choices() {
                 <div className = "tripData">
                     <ol className="list">
                         {output.map((k)=>
-                            <li onClick={() => setActCity(k)}>
+                            <li className="city" onClick={() => setActCity(k)}>
                                 {k}
                             </li>)}
                     </ol>
